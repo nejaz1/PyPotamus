@@ -1,2 +1,2 @@
-# PyPotamus
-Code base for running behaviour, imaging, emg experiments using the psychopy framework 
+# pyPotamus
+Base classes for designing experiments using Python 
