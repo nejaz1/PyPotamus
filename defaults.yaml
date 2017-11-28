@@ -1,7 +1,14 @@
-expwin_pos:       [48, 0]
-expwin_bgcolor:   [-1, -1, -1]
-expwin_size:      [400, 400]
-textwin_pos:      [48, 500]
-textwin_bgcolor:  [0, 0, 0]
-textwin_size:     [300, 300]
-num_counter:      3
+num_counter:            3
+
+expwin_fullscreen:      True
+expwin_pos:             [48, 0]
+expwin_bgcolor:         [-1, -1, -1]
+expwin_size:            [400, 400]
+expwin_autodraw:        True
+expwin_autolog:         False
+
+diagnosticwin_pos:      [48, 500]
+diagnosticwin_bgcolor:  [0, 0, 0]
+diagnosticwin_size:     [300, 300]
+diagnosticwin_autodraw: True
+

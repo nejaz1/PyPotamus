@@ -5,11 +5,22 @@
 from psychopy import visual
 
 class ExperimentDisplay:
-    handle = []
+    handle      = []
+    autodraw    = []
+    autoLog     = []
 
     # constructor
     def __init__(self, params):
-        self.handle = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], pos=params['expwin_pos'], name="ExperimentDisplay")
+        self.handle     = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], pos=params['expwin_pos'], fullscr=params['expwin_fullscreen'], name="ExperimentDisplay")
+        self.autodraw   = params['expwin_autodraw']
+        self.autoLog    = params['expwin_autolog']
+
+    # draw a grating stimulus
+    def grating(self, tex, mask, sf, name):
+        vis = visual.GratingStim(self.handle, tex=tex, mask=mask, sf=sf, name=name)
+        vis.setAutoDraw(self.autodraw)
+        vis.autoLog = self.autoLog
+        return vis
 
     # flip buffer to screen
     def flip(self):
@@ -17,5 +28,7 @@ class ExperimentDisplay:
 
 	# close window
     def close(self):
-		self.handle.close()
+        if self.handle != []:
+            self.handle.close()
+            self.handle = []
 
