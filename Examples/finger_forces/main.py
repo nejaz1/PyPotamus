@@ -18,18 +18,23 @@ class myExperiment(Experiment):
     # quicker to pre-allocate drawing elements on the screen
     def init_draw(self):
         # 0. draw circles for fingers
-        self.fBox       = list()
-        pos             = [[-0.8,0], [-0.4,0], [0,0], [0.4,0], [0.8,0]]
+        fingers = list()
+        pos     = [[-0.8,0], [-0.4,0], [0,0], [0.4,0], [0.8,0]]
         
         for i in range(5):
             f = self.gScreen.circle(pos=pos[i], radius=0.1, lineWidth=3.0, lineColor='white', fillColor='lightblue')
-            self.fBox.append(f)
+            fingers.append(f)
+        
+        # 1. add fingers stimulus to dictionary of visual stimuli
+        self.gScreen['fingers'] = fingers
 
     # this function is called when screen is about to be updated
     def updateScreen(self):        
+        fingers = self.gScreen['fingers']
+
         if 1000.0 <= self.gTimer[0] < 4000.0:
-            self.fBox[1].pos += (0,0.01)
-            self.fBox[2].pos += (0,-0.02)
+            fingers[1].pos += (0,0.01)
+            fingers[2].pos += (0,-0.02)
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
