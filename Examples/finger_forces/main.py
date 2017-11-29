@@ -17,11 +17,16 @@ class myExperiment(Experiment):
     
     # quicker to pre-allocate drawing elements on the screen
     def init_draw(self):
-        # draw gabor function in experimental window
-        self.gabor = self.gScreen.grating(tex='sin', mask='gauss', sf=10, name='gabor')
+        # 0. draw circles for fingers
+        self.fBox       = list()
+        pos             = [[-0.8,0], [-0.4,0], [0,0], [0.4,0], [0.8,0]]
+        
+        for i in range(5):
+            f = self.gScreen.circle(pos=pos[i], radius=0.1, lineWidth=3.0, lineColor='white', fillColor='lightblue')
+            self.fBox.append(f)
 
-        # print timer on screen
-        self.txt = self.gDiagnostic.write('init')
+        # 0. set subject id
+        self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
 
     # over-load experimental trial loop function
     def trial(self):
@@ -29,11 +34,11 @@ class myExperiment(Experiment):
 
         while self.gTimer[0] < 5000.0:  # clock times are in seconds
             if 1000.0 <= self.gTimer[0] < 4000.0:
-                self.gabor.setPhase(0.1, '+')  # increment by 10th of cycle
-                self.gData.add_dbg_event('tick')
-            self.txt.setText(self.gTimer[0])
-            self.gDiagnostic.flip()
-            self.gScreen.flip()
+                self.fBox[1].pos += (0,0.01)
+
+            self.gDiagnostic[1] = 'Timer:' + str(round(self.gTimer[0],1))
+
+            self.flip()
 
 
 # 2. Main entry point of experiment
@@ -50,14 +55,14 @@ if __name__ == "__main__":
     gExp.set_subject_id('s01')
     gExp.initialize_data_manager(['TN','startTime'])
 
-    # initialize drawing elements on screen for speed
+    # initialize drawing elements on screen for speed (also for diagnostic messages)
     gExp.init_draw()
 
     # start main experiment
     gExp.start()
     gExp.close_screens()
-    pdb.set_trace()
         
     # stop experiment, cleanup memory and look at data generated
+    pdb.set_trace()
     gExp.stop()
 

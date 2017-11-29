@@ -34,6 +34,10 @@ class Experiment:
     def set_subject_id(self, subject_id):
         self.gData.set_subject_id(subject_id)
 
+    # get subject id
+    def get_subject_id(self):
+        return self.gData.subject_id
+
     # toggle diagnostic window
     def diagnostic(self,mode):
         self.gDiagnostic.diagnostic(mode,self.gParams)
@@ -47,6 +51,14 @@ class Experiment:
     def stop(self):
         self.gData.add_dbg_event('stop')
         self.exit()        
+
+    # flip screen buffers
+    def flip(self):
+        if self.gScreen.handle != []:
+            self.gScreen.handle.flip()
+
+        if self.gDiagnostic.handle != []:
+            self.gDiagnostic.handle.flip()            
 
     # close all screens associated with experiment
     def close_screens(self):
