@@ -51,3 +51,5 @@ class DiagnosticDisplay:
         if self.handle != []:
             self.handle.close()
             self.handle = []
+            self.txt    = []
+            

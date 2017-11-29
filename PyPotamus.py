@@ -55,9 +55,11 @@ class Experiment:
     # flip screen buffers
     def flip(self):
         if self.gScreen.handle != []:
+            self.updateScreen()
             self.gScreen.handle.flip()
 
         if self.gDiagnostic.handle != []:
+            self.updateDiagnostic()
             self.gDiagnostic.handle.flip()            
 
     # close all screens associated with experiment
@@ -78,3 +80,14 @@ class Experiment:
     @abc.abstractmethod
     def trial(self):
          """Main experiment trial loop provided by the base class"""
+
+    # main drawing function to be called prior to screen refresh
+    # provided as an abstract function to be overloaded by inheriting class
+    @abc.abstractmethod
+    def updateScreen(self):
+         """main drawing function to be called prior to screen refresh"""         
+
+    # main updating function to be called prior to diagnostic info refresh
+    # provided as an abstract function to be overloaded by inheriting class
+    def updateDiagnostic(self):
+         """main drawing function to be called prior to diagnostic info refresh"""         

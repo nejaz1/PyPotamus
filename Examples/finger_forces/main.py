@@ -25,19 +25,22 @@ class myExperiment(Experiment):
             f = self.gScreen.circle(pos=pos[i], radius=0.1, lineWidth=3.0, lineColor='white', fillColor='lightblue')
             self.fBox.append(f)
 
-        # 0. set subject id
+    # this function is called when screen is about to be updated
+    def updateScreen(self):        
+        if 1000.0 <= self.gTimer[0] < 4000.0:
+            self.fBox[1].pos += (0,0.01)
+            self.fBox[2].pos += (0,-0.02)
+
+    # this function is called when diagnostic info is about to be updated
+    def updateDiagnostic(self):        
         self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
+        self.gDiagnostic[1] = 'Timer:' + str(round(self.gTimer[0],1))
 
     # over-load experimental trial loop function
     def trial(self):
         self.gTimer.reset_all()
 
         while self.gTimer[0] < 5000.0:  # clock times are in seconds
-            if 1000.0 <= self.gTimer[0] < 4000.0:
-                self.fBox[1].pos += (0,0.01)
-
-            self.gDiagnostic[1] = 'Timer:' + str(round(self.gTimer[0],1))
-
             self.flip()
 
 
