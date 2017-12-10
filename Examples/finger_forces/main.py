@@ -10,7 +10,7 @@ path    = '/Users/naveed/Dropbox/Code/experimentcode/PyPotamus/'
 sys.path.append(path)
 
 from PyPotamus import Experiment
-import pdb
+from HopkinsHandDevice import HopkinsHandDevice
 
 # 1. Inherited Experiment class in PyPotamus module
 class myExperiment(Experiment):
@@ -49,9 +49,12 @@ class myExperiment(Experiment):
             self.flip()
 
 
-# 2. Main entry point of experiment
+# 3. Main entry point of program
 if __name__ == "__main__":
-    
+
+    gHand  = HopkinsHandDevice()
+    gHand.start()
+
     # 1. Set up experiment and initalize using default parameters in yaml file
     gExp = myExperiment()
     gExp.initialize(path + 'defaults.yaml')
@@ -60,17 +63,27 @@ if __name__ == "__main__":
     gExp.diagnostic('on')
 
     # initialize data format to save during experiment
-    gExp.set_subject_id('s01')
     gExp.initialize_data_manager(['TN','startTime'])
 
     # initialize drawing elements on screen for speed (also for diagnostic messages)
     gExp.init_draw()
+
+    # get user input via console
+    gExp.get_user_input()
 
     # start main experiment
     gExp.start()
     gExp.close_screens()
         
     # stop experiment, cleanup memory and look at data generated
-    pdb.set_trace()
     gExp.stop()
+
+    # separate process for keyboard
+    #pKey    = multiprocessing.Process(target=start_keyboard)
+    #pKey.start()
+    #pKey.join()
+    
+
+
+
 

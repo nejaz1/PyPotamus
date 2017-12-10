@@ -8,7 +8,7 @@ from datetime import datetime
 # Class to manage data generated during experiment
 class DataManager:
     sep             = '\t'
-    subject_id      = '_'
+    subject_id      = ''
     nowtime         = ''
     fname           = []    # file name to save data to
     dbg_fname       = []    # file name to save debug data to

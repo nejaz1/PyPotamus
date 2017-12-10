@@ -10,7 +10,6 @@ from ExperimentDisplay import ExperimentDisplay
 from DiagnosticDisplay import DiagnosticDisplay
 from Timer import Timer
 from DataManager import DataManager
-from Keyboard import Keyboard
 
 class Experiment:
     __metaclass__  = abc.ABCMeta
@@ -26,7 +25,6 @@ class Experiment:
         self.gTimer  = Timer(self.gParams)                      # timers
         self.gData   = DataManager(self.gParams)                # data manager
         self.gDiagnostic    = DiagnosticDisplay(self.gParams)   # diagnostic window
-        self.gKeyboard      = Keyboard(self.gParams)   # diagnostic window
 
     # initialize data manager and provide format to expect data in
     def initialize_data_manager(self, dataformat):
@@ -68,20 +66,6 @@ class Experiment:
     def close_screens(self):
         self.gScreen.close()
         self.gDiagnostic.close()
-
-    def get_user_input(self):
-        while True:
-            resp = self.gKeyboard.poll(self.get_subject_id())
-
-            if resp[0] == 'quit':
-                self.close_screens()
-                self.stop()        
-
-            elif resp[0] == 'run':
-                break
-
-            elif resp[0] == 'subj':
-                self.set_subject_id(resp[1])
 
     # close all windows and clear memory
     def exit(self):
