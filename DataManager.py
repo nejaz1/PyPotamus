@@ -16,6 +16,9 @@ class DataManager:
     data            = []    # experimental data in pandas format
     dbg_data        = []    # debug data for experiment
 
+    BN              = 0     # block number
+    TN              = 0     # trial number
+
     # constructor
     def __init__(self, params):
         self.update_date_string()

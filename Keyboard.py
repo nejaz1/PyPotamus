@@ -36,7 +36,6 @@ class Keyboard:
         if splitstr[0] != '':
             try:
                 out = eval('self.' + splitstr[0] + '(splitstr[1:])')
-                print out
             except:
                 out = self.error()
 

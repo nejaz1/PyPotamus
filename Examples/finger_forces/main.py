@@ -30,16 +30,22 @@ class myExperiment(Experiment):
 
     # this function is called when screen is about to be updated
     def updateScreen(self):        
-        fingers = self.gScreen['fingers']
+        fingers     = self.gScreen['fingers']
+        f           = self.gTrial.Digit-1
+        d           = self.gTrial.Dir                       
 
         if 1000.0 <= self.gTimer[0] < 4000.0:
-            fingers[1].pos += (0,0.01)
-            fingers[2].pos += (0,-0.02)
+            if d==1:
+                fingers[f].pos += (0,0.01)
+            elif d==2:
+                fingers[f].pos -= (0,0.01)
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
         self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
         self.gDiagnostic[1] = 'Timer:' + str(round(self.gTimer[0],1))
+        self.gDiagnostic[2] = 'run:' + str(self.get_runno())
+        self.gDiagnostic[3] = 'TN:' + str(self.gTrial.TN)        
 
     # over-load experimental trial loop function
     def trial(self):
@@ -69,21 +75,8 @@ if __name__ == "__main__":
     gExp.init_draw()
 
     # get user input via console
-    gExp.get_user_input()
-
-    # start main experiment
-    gExp.start()
-    gExp.close_screens()
-        
-    # stop experiment, cleanup memory and look at data generated
-    gExp.stop()
-
-    # separate process for keyboard
-    #pKey    = multiprocessing.Process(target=start_keyboard)
-    #pKey.start()
-    #pKey.join()
-    
-
-
-
+    # user commands starts/stops experiment
+    gExp.control()
+    gHand.terminate()
+    gHand.join()
 

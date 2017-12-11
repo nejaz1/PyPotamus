@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import csv
-import sys
 import itertools
 
 # Class provides dxxxxd
@@ -24,12 +23,13 @@ class TargetFile:
                 s = "currTrialStr"
                 setattr(self,s,row)
                 for value,index in itertools.izip(row,self.headers):
-                    setattr(self,index,value)
+                    setattr(self,index,int(value))
 
     # method to increment the trial number
     def nextTrial(self):
         TargetFile.currTrial +=1
         self.trial()
+
         if TargetFile.currTrial> len(self.tgt):
             self.currTrial = self.eof
             for value in self.headers:
@@ -37,9 +37,7 @@ class TargetFile:
 
     # method to return the number of trials
     def getTrialNum(self):
-        for row, val in enumerate(self.tgt,start =1):
-            L = len(self.tgt)
-        print(L)
+        return len(self.tgt)
 
     # method to print the headers of a file
     def printHeaders(self):

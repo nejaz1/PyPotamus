@@ -4,6 +4,7 @@
 # Nov 24: Naveed Ejaz
 import yaml
 import abc
+import pdb
 
 # Load PyPotamus libraries
 from ExperimentDisplay import ExperimentDisplay
@@ -11,6 +12,7 @@ from DiagnosticDisplay import DiagnosticDisplay
 from Timer import Timer
 from DataManager import DataManager
 from Keyboard import Keyboard
+from TargetFile import TargetFile
 
 class Experiment:
     __metaclass__  = abc.ABCMeta
@@ -40,19 +42,28 @@ class Experiment:
     def get_subject_id(self):
         return self.gData.subject_id
 
+    # get run number
+    def get_runno(self):
+        return self.gData.run        
+
     # toggle diagnostic window
     def diagnostic(self,mode):
         self.gDiagnostic.diagnostic(mode,self.gParams)
 
-    # start main experiment
-    def start(self):
-        self.gData.add_dbg_event('start')
-        self.trial()
+    # start run in experiment
+    def start_run(self):
+        # posting run starting message  
+        self.gData.add_dbg_event('starting run ' + str(self.get_runno()))
 
-    # stop main experiment
-    def stop(self):
-        self.gData.add_dbg_event('stop')
-        self.exit()        
+        for i in range(self.gTrial.getTrialNum()):
+            # run abstract function for each trial
+            self.trial()
+
+            # go to next trial
+            self.gTrial.nextTrial()
+
+        # posting run ending message  
+        self.gData.add_dbg_event('run successfully completed')
 
     # flip screen buffers
     def flip(self):
@@ -69,27 +80,31 @@ class Experiment:
         self.gScreen.close()
         self.gDiagnostic.close()
 
-    def get_user_input(self):
+    def control(self):
         while True:
             resp = self.gKeyboard.poll(self.get_subject_id())
 
             if resp[0] == 'quit':
-                self.close_screens()
-                self.stop()        
+                self.exit()
+                break        
 
             elif resp[0] == 'run':
-                break
+                self.gData.run  = resp[1]
+                self.gTrial     = TargetFile(resp[2])
+                self.start_run()
 
             elif resp[0] == 'subj':
                 self.set_subject_id(resp[1])
 
     # close all windows and clear memory
     def exit(self):
-        self.gParams    = []
-        self.gScreen.close()
-        self.gDiagnostic.close()
+        self.close_screens()
         del self.gTimer
         del self.gData
+        del self.gScreen
+        del self.gDiagnostic
+        del self.gKeyboard
+        del self.gParams
 
     # main experiment loop for each trial
     # provided as an abstract function to be overloaded by inheriting class
