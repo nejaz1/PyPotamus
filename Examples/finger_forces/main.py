@@ -32,28 +32,38 @@ class myExperiment(Experiment):
     def updateScreen(self):        
         fingers     = self.gScreen['fingers']
         f           = self.gTrial.Digit-1
-        d           = self.gTrial.Dir                       
 
-        if 1000.0 <= self.gTimer[0] < 4000.0:
-            if d==1:
-                fingers[f].pos += (0,0.01)
-            elif d==2:
-                fingers[f].pos -= (0,0.01)
+        fingers[f].pos += self.update_pos
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
         self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
         self.gDiagnostic[1] = 'Timer:' + str(round(self.gTimer[0],1))
-        self.gDiagnostic[2] = 'run:' + str(self.get_runno())
+        self.gDiagnostic[2] = 'Run:' + str(self.get_runno())
         self.gDiagnostic[3] = 'TN:' + str(self.gTrial.TN)        
 
     # over-load experimental trial loop function
     def trial(self):
-        self.gTimer.reset_all()
+        d           = self.gTrial.Dir                       
 
-        while self.gTimer[0] < 5000.0:  # clock times are in seconds
-            self.flip()
+        # trial states here
+        if self.state == self.gStates.START_TRIAL:
 
+            self.update_pos = (0,0)
+
+            if self.gTimer[0] > self.gTrial.StartTime:
+                self.state = self.gStates.WAIT_TRIAL
+
+        # trial ends here
+        elif self.state == self.gStates.WAIT_TRIAL:
+
+            if d==1:
+                self.update_pos = (0,0.01)
+            elif d==2:
+                self.update_pos = (0,-0.01)
+
+            if self.gTimer[0] > self.gTrial.EndTime:
+                self.state = self.gStates.END_TRIAL
 
 # 3. Main entry point of program
 if __name__ == "__main__":
@@ -70,6 +80,9 @@ if __name__ == "__main__":
 
     # initialize data format to save during experiment
     gExp.initialize_data_manager(['TN','startTime'])
+
+    # initialize trial states
+    gExp.set_trial_states('START_TRIAL','WAIT_TRIAL','END_TRIAL')
 
     # initialize drawing elements on screen for speed (also for diagnostic messages)
     gExp.init_draw()

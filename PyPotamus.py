@@ -14,6 +14,7 @@ from DataManager import DataManager
 from Keyboard import Keyboard
 from TargetFile import TargetFile
 
+
 class Experiment:
     __metaclass__  = abc.ABCMeta
 
@@ -28,7 +29,8 @@ class Experiment:
         self.gTimer  = Timer(self.gParams)                      # timers
         self.gData   = DataManager(self.gParams)                # data manager
         self.gDiagnostic    = DiagnosticDisplay(self.gParams)   # diagnostic window
-        self.gKeyboard      = Keyboard(self.gParams)   # diagnostic window
+        self.gKeyboard      = Keyboard(self.gParams)            # diagnostic window
+        self.gStates        = []                                # trial states        
 
     # initialize data manager and provide format to expect data in
     def initialize_data_manager(self, dataformat):
@@ -37,6 +39,11 @@ class Experiment:
     # set subject id (used by data manager as file name to save data to disk)
     def set_subject_id(self, subject_id):
         self.gData.set_subject_id(subject_id)
+
+    # set states used to progress through a trial
+    def set_trial_states(self, *sequential, **named):
+        enums           = dict(zip(sequential, range(len(sequential))), **named)
+        self.gStates    = type('Enum', (), enums)       
 
     # get subject id
     def get_subject_id(self):
@@ -55,9 +62,17 @@ class Experiment:
         # posting run starting message  
         self.gData.add_dbg_event('starting run ' + str(self.get_runno()))
 
+        # reset all timers at the start of the run
+        self.gTimer.reset_all()
+
+        # loop over all trials in the target file
         for i in range(self.gTrial.getTrialNum()):
             # run abstract function for each trial
-            self.trial()
+            self.state = 0
+
+            while self.state != self.gStates.END_TRIAL:
+                self.trial()
+                self.flip()
 
             # go to next trial
             self.gTrial.nextTrial()
@@ -121,4 +136,5 @@ class Experiment:
     # main updating function to be called prior to diagnostic info refresh
     # provided as an abstract function to be overloaded by inheriting class
     def updateDiagnostic(self):
-         """main drawing function to be called prior to diagnostic info refresh"""         
+         """main drawing function to be called prior to diagnostic info refresh"""  
+
