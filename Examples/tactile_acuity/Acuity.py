@@ -17,6 +17,8 @@ class Acuity(TargetFile):
 
         self.plate = ['l','r']
         self.plateNum = [1,2]
+        self.orientation = ['F','B']
+        self.orientationNum = [1,2]
         self.UL = max(self.plateangle)
         self.LL = min(self.plateangle)
         self.trgt = (self.UL - self.LL)/2
@@ -48,12 +50,29 @@ class Acuity(TargetFile):
                             val = [0, value]
                             leftplate = random.choice(val)
                             rightplate = random.choice(val)
+                            combo = random.choice(self.orientation)
                             if leftplate == rightplate:
                                 continue
                             plate2 = [leftplate,rightplate]
-                            print 'Trial #: %s' %(self.index) + ' Left Plate: %s Right Plate: %s' %(leftplate, rightplate)
+
+                            if leftplate == rightplate:
+                                continue
+                            plate2 = [leftplate,rightplate]
+                            if leftplate > 0:
+                                plateAndOri = leftplate
+                                plateori = [combo,plateAndOri]
+                                print 'Trial #: %s' %(self.index) + ' Left Plate: %s Right Plate: %s' %(plateori, [rightplate])
+                            else:
+                                plateAndOri = rightplate
+                                plateori = [combo,plateAndOri]
+                                print 'Trial #: %s' %(self.index) + ' Left Plate: %s Right Plate: %s' %([leftplate], plateori)
+
+
                             plate_map = dict(zip(plate2,self.plate))
                             combo_map = dict(zip(self.plateNum, self.plate))
+
+                            ori_map = dict(zip(self.orientation, plate2))
+
                             input = raw_input("Enter response [L/R]:")
                             input = input.lower()
 
@@ -64,6 +83,8 @@ class Acuity(TargetFile):
                                 mylist.append(self.index)
                                 mylist.append(leftplate)
                                 mylist.append(rightplate)
+                                mylist.append(combo)
+
                                 if input == 'l':
                                     for key in combo_map:
                                         if key == 1:
@@ -123,8 +144,8 @@ class Acuity(TargetFile):
     def toFile(self, mylist, id, blockid):
         with open(id +'_'+ blockid +'.txt', 'a') as f:
             writer = csv.writer(f,delimiter = '\t')
-            composite_list = [mylist[x:x+8] for x in range(0, len(mylist),8)]
-            writer.writerow(['Hand', 'Digit','BN', 'TN','LeftPlate','RightPlate','Response','Correct'])
+            composite_list = [mylist[x:x+9] for x in range(0, len(mylist),9)]
+            writer.writerow(['Hand', 'Digit','BN', 'TN','LeftPlate','RightPlate', 'Orientation','Response','Correct'])
             writer.writerows(composite_list)
 
 
