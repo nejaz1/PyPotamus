@@ -3,7 +3,6 @@
 # Created:
 # Nov 17: Naveed Ejaz
 
-
 # 0. Import required modules
 import sys
 path    = '/Users/naveed/Dropbox/Code/experimentcode/PyPotamus/'
@@ -12,6 +11,8 @@ sys.path.append(path)
 from PyPotamus import Experiment
 from HopkinsHandDevice import HopkinsHandDevice
 
+
+# ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
 class myExperiment(Experiment):
     
@@ -65,10 +66,12 @@ class myExperiment(Experiment):
             if self.gTimer[0] > self.gTrial.EndTime:
                 self.state = self.gStates.END_TRIAL
 
+
+# ------------------------------------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__":
 
-    gHand  = HopkinsHandDevice()
+    gHand = HopkinsHandDevice()
     gHand.start()
 
     # 1. Set up experiment and initalize using default parameters in yaml file
