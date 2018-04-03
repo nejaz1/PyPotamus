@@ -5,6 +5,7 @@
 import yaml
 import abc
 import pdb
+import sys
 
 # Load PyPotamus libraries
 from ExperimentDisplay import ExperimentDisplay
@@ -20,7 +21,12 @@ class Experiment:
 
     # constructor
     def __init__(self):
-        """Constructor purposely left empty"""
+        self.pythonver  = sys.version_info[:2]
+        if self.pythonver < (3,6):
+            print("Please run with python version 3.6 or higher")
+            sys.exit(0)
+        else:
+            print("Current python version is " + str(self.pythonver))
 
     # initialize experiment with defaults provided in yaml file
     def initialize(self, filepath):
@@ -29,8 +35,9 @@ class Experiment:
         self.gTimer  = Timer(self.gParams)                      # timers
         self.gData   = DataManager(self.gParams)                # data manager
         self.gDiagnostic    = DiagnosticDisplay(self.gParams)   # diagnostic window
-        self.gKeyboard      = Keyboard(self.gParams)            # diagnostic window
-        self.gStates        = []                                # trial states        
+        self.gKeyboard      = Keyboard(self.gParams)            # keyboard input polling
+        self.gStates        = []                                # trial states 
+        self.gHardware      = []                                # hardware used for experiment    
 
     # initialize data manager and provide format to expect data in
     def initialize_data_manager(self, dataformat):
@@ -79,6 +86,7 @@ class Experiment:
 
         # posting run ending message  
         self.gData.add_dbg_event('run successfully completed')
+        pdb.set_trace()
 
     # flip screen buffers
     def flip(self):
@@ -120,21 +128,21 @@ class Experiment:
         del self.gDiagnostic
         del self.gKeyboard
         del self.gParams
+        del self.gHardware
 
     # main experiment loop for each trial
     # provided as an abstract function to be overloaded by inheriting class
     @abc.abstractmethod
     def trial(self):
-         """Main experiment trial loop provided by the base class"""
+        """Main experiment trial loop provided by the base class"""
 
     # main drawing function to be called prior to screen refresh
     # provided as an abstract function to be overloaded by inheriting class
     @abc.abstractmethod
     def updateScreen(self):
-         """main drawing function to be called prior to screen refresh"""         
+        """main drawing function to be called prior to screen refresh"""         
 
     # main updating function to be called prior to diagnostic info refresh
     # provided as an abstract function to be overloaded by inheriting class
     def updateDiagnostic(self):
-         """main drawing function to be called prior to diagnostic info refresh"""  
-
+        """main drawing function to be called prior to diagnostic info refresh"""  

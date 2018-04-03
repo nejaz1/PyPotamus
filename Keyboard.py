@@ -20,24 +20,25 @@ class Keyboard:
 
     # function handler for unrecognized keyboard input
     def error(self):
-        print 'unexpected command'
+        print('unexpected command')
         return ['error']
 
     # constructor
     def __init__(self, params):
-        """Constructor purposely left empty"""
+        """constructor left empty, nothing to do"""         
 
     # poll keyboard and get user input
     def poll(self, subject_id):
-        commandStr = raw_input(subject_id + ">> ")
+        commandStr = input(subject_id + ">> ")
+
         splitstr   = commandStr.split(' ')
 
         out = ['return']
         if splitstr[0] != '':
             try:
                 out = eval('self.' + splitstr[0] + '(splitstr[1:])')
-            except:
+            except Exception as e:
+                print(e)
                 out = self.error()
 
         return out    
-

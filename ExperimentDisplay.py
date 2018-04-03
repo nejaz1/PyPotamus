@@ -3,7 +3,6 @@
 # Created:
 # Nov 17: Naveed Ejaz
 from psychopy import visual
-from operator import add
 
 class ExperimentDisplay:
     handle      = []
@@ -56,11 +55,10 @@ class ExperimentDisplay:
 
     # flip buffer to screen
     def flip(self):
-		self.handle.flip()
+        self.handle.flip()
 
-	# close window
+    # close window
     def close(self):
         if self.handle != []:
             self.handle.close()
             self.handle = []
-

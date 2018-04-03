@@ -5,34 +5,32 @@
 
 # 0. Import required modules
 import sys
-path    = '/Users/naveed/Dropbox/Code/experimentcode/PyPotamus/'
+path    = '/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/'
 sys.path.append(path)
 
 from PyPotamus import Experiment
-from HopkinsHandDevice import HopkinsHandDevice
-
+from Hardware import HardwareManager
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
 class myExperiment(Experiment):
-    
     # quicker to pre-allocate drawing elements on the screen
     def init_draw(self):
         # 0. draw circles for fingers
         fingers = list()
         pos     = [[-0.8,0], [-0.4,0], [0,0], [0.4,0], [0.8,0]]
-        
+
         for i in range(5):
             f = self.gScreen.circle(pos=pos[i], radius=0.1, lineWidth=3.0, lineColor='white', fillColor='lightblue')
             fingers.append(f)
-        
+
         # 1. add fingers stimulus to dictionary of visual stimuli
         self.gScreen['fingers'] = fingers
 
     # this function is called when screen is about to be updated
     def updateScreen(self):        
         fingers     = self.gScreen['fingers']
-        f           = self.gTrial.Digit-1
+        f           = self.gTrial.Digit - 1
 
         fingers[f].pos += self.update_pos
 
@@ -58,9 +56,9 @@ class myExperiment(Experiment):
         # trial ends here
         elif self.state == self.gStates.WAIT_TRIAL:
 
-            if d==1:
+            if d == 1:
                 self.update_pos = (0,0.01)
-            elif d==2:
+            elif d == 2:
                 self.update_pos = (0,-0.01)
 
             if self.gTimer[0] > self.gTrial.EndTime:
@@ -71,7 +69,7 @@ class myExperiment(Experiment):
 # 3. Main entry point of program
 if __name__ == "__main__":
 
-    gHand = HopkinsHandDevice()
+    gHand = HardwareManager()
     gHand.start()
 
     # 1. Set up experiment and initalize using default parameters in yaml file
@@ -95,4 +93,3 @@ if __name__ == "__main__":
     gExp.control()
     gHand.terminate()
     gHand.join()
-

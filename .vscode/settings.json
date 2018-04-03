@@ -1,5 +1,7 @@
 {
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "python.linting.flake8Args": ["--ignore=E221,E501,E231,E402,E302,W291"],    
+    "python.pythonPath": "/Users/naveed/anaconda2/envs/psychopy3/bin/python"
 }

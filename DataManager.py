@@ -4,6 +4,7 @@
 # Nov 20: Naveed Ejaz
 import pandas as pd
 from datetime import datetime
+import os
 
 # Class to manage data generated during experiment
 class DataManager:
@@ -13,6 +14,7 @@ class DataManager:
     fname           = []    # file name to save data to
     dbg_fname       = []    # file name to save debug data to
 
+    data_dir        = ''    # directory where data will be stored
     data            = []    # experimental data in pandas format
     dbg_data        = []    # debug data for experiment
 
@@ -22,10 +24,27 @@ class DataManager:
     # constructor
     def __init__(self, params):
         self.update_date_string()
+        self.subject_id = ''
+        self.update_file_names()
 
-        # files for storing experimental and debug data
-        self.fname      = self.subject_id + '.txt'
-        self.dbg_fname  = self.subject_id + '_debug.txt'
+    # run this whenever subject name gets updated
+    def update_file_names(self):
+        if self.subject_id == '':
+            self.fname      = '_.txt'
+            self.dbg_fname  = '_debug.txt'
+        else:
+            self.fname      = self.subject_id + '.txt'
+            self.dbg_fname  = self.subject_id + '_debug.txt'                
+
+    # set data directory
+    def set_data_directory(self, data_dir_path):
+        self.data_dir = os.path.dirname(data_dir_path)
+        self.check_data_directory()
+
+    # run this to make data directory if it does not exist
+    def check_data_directory(self):
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
 
     # get date string
     def update_date_string(self):

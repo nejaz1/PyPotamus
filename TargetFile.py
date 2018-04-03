@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import csv
-import itertools
 
 # Class provides dxxxxd
 class TargetFile:
@@ -9,7 +8,7 @@ class TargetFile:
 
     def __init__(self, filename):
         with open(filename,'r') as f:
-            tgt2                  = csv.reader(f.read().splitlines(), delimiter ='\t')
+            tgt2                  = csv.reader(f.read().splitlines(), delimiter='\t')
             self.headers          = list(next(tgt2, None))
             self.tgt              = list(tgt2)
             TargetFile.currTrial  = 1
@@ -22,15 +21,15 @@ class TargetFile:
             if i == TargetFile.currTrial:
                 s = "currTrialStr"
                 setattr(self,s,row)
-                for value,index in itertools.izip(row,self.headers):
+                for value,index in zip(row,self.headers):
                     setattr(self,index,int(value))
 
     # method to increment the trial number
     def nextTrial(self):
-        TargetFile.currTrial +=1
+        TargetFile.currTrial += 1
         self.trial()
 
-        if TargetFile.currTrial> len(self.tgt):
+        if TargetFile.currTrial > len(self.tgt):
             self.currTrial = self.eof
             for value in self.headers:
                 setattr(self,value,self.eof)
@@ -46,17 +45,13 @@ class TargetFile:
     # method to print the entire current trial to screen
     def printCurrTrial(self):
         print(self.headers)
-        for i,row in enumerate(self.tgt, start =1):
+        for i,row in enumerate(self.tgt, start=1):
             if i == self.currTrial:
-                print row
+                print(row)
 
     # method to return the entire file with trial #'s
     def printTrial(self):
         print(self.headers)
         for row in enumerate(self.tgt, start=1):
             values  = ' '.join(str(v) for v in row)
-            print('Trial #%s' %(values))
-
-
-
-
+            print('Trial #%s' % (values))
