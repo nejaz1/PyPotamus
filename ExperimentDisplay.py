@@ -53,6 +53,13 @@ class ExperimentDisplay:
         vis.autoLog = self.autoLog
         return vis        
 
+    # draw text
+    def text(self, **kwargs):
+        vis = visual.TextStim(self.handle, **kwargs)
+        vis.setAutoDraw(self.autodraw)
+        vis.autoLog = self.autoLog
+        return vis                
+
     # flip buffer to screen
     def flip(self):
         self.handle.flip()

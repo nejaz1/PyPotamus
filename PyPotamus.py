@@ -29,7 +29,7 @@ class Experiment:
             print("Current python version is " + str(self.pythonver))
 
     # initialize experiment with defaults provided in yaml file
-    def initialize(self, filepath):
+    def load_settings(self, filepath):
         self.gParams = yaml.load(open(filepath))                # load defaults
         self.gScreen = ExperimentDisplay(self.gParams)          # exp display
         self.gTimer  = Timer(self.gParams)                      # timers

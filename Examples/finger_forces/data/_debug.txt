@@ -1,4 +1,4 @@
 time_stamp	subject_id	event
-April 04, 2018 at 06:27AM		init
-April 04, 2018 at 06:27AM		starting run 1
-April 04, 2018 at 06:27AM		run successfully completed
+April 04, 2018 at 05:41PM		init
+April 04, 2018 at 05:41PM		starting run 1
+April 04, 2018 at 05:42PM		run successfully completed

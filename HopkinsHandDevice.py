@@ -2,6 +2,7 @@ import multiprocessing
 import hid
 from struct import unpack
 import numpy as np
+import pdb
 
 # Main Class to communication with all the hopkins hand device
 #
@@ -42,9 +43,6 @@ class HopkinsHandDeviceMultiproc(multiprocessing.Process):
         self.handle.close()
         self.exit.set()        
 
-
-
-
 # Base class without multiprocessing
 class HopkinsHandDevice:
 
@@ -63,9 +61,20 @@ class HopkinsHandDevice:
 
         self.zerof(500)
         print('Calibrating zero baseline')
-        
+
     # initialize connection to hand device
     def initialize(self):
+        self.handle = hid.device()
+
+        dev_path = ''
+        for d in hid.enumerate():
+            if d['product_id'] == 1158 and d['usage'] == 512:
+                dev_path = d['path']
+                print('Opened hand device')
+        self.handle.open_path(dev_path)
+
+    # initialize connection to hand device (this sometimes doesn't work)
+    def initialize_alternative(self):
         self.handle = hid.device()
         self.handle.open(0x16c0, 0x486)
         self.handle.set_nonblocking(1)
@@ -102,6 +111,19 @@ class HopkinsHandDevice:
         self.update()
         return self.last_data
 
+    # get (X,Y) summated readings for all fingers except the i-th pair
+    def getXY_RMSForces(self,i):
+        self.update()
+        x   = np.reshape(self.last_data,[5,3])
+        x   = np.multiply(x,self.multiplier)
+        x   = x[:,0:2]
+
+        fin_i   = np.square(x[i,:]).sum()
+        fin_all = np.square(x).sum()
+        rms     = np.sqrt(fin_all-fin_i)
+
+        return rms
+
     # get all (X,Y,Z) readings for i-th finger
     def getXYZ(self,i):
         self.update()
@@ -121,3 +143,5 @@ class HopkinsHandDevice:
             t[i,:] = self.getRaw()
 
         self.f_baseline = np.mean(t,axis=0)
+
+    # estimate enslaving
