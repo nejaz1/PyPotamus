@@ -40,6 +40,11 @@ class myExperiment(Experiment):
         # update target pos based on hardware readings
         self.gScreen['target'].pos = (self.gTrial.TargetX/10,self.gTrial.TargetY/10)
 
+        euc_dist = np.linalg.norm(np.subtract(self.gScreen['finger'].pos,self.gScreen['target'].pos))
+        if euc_dist <= self.gScreen['target'].radius:
+            self.gScreen['target'].fillColor = 'green'
+            self.gScreen['target'].lineColor = 'green'
+
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
         self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
@@ -50,17 +55,20 @@ class myExperiment(Experiment):
     # over-load experimental trial loop function
     def trial(self):
         forces      = self.gHardware['gHand'].getRaw()
+        target      = self.gScreen['target']
 
         print(np.array_str(forces, max_line_width=1000, precision=1, suppress_small=True))
         
         # START_TRIAL
         if self.state == self.gStates.START_TRIAL:
+            target.fillColor = 'red'
+            target.lineColor = 'red'
 
             if self.gTimer[0] > self.gTrial.StartTime:
                 # log trial start time
                 self.gVariables['measStartTime']    = self.gTimer[0]
                 self.state                          = self.gStates.WAIT_TRIAL
-                self.gScreen['target'].opacity      = 1.0
+                target.opacity                      = 1.0
 
         # WAIT_TRIAL
         elif self.state == self.gStates.WAIT_TRIAL:
@@ -69,7 +77,7 @@ class myExperiment(Experiment):
                 # log trial end time
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.state                          = self.gStates.END_TRIAL
-                self.gScreen['target'].opacity      = 0.0
+                target.opacity                      = 0.0
 
     # adding trial data on trial end
     def onTrialEnd(self):
