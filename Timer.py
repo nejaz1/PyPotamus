@@ -7,7 +7,7 @@ from psychopy import core
 class Timer:
     internal_counter    = 0    # USED FOR INTERNAL CLOCKING, DO NOT CHANGE
     internal_resettime  = []
-    multiplier  = 1000;     # pyschopy measures in sec, convert to millisec
+    multiplier  = 1000      # pyschopy measures in sec, convert to millisec
     nCounter    = 0
     counter     = []
     resettime   = []

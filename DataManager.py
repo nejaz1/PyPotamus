@@ -16,6 +16,7 @@ class DataManager:
 
     data_dir        = ''    # directory where data will be stored
     data            = []    # experimental data in pandas format
+    mov_data        = []    # raw time course data for the trial
     dbg_data        = []    # debug data for experiment
 
     BN              = 0     # block number
@@ -44,6 +45,7 @@ class DataManager:
     # run this to make data directory if it does not exist
     def check_data_directory(self):
         if not os.path.exists(self.data_dir):
+            print('Making data directory: ' + self.data_dir)
             os.makedirs(self.data_dir)
 
     # get date string
@@ -53,6 +55,7 @@ class DataManager:
     # set subject id (used as file name to save data to disk)
     def set_subject_id(self, subject_id):
         self.subject_id     = subject_id
+        self.update_file_names()
 
     # add event to debug data store
     def add_dbg_event(self, event):
@@ -71,3 +74,13 @@ class DataManager:
 
         # add debug event
         self.add_dbg_event('init')
+
+    # write debug data to file
+    def write_dbg_data(self):
+        dbg_fname = os.path.join(self.data_dir,self.dbg_fname)
+        self.dbg_data.to_csv(dbg_fname, sep='\t', index=False)
+
+    # write data to file
+    def write_data(self):
+        data_fname = os.path.join(self.data_dir,self.fname)
+        self.data.to_csv(data_fname, sep='\t', index=False)        

@@ -1,0 +1,17 @@
+num_counter:            3
+
+expwin_fullscreen:      False
+expwin_pos:             [48, 0]
+expwin_bgcolor:         [-1, -1, -1]
+expwin_size:            [600, 600]
+expwin_autodraw:        True
+expwin_autolog:         False
+
+diagnosticwin_pos:      [48, 700]
+diagnosticwin_bgcolor:  [1, 1, 1]
+diagnosticwin_size:     [200, 200]
+diagnosticwin_autodraw: True
+
+handdevice_multiplier:  (1,-1,1)
+
+

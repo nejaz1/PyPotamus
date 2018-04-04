@@ -1,0 +1,156 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Timer.py	../Timer.py	1;"	kind:file	line:1
+core	../Timer.py	/^from psychopy import core$/;"	kind:namespace	line:5
+Timer	../Timer.py	/^class Timer:$/;"	kind:class	line:7
+internal_counter	../Timer.py	/^    internal_counter    = 0    # USED FOR INTERNAL CLOCKING, DO NOT CHANGE$/;"	kind:variable	line:8
+internal_resettime	../Timer.py	/^    internal_resettime  = []$/;"	kind:variable	line:9
+multiplier	../Timer.py	/^    multiplier  = 1000;     # pyschopy measures in sec, convert to millisec$/;"	kind:variable	line:10
+nCounter	../Timer.py	/^    nCounter    = 0$/;"	kind:variable	line:11
+counter	../Timer.py	/^    counter     = []$/;"	kind:variable	line:12
+resettime	../Timer.py	/^    resettime   = []$/;"	kind:variable	line:13
+__init__	../Timer.py	/^    def __init__(self, params):$/;"	kind:member	line:16
+__getitem__	../Timer.py	/^    def __getitem__(self, index):$/;"	kind:member	line:30
+get_internal_time	../Timer.py	/^    def get_internal_time(self):$/;"	kind:member	line:34
+reset_internal_counter	../Timer.py	/^    def reset_internal_counter(self):$/;"	kind:member	line:38
+reset	../Timer.py	/^    def reset(self, index):$/;"	kind:member	line:42
+reset_all	../Timer.py	/^    def reset_all(self):$/;"	kind:member	line:46
+__del__	../Timer.py	/^    def __del__(self):$/;"	kind:member	line:51
+PyPotamus.py	../PyPotamus.py	1;"	kind:file	line:1
+yaml	../PyPotamus.py	/^import yaml$/;"	kind:namespace	line:5
+abc	../PyPotamus.py	/^import abc$/;"	kind:namespace	line:6
+pdb	../PyPotamus.py	/^import pdb$/;"	kind:namespace	line:7
+sys	../PyPotamus.py	/^import sys$/;"	kind:namespace	line:8
+ExperimentDisplay	../PyPotamus.py	/^from ExperimentDisplay import ExperimentDisplay$/;"	kind:namespace	line:11
+DiagnosticDisplay	../PyPotamus.py	/^from DiagnosticDisplay import DiagnosticDisplay$/;"	kind:namespace	line:12
+Timer	../PyPotamus.py	/^from Timer import Timer$/;"	kind:namespace	line:13
+DataManager	../PyPotamus.py	/^from DataManager import DataManager$/;"	kind:namespace	line:14
+Keyboard	../PyPotamus.py	/^from Keyboard import Keyboard$/;"	kind:namespace	line:15
+TargetFile	../PyPotamus.py	/^from TargetFile import TargetFile$/;"	kind:namespace	line:16
+Experiment	../PyPotamus.py	/^class Experiment:$/;"	kind:class	line:19
+__metaclass__	../PyPotamus.py	/^    __metaclass__  = abc.ABCMeta$/;"	kind:variable	line:20
+__init__	../PyPotamus.py	/^    def __init__(self):$/;"	kind:member	line:23
+initialize	../PyPotamus.py	/^    def initialize(self, filepath):$/;"	kind:member	line:32
+set_data_format	../PyPotamus.py	/^    def set_data_format(self, dataformat):$/;"	kind:member	line:43
+set_data_directory	../PyPotamus.py	/^    def set_data_directory(self, data_dir):$/;"	kind:member	line:47
+set_subject_id	../PyPotamus.py	/^    def set_subject_id(self, subject_id):$/;"	kind:member	line:51
+set_trial_states	../PyPotamus.py	/^    def set_trial_states(self, *sequential, **named):$/;"	kind:member	line:55
+get_subject_id	../PyPotamus.py	/^    def get_subject_id(self):$/;"	kind:member	line:60
+get_runno	../PyPotamus.py	/^    def get_runno(self):$/;"	kind:member	line:64
+diagnostic	../PyPotamus.py	/^    def diagnostic(self,mode):$/;"	kind:member	line:68
+start_run	../PyPotamus.py	/^    def start_run(self):$/;"	kind:member	line:72
+flip	../PyPotamus.py	/^    def flip(self):$/;"	kind:member	line:96
+close_screens	../PyPotamus.py	/^    def close_screens(self):$/;"	kind:member	line:106
+control	../PyPotamus.py	/^    def control(self):$/;"	kind:member	line:110
+exit	../PyPotamus.py	/^    def exit(self):$/;"	kind:member	line:127
+trial	../PyPotamus.py	/^    def trial(self):$/;"	kind:member	line:140
+updateScreen	../PyPotamus.py	/^    def updateScreen(self):$/;"	kind:member	line:146
+updateDiagnostic	../PyPotamus.py	/^    def updateDiagnostic(self):$/;"	kind:member	line:151
+DiagnosticDisplay.py	../DiagnosticDisplay.py	1;"	kind:file	line:1
+visual	../DiagnosticDisplay.py	/^from psychopy import visual$/;"	kind:namespace	line:5
+DiagnosticDisplay	../DiagnosticDisplay.py	/^class DiagnosticDisplay:$/;"	kind:class	line:7
+handle	../DiagnosticDisplay.py	/^    handle      = []$/;"	kind:variable	line:8
+autodraw	../DiagnosticDisplay.py	/^    autodraw    = []$/;"	kind:variable	line:9
+txt	../DiagnosticDisplay.py	/^    txt         = []$/;"	kind:variable	line:10
+__init__	../DiagnosticDisplay.py	/^    def __init__(self, params):$/;"	kind:member	line:13
+diagnostic	../DiagnosticDisplay.py	/^    def diagnostic(self, mode, params):$/;"	kind:member	line:21
+init_lines	../DiagnosticDisplay.py	/^    def init_lines(self,**kwargs):$/;"	kind:member	line:30
+__setitem__	../DiagnosticDisplay.py	/^    def __setitem__(self, key, item):$/;"	kind:member	line:37
+__getitem__	../DiagnosticDisplay.py	/^    def __getitem__(self, key):$/;"	kind:member	line:41
+flip	../DiagnosticDisplay.py	/^    def flip(self):$/;"	kind:member	line:45
+close	../DiagnosticDisplay.py	/^    def close(self):$/;"	kind:member	line:50
+TargetFile.py	../TargetFile.py	1;"	kind:file	line:1
+csv	../TargetFile.py	/^import csv$/;"	kind:namespace	line:2
+TargetFile	../TargetFile.py	/^class TargetFile:$/;"	kind:class	line:5
+currTrial	../TargetFile.py	/^    currTrial = 0$/;"	kind:variable	line:6
+eof	../TargetFile.py	/^    eof       = -1$/;"	kind:variable	line:7
+__init__	../TargetFile.py	/^    def __init__(self, filename):$/;"	kind:member	line:9
+trial	../TargetFile.py	/^    def trial(self):$/;"	kind:member	line:18
+nextTrial	../TargetFile.py	/^    def nextTrial(self):$/;"	kind:member	line:28
+getTrialNum	../TargetFile.py	/^    def getTrialNum(self):$/;"	kind:member	line:38
+printHeaders	../TargetFile.py	/^    def printHeaders(self):$/;"	kind:member	line:42
+printCurrTrial	../TargetFile.py	/^    def printCurrTrial(self):$/;"	kind:member	line:46
+printTrial	../TargetFile.py	/^    def printTrial(self):$/;"	kind:member	line:53
+ExperimentDisplay.py	../ExperimentDisplay.py	1;"	kind:file	line:1
+visual	../ExperimentDisplay.py	/^from psychopy import visual$/;"	kind:namespace	line:5
+ExperimentDisplay	../ExperimentDisplay.py	/^class ExperimentDisplay:$/;"	kind:class	line:7
+handle	../ExperimentDisplay.py	/^    handle      = []$/;"	kind:variable	line:8
+autodraw	../ExperimentDisplay.py	/^    autodraw    = []$/;"	kind:variable	line:9
+autoLog	../ExperimentDisplay.py	/^    autoLog     = []$/;"	kind:variable	line:10
+stim_dict	../ExperimentDisplay.py	/^    stim_dict   = []$/;"	kind:variable	line:11
+__init__	../ExperimentDisplay.py	/^    def __init__(self, params):$/;"	kind:member	line:14
+__setitem__	../ExperimentDisplay.py	/^    def __setitem__(self, key, item):$/;"	kind:member	line:21
+__getitem__	../ExperimentDisplay.py	/^    def __getitem__(self, key):$/;"	kind:member	line:25
+grating	../ExperimentDisplay.py	/^    def grating(self, **kwargs):$/;"	kind:member	line:29
+circle	../ExperimentDisplay.py	/^    def circle(self, **kwargs):$/;"	kind:member	line:36
+line	../ExperimentDisplay.py	/^    def line(self, **kwargs):$/;"	kind:member	line:43
+rect	../ExperimentDisplay.py	/^    def rect(self, **kwargs):$/;"	kind:member	line:50
+flip	../ExperimentDisplay.py	/^    def flip(self):$/;"	kind:member	line:57
+close	../ExperimentDisplay.py	/^    def close(self):$/;"	kind:member	line:61
+main.py	../Examples/finger_forces/main.py	1;"	kind:file	line:1
+sys	../Examples/finger_forces/main.py	/^import sys$/;"	kind:namespace	line:7
+path	../Examples/finger_forces/main.py	/^path    = '\/Users\/naveed\/Dropbox\/Code\/toolboxes\/PyPotamus\/'$/;"	kind:variable	line:8
+Experiment	../Examples/finger_forces/main.py	/^from PyPotamus import Experiment$/;"	kind:namespace	line:11
+HardwareManager	../Examples/finger_forces/main.py	/^from Hardware import HardwareManager$/;"	kind:namespace	line:12
+myExperiment	../Examples/finger_forces/main.py	/^class myExperiment(Experiment):$/;"	kind:class	line:16
+init_draw	../Examples/finger_forces/main.py	/^    def init_draw(self):$/;"	kind:member	line:18
+updateScreen	../Examples/finger_forces/main.py	/^    def updateScreen(self):        $/;"	kind:member	line:31
+updateDiagnostic	../Examples/finger_forces/main.py	/^    def updateDiagnostic(self):        $/;"	kind:member	line:38
+trial	../Examples/finger_forces/main.py	/^    def trial(self):$/;"	kind:member	line:45
+gHand	../Examples/finger_forces/main.py	/^    gHand = HardwareManager()$/;"	kind:variable	line:72
+gExp	../Examples/finger_forces/main.py	/^    gExp = myExperiment()$/;"	kind:variable	line:76
+Acuity.py	../Examples/tactile_acuity/Acuity.py	1;"	kind:file	line:1
+csv	../Examples/tactile_acuity/Acuity.py	/^import csv$/;"	kind:namespace	line:2
+sys	../Examples/tactile_acuity/Acuity.py	/^import sys$/;"	kind:namespace	line:3
+random	../Examples/tactile_acuity/Acuity.py	/^import random$/;"	kind:namespace	line:4
+math	../Examples/tactile_acuity/Acuity.py	/^import math$/;"	kind:namespace	line:5
+shuffle	../Examples/tactile_acuity/Acuity.py	/^from random import shuffle$/;"	kind:namespace	line:6
+TargetFile	../Examples/tactile_acuity/Acuity.py	/^from TargetFile import TargetFile$/;"	kind:namespace	line:7
+Acuity	../Examples/tactile_acuity/Acuity.py	/^class Acuity(TargetFile):$/;"	kind:class	line:9
+__init__	../Examples/tactile_acuity/Acuity.py	/^    def __init__(self):$/;"	kind:member	line:11
+trial	../Examples/tactile_acuity/Acuity.py	/^    def trial(self):$/;"	kind:member	line:29
+next	../Examples/tactile_acuity/Acuity.py	/^    def next(self):$/;"	kind:member	line:141
+toFile	../Examples/tactile_acuity/Acuity.py	/^    def toFile(self, mylist, id, blockid):$/;"	kind:member	line:144
+Hardware.py	../Hardware.py	1;"	kind:file	line:1
+multiprocessing	../Hardware.py	/^import multiprocessing$/;"	kind:namespace	line:1
+HardwareManager	../Hardware.py	/^class HardwareManager(multiprocessing.Process):$/;"	kind:class	line:10
+__init__	../Hardware.py	/^    def __init__(self):$/;"	kind:member	line:13
+run	../Hardware.py	/^    def run(self):$/;"	kind:member	line:17
+shutdown	../Hardware.py	/^    def shutdown(self):$/;"	kind:member	line:21
+DataManager.py	../DataManager.py	1;"	kind:file	line:1
+pd	../DataManager.py	/^import pandas as pd$/;"	kind:namespace	line:5
+datetime	../DataManager.py	/^from datetime import datetime$/;"	kind:namespace	line:6
+os	../DataManager.py	/^import os$/;"	kind:namespace	line:7
+pdb	../DataManager.py	/^import pdb$/;"	kind:namespace	line:8
+DataManager	../DataManager.py	/^class DataManager:$/;"	kind:class	line:11
+sep	../DataManager.py	/^    sep             = '\\t'$/;"	kind:variable	line:12
+subject_id	../DataManager.py	/^    subject_id      = ''$/;"	kind:variable	line:13
+nowtime	../DataManager.py	/^    nowtime         = ''$/;"	kind:variable	line:14
+fname	../DataManager.py	/^    fname           = []    # file name to save data to$/;"	kind:variable	line:15
+dbg_fname	../DataManager.py	/^    dbg_fname       = []    # file name to save debug data to$/;"	kind:variable	line:16
+data_dir	../DataManager.py	/^    data_dir        = ''    # directory where data will be stored$/;"	kind:variable	line:18
+data	../DataManager.py	/^    data            = []    # experimental data in pandas format$/;"	kind:variable	line:19
+dbg_data	../DataManager.py	/^    dbg_data        = []    # debug data for experiment$/;"	kind:variable	line:20
+BN	../DataManager.py	/^    BN              = 0     # block number$/;"	kind:variable	line:22
+TN	../DataManager.py	/^    TN              = 0     # trial number$/;"	kind:variable	line:23
+__init__	../DataManager.py	/^    def __init__(self, params):$/;"	kind:member	line:26
+update_file_names	../DataManager.py	/^    def update_file_names(self):$/;"	kind:member	line:32
+set_data_directory	../DataManager.py	/^    def set_data_directory(self, data_dir_path):$/;"	kind:member	line:41
+check_data_directory	../DataManager.py	/^    def check_data_directory(self):$/;"	kind:member	line:46
+update_date_string	../DataManager.py	/^    def update_date_string(self):$/;"	kind:member	line:51
+set_subject_id	../DataManager.py	/^    def set_subject_id(self, subject_id):$/;"	kind:member	line:55
+add_dbg_event	../DataManager.py	/^    def add_dbg_event(self, event):$/;"	kind:member	line:59
+add_data_record	../DataManager.py	/^    def add_data_record(self, values):$/;"	kind:member	line:64
+init_data_manager	../DataManager.py	/^    def init_data_manager(self, dataformat):$/;"	kind:member	line:68
+Keyboard.py	../Keyboard.py	1;"	kind:file	line:1
+Keyboard	../Keyboard.py	/^class Keyboard:$/;"	kind:class	line:6
+subj	../Keyboard.py	/^    def subj(self, input_list):$/;"	kind:member	line:8
+run	../Keyboard.py	/^    def run(self, input_list):$/;"	kind:member	line:12
+quit	../Keyboard.py	/^    def quit(self, input_list):$/;"	kind:member	line:18
+error	../Keyboard.py	/^    def error(self):$/;"	kind:member	line:22
+__init__	../Keyboard.py	/^    def __init__(self, params):$/;"	kind:member	line:27
+poll	../Keyboard.py	/^    def poll(self, subject_id):$/;"	kind:member	line:31

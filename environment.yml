@@ -1,0 +1,9 @@
+name: pypotamus
+
+dependencies:
+  - python=3.5
+  - numpy
+  - yaml
+  - pip:
+    - hidapi
+    
