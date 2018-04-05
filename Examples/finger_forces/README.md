@@ -1,6 +1,6 @@
-# Installation instructions for finger forces task
+# Installation instructions for finger forces task
 
-### Install Python using Anaconda
+### Install Python using Anaconda
 
 You first need a distribution of python, we highly recommend using the Anaconda 3.6 distribution which you can get from [here](https://www.anaconda.com/downloads).
 
