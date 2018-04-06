@@ -13,6 +13,10 @@ mkdir PyPotamus
 git clone git@github.com:nejaz1/PyPotamus.git PyPotamus
 ```
 
+### [IMPORTANT] SDL Libraries
+
+On some systems, building PyPotamus might give an error that `SDL.h` was not found. On such systems, it is important to install the SDL development tools/libraries provided [here](https://www.libsdl.org/download-2.0.php).
+
 ### Install package dependencies for PyPotamus
 
 Use the condo package manager to setup a new environment and install the package dependencies specified in the `environment.yml` file using the following commands in terminal:
