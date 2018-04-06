@@ -1,9 +1,9 @@
-name: pypotamus
+name: todelete
 
 dependencies:
   - python=3.5
   - numpy
-  - yaml
   - pip:
     - hidapi
+    - psychopy
     
