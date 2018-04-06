@@ -15,7 +15,11 @@ git clone git@github.com:nejaz1/PyPotamus.git PyPotamus
 
 ### [IMPORTANT] SDL Libraries
 
-On some systems, building PyPotamus might give an error that `SDL.h` was not found. On such systems, it is important to install the SDL development tools/libraries provided [here](https://www.libsdl.org/download-2.0.php).
+On some systems, building PyPotamus might give an error that `SDL.h` was not found. On such systems, it is important to install the SDL development tools/libraries first by installing the package manager [homebrew](https://brew.sh), then executing the following command in the terminal window:
+
+```
+brew install sdl
+```
 
 ### Install package dependencies for PyPotamus
 
