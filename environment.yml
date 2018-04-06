@@ -1,4 +1,4 @@
-name: todelete
+name: pypotamus
 
 dependencies:
   - python=3.5
