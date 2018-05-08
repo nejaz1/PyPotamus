@@ -10,6 +10,7 @@ from HopkinsHandDevice import HopkinsHandDevice
 import numpy as np
 import math
 import pdb
+from sys import platform
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -148,7 +149,10 @@ if __name__ == "__main__":
     gExp.diagnostic('on')
 
     # initialize data directory and format to save during experiment
-    gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
+    if platform == "darwin":
+       gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
+    elif platform == "win32":    
+       gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
     gExp.set_data_format(['TN','startTime','endTime','hand','digit','measStartTime','measEndTime'])
 
     # initialize trial states
