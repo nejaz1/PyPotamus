@@ -15,6 +15,7 @@ class ExperimentDisplay:
         self.handle     = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], pos=params['expwin_pos'], fullscr=params['expwin_fullscreen'], name="ExperimentDisplay")
         self.autodraw   = params['expwin_autodraw']
         self.autoLog    = params['expwin_autolog']
+        self.useFBO     = params['expwin_useFBO']
         self.stim_dict  = dict()
 
     # sets the current line to the diagnostic text

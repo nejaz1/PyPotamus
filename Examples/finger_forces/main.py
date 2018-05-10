@@ -146,7 +146,8 @@ if __name__ == "__main__":
     gExp.load_settings('finger_task.yaml')
 
     # turn on diagnostic screen for messages/state variables etc
-    gExp.diagnostic('on')
+    if platform == "darwin":
+        gExp.diagnostic('on')
 
     # initialize data directory and format to save during experiment
     if platform == "darwin":
