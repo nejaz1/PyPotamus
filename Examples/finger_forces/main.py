@@ -8,9 +8,7 @@
 from PyPotamus import Experiment
 from HopkinsHandDevice import HopkinsHandDevice
 import numpy as np
-import math
 import pdb
-from sys import platform
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -67,7 +65,11 @@ class myExperiment(Experiment):
         gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
         
         # update finger pos based on hardware readings
-        gFinger.pos = self.gHardware['gHand'].getXY(self.gTrial.Digit - 1)
+        pos = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
+        gFinger.pos     = pos[0:2]
+        gFinger.radius  = 0.05 + pos[2]/3
+        #set radius of gFinger to pos(z) 
+        #gFinger.pos = self.gHardware['gHand'].getXY(self.gTrial.Digit - 1)
         
         # update target pos based on hardware readings
         x = self.gTrial.TargetX/10
@@ -146,14 +148,15 @@ if __name__ == "__main__":
     gExp.load_settings('finger_task.yaml')
 
     # turn on diagnostic screen for messages/state variables etc
-    if platform == "darwin":
+    if gExp.gPlatform.isMac():
         gExp.diagnostic('on')
 
     # initialize data directory and format to save during experiment
-    if platform == "darwin":
-       gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
-    elif platform == "win32":    
-       gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
+    if gExp.gPlatform.isMac():
+        gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
+    else:
+        gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
+    
     gExp.set_data_format(['TN','startTime','endTime','hand','digit','measStartTime','measEndTime'])
 
     # initialize trial states

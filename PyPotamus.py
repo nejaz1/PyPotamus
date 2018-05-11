@@ -15,18 +15,19 @@ from HardwareManager import HardwareManager
 from Keyboard import Keyboard
 from TargetFile import TargetFile
 from ExperimentVariables import Variables
+from PlatformInfo import PlatformInfo
 
 class Experiment:
     __metaclass__  = abc.ABCMeta
 
     # constructor
     def __init__(self):
-        self.pythonver  = sys.version_info[:2]
-        if self.pythonver < (3,5):
-            print("Please run with python version 3.6 or higher")
+        self.gPlatform  = PlatformInfo()
+        if self.gPlatform.pythonVer < (3,5):
+            print("Please run with python version 3.5 or higher")
             sys.exit(0)
         else:
-            print("Current python version is " + str(self.pythonver))
+            self.gPlatform.printPythonVer()
 
     # initialize experiment with defaults provided in yaml file
     def load_settings(self, filepath):
