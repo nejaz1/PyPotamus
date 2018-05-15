@@ -3,3 +3,4 @@
 *.pyc
 *.code-workspace
 
+Examples/finger_forces/main_5fing.py

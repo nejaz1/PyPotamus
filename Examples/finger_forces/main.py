@@ -8,6 +8,7 @@
 from PyPotamus import Experiment
 from HopkinsHandDevice import HopkinsHandDevice
 import numpy as np
+import math
 import pdb
 
 # ------------------------------------------------------------------------
@@ -28,22 +29,46 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         text = self.gScreen.text(text='', pos=(0,0.9), color='white')
-        ens  = self.gScreen.circle(pos=[0,0], radius=0.01, lineColor='black', fillColor='gray')
+        ens  = self.gScreen.circle(pos=[0,0], radius=0.01, lineColor='black', fillColor='red')
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
         fixation = self.gScreen.text(text='+', pos=(0,0.02), color='white', height=0.3)
-        target = self.gScreen.circle(pos=[0,0], radius=0.1, lineWidth=4.0, lineColor='green', fillColor='lightgreen')
-        finger = self.gScreen.circle(pos=[0,0], radius=0.05, lineWidth=3.0, lineColor='white', fillColor='lightblue')
+        target = self.gScreen.circle(pos=[0,0], radius = 0.05, lineWidth=4.0, lineColor='green', fillColor='lightgreen')
+        finger = self.gScreen.circle(pos=[0,0],radius = 0.01, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
+        rmsbarL = self.gScreen.rect(pos=[-0.8,0], width=0.1, height=0.0, lineWidth = 10, lineColor = 'white', fillColor = 'red')
+        rmsbarR = self.gScreen.rect(pos=[0.8,0], width=0.1, height=0.0, lineWidth = 10, lineColor = 'white', fillColor = 'red')
+        #limit1 = self.gScreen.rect(pos=[-0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
+        #limit2 = self.gScreen.rect(pos=[0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
+        boxL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
+        boxR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
+        #lowerlimit = self.gScreen.rect(pos=[-0.8,-0.5], width=5, height=0.0, lineWidth = 3.0, lineColor = 'white', fillColor = 'black')
+        
+
+
+
 
         target.opacity = 0.0
-        ens.opacity    = 0.4
+        bar1.opacity = 0.4
+        finger.opacity = 0.4
+        bar2.opacity = 0.4
+        box1.opacity = 0.4
+        box2.opacity = 0.9
+        #limit1.opacity = 0.3
+        #limit2.opacity = 0.3
+        
+        
 
 
         #   - save objects to dictionary for easy access
+        #self.gScreen['finger1']          = finger1
         self.gScreen['finger']          = finger
+        self.gScreen['rmsbarL']         = rmsbarL
+        self.gScreen['rmsbarR']         = rmsbarR
+        self.gScreen['boxL']            = boxL
+        self.gScreen['boxR']            = boxR
         self.gScreen['target']          = target
         self.gScreen['text']            = text
         self.gScreen['fixation']        = fixation        
-        self.gScreen['enslaving']       = ens
+        #self.gScreen['limit']           = limit
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
     # this function is called when diagnostic info is about to be updated
@@ -56,75 +81,116 @@ class myExperiment(Experiment):
     # this function is called when screen is about to be updated
     def updateScreen(self):     
         # get handles for fast access
-        gText   = self.gScreen['text']
-        gFinger = self.gScreen['finger']
-        gTarget = self.gScreen['target']
-        gEns    = self.gScreen['enslaving']        
+        gText       = self.gScreen['text']
+        gFinger     = self.gScreen['finger']
+        gRMSbarL    = self.gScreen['bar1']
+        gRMSbarR    =self.gScreen['bar2']
+        gTarget     = self.gScreen['target']
+        #gLimit  = self.gScreen['limit']       
 
         # update finger notification
         gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
         
-        # update finger pos based on hardware readings
-        pos = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
-        gFinger.pos     = pos[0:2]
-        gFinger.radius  = 0.05 + pos[2]/3
-        #set radius of gFinger to pos(z) 
-        #gFinger.pos = self.gHardware['gHand'].getXY(self.gTrial.Digit - 1)
-        
+        # update finger pos and raidus based on hardware readings
+        pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
+        gFinger.pos     = [(pos2[0]), (pos2[1])]
+        gFinger.radius  = 0.05 + pos2[2]/1.5
+      
+        #update ens bars based on hardware reading
+        rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1) 
+        fingxy      = (np.sqaure(self.gTrial.TargetX/10) + np.sqaure(self.gTrial.TargetY/10))
+        rms_perc    = self.gTrial.EnsPercent
+        rms_fing    = np.sqrt(fingxy)
+
+        rms_lim         = rms_fing*rms_perc
+        rms_visual       = 0.8*(rms/rms_limit)
+
+        gRMSbarL.height = rms_visual
+        gRMSbarR.height = rms_visual
+
         # update target pos based on hardware readings
         x = self.gTrial.TargetX/10
         y = self.gTrial.TargetY/10
         gTarget.pos = (x,y)
-
-        # update enslaving strength indicator
-        rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
-        gEns.radius = rms / 1.4
-
+        #z= self.gTrial.TargetZ
+        #gTarget.radius = z
+    
     # over-load experimental trial loop function
     def trial(self):
         # get handles for fast access
         gFixation   = self.gScreen['fixation']
-        gFinger = self.gScreen['finger']
-        gTarget = self.gScreen['target']
-        
+        #gFinger1     = self.gScreen['finger1']
+        gFinger     = self.gScreen['finger']
+        gBar2     = self.gScreen['bar1']
+        gBar2     = self.gScreen['bar2']
+        #gFinger3     = self.gScreen['finger3']
+        #gFinger4     = self.gScreen['finger4']
+        #gFinger5     = self.gScreen['finger5']
+        gTarget     = self.gScreen['target']
+        gEns        = self.gScreen['enslaving']
+        #gLimit      = self.gScreen['limit']
         # START_TRIAL
         if self.state == self.gStates.START_TRIAL:
-            gTarget.opacity     = 0.0
+            gTarget.opacity     = 1.0
+            gTarget.fillColor   = 'black'
+            gTarget.lineColor   = 'black'
+
+            gFinger.opacity     = 0.7
             gFixation.color     = 'white'
-            gFinger.fillColor   = 'lightblue'
+            gFinger.fillColor   = 'blue'
+
+            gEns.opacity        = 1.0
+            gEns.fillColor      = 'red'
 
             if self.gTimer[0] > self.gTrial.StartTime:
                 # log trial start time
                 self.gVariables['measStartTime']    = self.gTimer[0]
                 gTarget.opacity                     = 1.0
+                gTarget.fillColor                   = 'green'
+                gTarget.lineColor                   = 'green'
                 gFixation.color                     = 'black'
                 self.state                          = self.gStates.WAIT_RESPONSE                
 
         # WAIT_RESPONSE
         elif self.state == self.gStates.WAIT_RESPONSE:
+            # ****** somewhere here, look to add while loop to end trial early if ens radius > finger radius
             # calculate distance from target
-            euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gTarget.pos))
+            euc_dist    = np.linalg.norm(np.subtract(gFinger.pos,gTarget.pos))
+            bar_height  = gRMSbarL.height
+            box_height  = 0.8 # ** change later
+            if bar_height > box_height:
+                    print('true')
+                    gTarget.lineColor   = 'black'
+                    gTarget.fillColor   = 'black'
+                    gFixation.color     = 'white'                
+                    gFinger.fillColor   = 'red'
+                    self.state = self.gStates.TRIAL_COMPLETE
+
             if euc_dist <= gTarget.radius:
-                gTarget.opacity     = 0.3
                 gFixation.color     = 'white'
+                gFinger.opacity     = 0.95
                 gFinger.fillColor   = 'green'
+                gTarget.lineColor   = 'black'
+                gTarget.fillColor   = 'black'
                 self.state          = self.gStates.WAIT_RELEASE
 
             if self.gTimer[0] > self.gTrial.EndTime:
                 # log trial end time
-                gTarget.opacity     = 0.0
+                gTarget.opacity     = 0.95
                 gFixation.color     = 'white'                
                 gFinger.fillColor   = 'red'
+                gTarget.lineColor   = 'black'
+                gTarget.fillColor   = 'black'
                 self.state          = self.gStates.TRIAL_COMPLETE
 
         # WAIT_RELEASE
         elif self.state == self.gStates.WAIT_RELEASE:
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
-
+            # *** seems to be issue with endtime being the same time as end of trial and end of time to get backk?
             if (euc_dist <= 0.05) or (self.gTimer[0] > self.gTrial.EndTime):
                 gFixation.color                     = 'white'                
                 gFinger.fillColor                   = 'lightblue'
-                self.state          = self.gStates.TRIAL_COMPLETE
+                self.state                          = self.gStates.TRIAL_COMPLETE
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
@@ -156,7 +222,6 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    
     gExp.set_data_format(['TN','startTime','endTime','hand','digit','measStartTime','measEndTime'])
 
     # initialize trial states
@@ -174,3 +239,14 @@ if __name__ == "__main__":
     gExp.control()
     # gHand.terminate()
     # gHand.join()
+''' notes
+- timing issues of starting/stopping on fixation and the 'hold' period
+
+
+- word phrases at bottom?
+    - center, wait/hold, relax? etc...
+
+- remove current finger from the rms thing?
+
+- 
+'''
