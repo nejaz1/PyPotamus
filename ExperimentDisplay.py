@@ -52,7 +52,14 @@ class ExperimentDisplay:
         vis = visual.Rect(self.handle, **kwargs)
         vis.setAutoDraw(self.autodraw)
         vis.autoLog = self.autoLog
-        return vis        
+        return vis
+    
+    #display hand images
+    def image(self, **kwargs):
+        vis = visual.ImageStim(self.handle, **kwargs)
+        vis.setAutoDraw(self.autodraw)
+        vis.autoLog = self.autoLog
+        return vis
 
     # draw text
     def text(self, **kwargs):

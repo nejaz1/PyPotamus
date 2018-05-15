@@ -41,6 +41,19 @@ class myExperiment(Experiment):
         boxL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
         boxR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
         #lowerlimit = self.gScreen.rect(pos=[-0.8,-0.5], width=5, height=0.0, lineWidth = 3.0, lineColor = 'white', fillColor = 'black')
+        img = self.gScreen.image(win = self.handle, image = "hand.png", units = "pix")
+        
+        size_x = img.size[0]
+        size_y = img.size[1]
+        img.size = [size_x * 1.5, size_y * 1.5]
+        
+        img.draw()
+        
+        self.flip()
+        
+        psychopy.event.waitKeys()
+        
+        win.close()
         
 
 
