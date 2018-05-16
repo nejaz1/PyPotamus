@@ -29,32 +29,50 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         text = self.gScreen.text(text='', pos=(0,0.9), color='white')
-        ens  = self.gScreen.circle(pos=[0,0], radius=0.01, lineColor='black', fillColor='red')
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
+        boxL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'white')
+        boxR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         fixation = self.gScreen.text(text='+', pos=(0,0.02), color='white', height=0.3)
+        rmsbarL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'red')
+        rmsbarR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'red')
         target = self.gScreen.circle(pos=[0,0], radius = 0.05, lineWidth=4.0, lineColor='green', fillColor='lightgreen')
         finger = self.gScreen.circle(pos=[0,0],radius = 0.01, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
-        rmsbarL = self.gScreen.rect(pos=[-0.8,0], width=0.1, height=0.0, lineWidth = 10, lineColor = 'white', fillColor = 'red')
-        rmsbarR = self.gScreen.rect(pos=[0.8,0], width=0.1, height=0.0, lineWidth = 10, lineColor = 'white', fillColor = 'red')
         #limit1 = self.gScreen.rect(pos=[-0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
         #limit2 = self.gScreen.rect(pos=[0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
+<<<<<<< HEAD
+       
+=======
         boxL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
         boxR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
         #lowerlimit = self.gScreen.rect(pos=[-0.8,-0.5], width=5, height=0.0, lineWidth = 3.0, lineColor = 'white', fillColor = 'black')
+        img = self.gScreen.image(win = self.handle, image = "hand.png", units = "pix")
+        
+        size_x = img.size[0]
+        size_y = img.size[1]
+        img.size = [size_x * 1.5, size_y * 1.5]
+        
+        img.draw()
+        
+        self.flip()
+        
+        psychopy.event.waitKeys()
+        
+        win.close()
+>>>>>>> 59757662aa8db8826d46c8b2b78f978adea03b2d
         
 
 
 
 
         target.opacity = 0.0
-        bar1.opacity = 0.4
-        finger.opacity = 0.4
-        bar2.opacity = 0.4
-        box1.opacity = 0.4
-        box2.opacity = 0.9
+        rmsbarL.opacity = 0.5
+        rmsbarR.opacity = 0.5
+        finger.opacity = 0.7
+        boxL.opacity = 0.4
+        boxR.opacity = 0.4
         #limit1.opacity = 0.3
         #limit2.opacity = 0.3
-        
+
         
 
 
@@ -83,8 +101,8 @@ class myExperiment(Experiment):
         # get handles for fast access
         gText       = self.gScreen['text']
         gFinger     = self.gScreen['finger']
-        gRMSbarL    = self.gScreen['bar1']
-        gRMSbarR    =self.gScreen['bar2']
+        gRMSbarL    = self.gScreen['rmsbarL']
+        gRMSbarR    =self.gScreen['rmsbarR']
         gTarget     = self.gScreen['target']
         #gLimit  = self.gScreen['limit']       
 
@@ -93,17 +111,17 @@ class myExperiment(Experiment):
         
         # update finger pos and raidus based on hardware readings
         pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
-        gFinger.pos     = [(pos2[0]), (pos2[1])]
-        gFinger.radius  = 0.05 + pos2[2]/1.5
+        gFinger.pos     = [(pos[0]), (pos[1])]
+        gFinger.radius  = 0.05 + pos[2]/1.5
       
         #update ens bars based on hardware reading
         rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1) 
-        fingxy      = (np.sqaure(self.gTrial.TargetX/10) + np.sqaure(self.gTrial.TargetY/10))
+        fingxy      = (np.square(self.gTrial.TargetX/10)) + (np.square(self.gTrial.TargetY/10))
         rms_perc    = self.gTrial.EnsPercent
         rms_fing    = np.sqrt(fingxy)
 
         rms_lim         = rms_fing*rms_perc
-        rms_visual       = 0.8*(rms/rms_limit)
+        rms_visual       = 50*(rms/rms_lim)
 
         gRMSbarL.height = rms_visual
         gRMSbarR.height = rms_visual
@@ -119,16 +137,12 @@ class myExperiment(Experiment):
     def trial(self):
         # get handles for fast access
         gFixation   = self.gScreen['fixation']
-        #gFinger1     = self.gScreen['finger1']
         gFinger     = self.gScreen['finger']
-        gBar2     = self.gScreen['bar1']
-        gBar2     = self.gScreen['bar2']
-        #gFinger3     = self.gScreen['finger3']
-        #gFinger4     = self.gScreen['finger4']
-        #gFinger5     = self.gScreen['finger5']
+        gRMSbarL     = self.gScreen['rmsbarL']
+        gRMSbarR     = self.gScreen['rmsbarR']
         gTarget     = self.gScreen['target']
-        gEns        = self.gScreen['enslaving']
         #gLimit      = self.gScreen['limit']
+
         # START_TRIAL
         if self.state == self.gStates.START_TRIAL:
             gTarget.opacity     = 1.0
@@ -139,8 +153,9 @@ class myExperiment(Experiment):
             gFixation.color     = 'white'
             gFinger.fillColor   = 'blue'
 
-            gEns.opacity        = 1.0
-            gEns.fillColor      = 'red'
+            gRMSbarR.fillColor  = 'LightPink'
+            gRMSbarL.fillColor  = 'LightPink'
+
 
             if self.gTimer[0] > self.gTrial.StartTime:
                 # log trial start time
@@ -159,12 +174,14 @@ class myExperiment(Experiment):
             bar_height  = gRMSbarL.height
             box_height  = 0.8 # ** change later
             if bar_height > box_height:
-                    print('true')
-                    gTarget.lineColor   = 'black'
-                    gTarget.fillColor   = 'black'
-                    gFixation.color     = 'white'                
-                    gFinger.fillColor   = 'red'
-                    self.state = self.gStates.TRIAL_COMPLETE
+                gTarget.lineColor   = 'black'
+                gTarget.fillColor   = 'black'
+                gFixation.color     = 'white'                
+                gFinger.fillColor   = 'red'
+                gRMSbarL.fillColor  = 'red'
+                gRMSbarR.fillColor  = 'red'
+                
+                self.state = self.gStates.TRIAL_COMPLETE
 
             if euc_dist <= gTarget.radius:
                 gFixation.color     = 'white'
@@ -239,14 +256,3 @@ if __name__ == "__main__":
     gExp.control()
     # gHand.terminate()
     # gHand.join()
-''' notes
-- timing issues of starting/stopping on fixation and the 'hold' period
-
-
-- word phrases at bottom?
-    - center, wait/hold, relax? etc...
-
-- remove current finger from the rms thing?
-
-- 
-'''
