@@ -39,12 +39,7 @@ class myExperiment(Experiment):
         finger = self.gScreen.circle(pos=[0,0],radius = 0.01, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
         #limit1 = self.gScreen.rect(pos=[-0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
         #limit2 = self.gScreen.rect(pos=[0.8,0], width=0.1, height=0.6, lineWidth = 5, lineColor = 'white', fillColor = 'grey')
-<<<<<<< HEAD
-       
-=======
-        boxL = self.gScreen.rect(pos=[-0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
-        boxR = self.gScreen.rect(pos=[0.85,0], width=0.05, height=0.8, lineWidth = 5, lineColor = 'white', fillColor = 'black')
-        #lowerlimit = self.gScreen.rect(pos=[-0.8,-0.5], width=5, height=0.0, lineWidth = 3.0, lineColor = 'white', fillColor = 'black')
+
         img = self.gScreen.image(win = self.handle, image = "hand.png", units = "pix")
         
         size_x = img.size[0]
@@ -58,11 +53,6 @@ class myExperiment(Experiment):
         psychopy.event.waitKeys()
         
         win.close()
->>>>>>> 59757662aa8db8826d46c8b2b78f978adea03b2d
-        
-
-
-
 
         target.opacity = 0.0
         rmsbarL.opacity = 0.5
@@ -72,9 +62,6 @@ class myExperiment(Experiment):
         boxR.opacity = 0.4
         #limit1.opacity = 0.3
         #limit2.opacity = 0.3
-
-        
-
 
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
@@ -256,3 +243,5 @@ if __name__ == "__main__":
     gExp.control()
     # gHand.terminate()
     # gHand.join()
+    # gHand.join()
+
