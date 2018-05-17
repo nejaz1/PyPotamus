@@ -142,28 +142,30 @@ class myExperiment(Experiment):
         gBoxL       = self.gScreen['boxL']
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
-        timeMarker = 0
-        start_time = 2000
+        gDigit      = self.gTrial.Digit - 1
+
+        # set time limits for different phases of the trial
+        cue_time = 2000
         prep_time = 500
         resp_time  = 1500
         wait_time  = 1000
         dead_time  = 400
-        gDigit      = self.gTrial.Digit - 1
 
-
-        #gLimit      = self.gScreen['limit']
-
-        # QUEUE PHASE
+        # START TRIAL
         if self.state == self.gStates.START_TRIAL:
-            timeMarker = self.gTrial.StartTime
-            gHandimage.opacity  = 1
-            gFinger.opacity = 0.7
-            if self.gTimer[0] > (timeMarker + start_time):
-                timeMarker = self.gTimer[0]
-                self.state = self.gStates.WAIT_PREPRATORY  
+            if self.gTimer[0] > self.gTrial.StartTime:
+                gHandimage.opacity  = 1
+                gFinger.opacity = 0.7
+                '''
+                code for signalling which finger goes here
+                '''
+            if self.gTimer[0] > (self.gTrial.StartTime + cue_time):
+                self.gVariables['measStartTime']    = self.gTimer[0]
+                self.state                          = self.gStates.WAIT_PREPRATORY 
+                self.timeMark                       = self.gTimer[0] 
    
 
-        # START_TRIAL
+        # PREPRATORY PHASE
         elif self.state == self.gStates.WAIT_PREPRATORY:
             ens_perc            = self.gTrial.EnsPercent/100
             gBoxL.height        = ens_perc
@@ -181,7 +183,7 @@ class myExperiment(Experiment):
             gEnsbarL.fillColor  = 'LightPink'
 
 
-            if self.gTimer[0] > (timeMarker + prep_time):
+            if self.gTimer[0] > (self.timeMark + prep_time):
                 # log trial start time
                 self.gVariables['measStartTime']    = self.gTimer[0]
                 gHandimage.opacity                  = 0.0
@@ -189,8 +191,9 @@ class myExperiment(Experiment):
                 gTarget.fillColor                   = 'Lime'
                 gTarget.lineColor                   = 'Lime'
                 gFixation.color                     = 'black'
-                timeMarker                          = self.gTimer[0]
-                self.state                          = self.gStates.WAIT_RESPONSE                
+                self.state                          = self.gStates.WAIT_RESPONSE
+                self.timeMark                      = self.gTimer[0]
+                                
         # WAIT_RESPONSE
         elif self.state == self.gStates.WAIT_RESPONSE:
             # ****** somewhere here, look to add while loop to end trial early if ens radius > finger radius
@@ -205,8 +208,9 @@ class myExperiment(Experiment):
                 gFinger.fillColor   = 'red'
                 gEnsbarL.fillColor  = 'red'
                 gEnsbarR.fillColor  = 'red'
-                timeMarker             = self.gTimer[0]
                 self.state = self.gStates.WAIT_RELEASE
+                self.timeMark       = self.gTimer[0]
+
 
             if euc_dist <= gTarget.radius:
                 gFixation.color     = 'white'
@@ -214,36 +218,39 @@ class myExperiment(Experiment):
                 gFinger.fillColor   = 'Lime'
                 gTarget.lineColor   = 'black'
                 gTarget.fillColor   = 'black'
-                timeMarker             = self.gTimer[0]
                 self.state          = self.gStates.WAIT_RELEASE
+                self.timeMark       = self.gTimer[0]
 
-            if self.gTimer[0] > (timeMarker + resp_time):
+
+            if self.gTimer[0] > (self.timeMark + resp_time):
                 # log trial end time
                 gTarget.opacity     = 0.95
                 gFixation.color     = 'white'                
                 gFinger.fillColor   = 'red'
                 gTarget.lineColor   = 'black'
                 gTarget.fillColor   = 'black'
-                timeMarker             = self.gTimer[0]
                 self.state          = self.gStates.WAIT_RELEASE
+                self.timeMark       = self.gTimer[0]
 
         # WAIT_RELEASE
         elif self.state == self.gStates.WAIT_RELEASE:
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
             # *** seems to be issue with endtime being the same time as end of trial and end of time to get backk?
-            if (euc_dist <= 0.05) or (self.gTimer[0] > (timeMarker + wait_time)):
+            if (euc_dist <= 0.05) or (self.gTimer[0] > (self.timeMark + wait_time)):
                 gFixation.color                     = 'white'                
                 gFinger.fillColor                   = 'lightblue'
-                timeMarker                          = self.gTimer[0]
                 self.state                          = self.gStates.TRIAL_COMPLETE
+                self.timeMark                       = self.gTimer[0]
+
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
             self.gVariables['measEndTime']      = self.gTimer[0]
             gFixation.opacity                   = 1
 
-            if self.gTimer[0] > (timeMarker + dead_time):
-                self.state                          = self.gStates.END_TRIAL
+            if self.gTimer[0] > (self.timeMark + dead_time):
+                self.state          = self.gStates.END_TRIAL
+
             
 
     # adding trial data on trial end
@@ -270,7 +277,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','startTime','endTime','hand','digit','measStartTime','measEndTime'])
+    gExp.set_data_format(['TN','startTime','hand','digit','measStartTime','measEndTime', 'EnsPercent'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE','TRIAL_COMPLETE','END_TRIAL')

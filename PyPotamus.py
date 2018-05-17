@@ -86,7 +86,7 @@ class Experiment:
         for i in range(self.gTrial.getTrialNum()):
             # run abstract function for each trial
             self.state = 0
-
+            self.timeMark = 0
             while self.state != self.gStates.END_TRIAL:
                 self.trial()
                 self.flip()
