@@ -28,7 +28,6 @@ class myExperiment(Experiment):
         #   - text indicator for which finger to press
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
-        text = self.gScreen.text(text='', pos=(0,0.9), color='white')
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
         img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
         boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
@@ -36,6 +35,7 @@ class myExperiment(Experiment):
         fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
         ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'red')
         ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'red')
+        text = self.gScreen.text(text='', pos=(0,0.7), color='white')
         target = self.gScreen.circle(pos=[0,0], radius = 0.05, lineWidth=4.0, lineColor='green', fillColor='green')
         finger = self.gScreen.circle(pos=[0,0],radius = 0.01, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
         posList = [(-0.1,0),(-0.5, 0.4),(0,0.5),(-0.5,0.4),(-0.1,0.2)]
@@ -64,9 +64,7 @@ class myExperiment(Experiment):
         boxL.opacity = 0.4
         boxR.opacity = 0.4
         img.opacity = 0.0
-        #limit1.opacity = 0.3
-        #limit2.opacity = 0.3
-
+        text.color  = 'black'
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
         self.gScreen['finger']          = finger
@@ -93,21 +91,17 @@ class myExperiment(Experiment):
     # this function is called when screen is about to be updated
     def updateScreen(self):     
         # get handles for fast access
-        gText       = self.gScreen['text']
         gFinger     = self.gScreen['finger']
-  
         gEnsbarL    = self.gScreen['ensbarL']
         gEnsbarR    =self.gScreen['ensbarR']
         gTarget     = self.gScreen['target']
         gBoxL       = self.gScreen['boxL']
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
+        gText       = self.gScreen['text']
 
-        #gLimit  = self.gScreen['limit']       
-
-        # update finger notification
         gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
-        
+
         # update finger pos and raidus based on hardware readings
         pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
         gFinger.pos     = [(pos[0]), (pos[1])]
@@ -142,6 +136,8 @@ class myExperiment(Experiment):
         gBoxL       = self.gScreen['boxL']
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
+        gText       = self.gScreen['text']
+
         gDigit      = self.gTrial.Digit - 1
 
         # set time limits for different phases of the trial
@@ -154,13 +150,20 @@ class myExperiment(Experiment):
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:
             if self.gTimer[0] > self.gTrial.StartTime:
+                gText.color = 'white'
                 gHandimage.opacity  = 1
-                gFinger.opacity = 0.7
+                gFinger.opacity = 0.0
+                gBoxR.opacity   = 0.0
+                gBoxL.opacity   = 0.0
+                gFixation.color = 'black'
+
                 '''
                 code for signalling which finger goes here
                 '''
             if self.gTimer[0] > (self.gTrial.StartTime + cue_time):
                 self.gVariables['measStartTime']    = self.gTimer[0]
+                gHandimage.opacity                  = 0.0
+                gText.color                         = 'black'
                 self.state                          = self.gStates.WAIT_PREPRATORY 
                 self.timeMark                       = self.gTimer[0] 
    
@@ -168,6 +171,9 @@ class myExperiment(Experiment):
         # PREPRATORY PHASE
         elif self.state == self.gStates.WAIT_PREPRATORY:
             ens_perc            = self.gTrial.EnsPercent/100
+            gBoxL.opacity   = 0.4
+            gBoxR.opacity   = 0.4
+
             gBoxL.height        = ens_perc
             gBoxR.height        = ens_perc
 
