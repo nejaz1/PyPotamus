@@ -30,13 +30,13 @@ class myExperiment(Experiment):
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
         img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
+        warnings = self.gScreen.text(text='', pos=(0,-0.1), color='black')
         boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         boxR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
         ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         text = self.gScreen.text(text='', pos=(0,0.95), color='white')
-        warnings = self.gScreen.text(text='', pos=(0,0), color='black')
         target = self.gScreen.circle(pos=[0,0], radius = 0.1, lineWidth=4.0, lineColor='black', fillColor='black')
         finger = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
         digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
@@ -101,7 +101,7 @@ class myExperiment(Experiment):
             pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
             #gFinger.radius  = 0.05 + pos[2]/1.5
-      
+
         #update ens bars based on hardware reading
         if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
             rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
@@ -120,6 +120,7 @@ class myExperiment(Experiment):
         x = self.gTrial.TargetX/10
         y = self.gTrial.TargetY/10
         gTarget.pos = (x,y)
+
         #z= self.gTrial.TargetZ
         #gTarget.radius = z
     
@@ -248,7 +249,7 @@ class myExperiment(Experiment):
             gBoxL.opacity = 0
             gBoxR.opacity = 0
             gEnsbarL.opacity = 0
-            gEnsbarRL.opacity = 0
+            gEnsbarR.opacity = 0
             gBoxL.opacity = 0
             gBoxL.opacity = 0
             gFinger.opacity = 0
@@ -261,8 +262,8 @@ class myExperiment(Experiment):
                 gWarnings.text = gWarnlist[1]
                 gWarnings.color = 'white'
             
-            if gTimer[2] > wait_time:
-                gWarnings.color = 'black'
+            if self.gTimer[2] > wait_time:
+                gWarnings.text = ''
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gTimer.reset(2)
 
