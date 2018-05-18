@@ -1,0 +1,2 @@
+TN	startTime	endTime	hand	digit	measStartTime	measEndTime
+1.0	2000.0	4000.0	1.0	2.0	2005.0560779927764	4093.8820589944953
