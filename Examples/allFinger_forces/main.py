@@ -35,38 +35,32 @@ class myExperiment(Experiment):
         fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
         #ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         #ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
-        text = self.gScreen.text(text='', pos=(0,0.95), color='white')
+        text = self.gScreen.text(text='', pos=(0,0.95), color='black')
         warnings = self.gScreen.text(text='', pos=(0,0), color='black')
         target = self.gScreen.circle(pos=[0,0], radius = 0.1, lineWidth=4.0, lineColor='black', fillColor='black')
         #finger = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
-        finger1 = self.gScreen.circle(pos=[-0.45,0.01],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#AFADF5')
-        finger2 = self.gScreen.circle(pos=[-0.21,0.42],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#E3CBA0')
-        finger3 = self.gScreen.circle(pos=[0.03,0.5],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#DE4CBA')
-        finger4 = self.gScreen.circle(pos=[0.22,0.48],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
-        finger5 = self.gScreen.circle(pos=[0.38,0.28],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'yellow')
+        finger1 = self.gScreen.circle(pos=[-0.4,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#AFADF5')
+        finger2 = self.gScreen.circle(pos=[-0.2,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#E3CBA0')
+        finger3 = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = '#DE4CBA')
+        finger4 = self.gScreen.circle(pos=[0.2,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
+        finger5 = self.gScreen.circle(pos=[0.4,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'yellow')
         #digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         #posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
-        #colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+        colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
     
         target.opacity = 0.0
-        ensbarL.opacity = 0.5
-        ensbarR.opacity = 0.5
-        finger.opacity = 0.7
-        boxL.opacity = 0.4
-        boxR.opacity = 0.4
         img.opacity = 0.0
-        #digit.opacity = 0.0
-        dig1.opacity = 0.7
-        dig2.opacity = 0.7
-        dig3.opacity = 0.7
-        dig4.opacity = 0.7
-        dig5.opacity = 0.7
+        finger1.opacity = 0.7
+        finger2.opacity = 0.7
+        finger3.opacity = 0.7
+        finger4.opacity = 0.7
+        finger5.opacity = 0.7
 
         text.color  = 'black'
 
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
-        self.gScreen['finger']          = finger
+        #self.gScreen['finger']          = finger
         #self.gScreen['digit']           = digit
         #self.gScreen['ensbarL']         = ensbarL
         #self.gScreen['ensbarR']         = ensbarR
@@ -82,6 +76,7 @@ class myExperiment(Experiment):
         self.gScreen['finger5']          = finger5
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
+        self.gScreen['fingers']         = [finger1, finger2, finger3, finger4, finger5]
         #self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
         self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
@@ -97,15 +92,14 @@ class myExperiment(Experiment):
     # this function is called when screen is about to be updated
     def updateScreen(self):     
         # get handles for fast access
-        gFinger     = self.gScreen['finger']
+        #gFinger     = self.gScreen['finger']
         #gEnsbarL    = self.gScreen['ensbarL']
         #gEnsbarR    = self.gScreen['ensbarR']
-        gTarget     = self.gScreen['target']
+        gTarget      = self.gScreen['target']
         #gBoxL       = self.gScreen['boxL']
         #gBoxR       = self.gScreen['boxR']
-        gHandimage  = self.gScreen['handimage']
-        gText       = self.gScreen['text']
-        gWarn       = self.gScreen['warnings']
+        gHandimage   = self.gScreen['handimage']
+        gText        = self.gScreen['text']
         gFinger1     = self.gScreen['finger1']
         gFinger2     = self.gScreen['finger2']
         gFinger3     = self.gScreen['finger3']
@@ -118,33 +112,32 @@ class myExperiment(Experiment):
 
         # update finger pos and raidus based on hardware readings
         if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
-            gFinger          = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
             
             pos1             = self.gHardware['gHand'].getXYZ(0)
-            gFinger1.pos     = [(pos1[0] - 0.4), (pos1[1]- 0.2)]
+            gFinger1.pos     = [(pos1[0] - 0.4), (pos1[1])]
             gFinger1.radius  = 0.07 + pos1[2]/1.5
 
             pos2             = self.gHardware['gHand'].getXYZ(1)
-            gFinger2.pos     = [(pos[0]), (pos[1])]
-            gFinger2.radius  = 0.05 + pos[2]/1.5
+            gFinger2.pos     = [(pos2[0] - 0.2), (pos2[1])]
+            gFinger2.radius  = 0.07 + pos2[2]/1.5
 
             pos3             = self.gHardware['gHand'].getXYZ(2)
             gFinger3.pos     = [pos3[0], pos3[1]]
             gFinger3.radius  = 0.07 + pos3[2]/1.5
 
             pos4             = self.gHardware['gHand'].getXYZ(3)
-            gFinger4.pos     = [(pos4[0]+0.2), (pos4[1]-0.1)]
+            gFinger4.pos     = [(pos4[0]+0.2), (pos4[1])]
             gFinger4.radius  = 0.07 + pos4[2]/1.5
 
             pos5             = self.gHardware['gHand'].getXYZ(4)
-            gFinger5.pos     = [(pos5[0]+0.4), (pos5[1]-0.2)]
-            gFinger4.radius  = 0.07 + pos5[2]/1.5
+            gFinger5.pos     = [(pos5[0]+0.4), (pos5[1])]
+            gFinger5.radius  = 0.07 + pos5[2]/1.5
 
 
       
         #update ens bars based on hardware reading
         #if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
-            rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
+            #rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
             #ens_perc    = self.gTrial.EnsPercent/100
             #max_rms     = np.sqrt((2 * np.square(0.9)))
             #rms_lim     = ens_perc*max_rms
@@ -155,7 +148,7 @@ class myExperiment(Experiment):
 
         #gDigit.pos = gPoslist[(self.gTrial.Digit - 1)]
       
-    
+
         # update target pos based on hardware readings
             x = self.gTrial.TargetX/10
             y = self.gTrial.TargetY/10
@@ -167,7 +160,13 @@ class myExperiment(Experiment):
     def trial(self):
         # get handles for fast access
         gFixation   = self.gScreen['fixation']
-        gFinger     = self.gScreen['finger']
+        gFinger1     = self.gScreen['finger1']
+        gFinger2     = self.gScreen['finger2']
+        gFinger3     = self.gScreen['finger3']
+        gFinger4     = self.gScreen['finger4']
+        gFinger5     = self.gScreen['finger5']
+        gFingers     = self.gScreen['fingers']
+        gFinger      = gFingers[self.gTrial.Digit - 1]
         #gEnsbarL     = self.gScreen['ensbarL']
         #gEnsbarR     = self.gScreen['ensbarR']
         gTarget     = self.gScreen['target']
@@ -176,9 +175,9 @@ class myExperiment(Experiment):
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         #gDigit      = self.gScreen['digit']
-        #gColorlist  = self.gScreen['colorList']
-        gWarnings   = self.gScreen['warnings']
-        gWarnlist   = self.gScreen['warnList']
+        gColorlist  = self.gScreen['colorList']
+        #gWarnings   = self.gScreen['warnings']
+        #gWarnlist   = self.gScreen['warnList']
 
         # set time limits for different phases of the trial
         cue_time = 2000
@@ -195,14 +194,16 @@ class myExperiment(Experiment):
                 self.gTimer.reset(2)
 
         if self.state == self.gStates.CUE_PHASE:
-            gEnsbarL.opacity = 0.0
-            gEnsbarR.opacity = 0.0
-
+           # gEnsbarL.opacity = 0.0
+           # gEnsbarR.opacity = 0.0
+            for i in range(0,5):
+                gFingers[i].opacity = 0
+                gFingers[i].fillColor = gColorlist[i] 
             gText.color = 'white'
             gHandimage.opacity  = 0.9
             #gDigit.opacity = 1
             #gDigit.fillColor   = gColorlist[self.gTrial.Digit - 1]
-            gFinger.opacity = 0.0
+           
             #gBoxR.opacity   = 0.0
             #gBoxL.opacity   = 0.0
             gFixation.color = 'black'
@@ -219,7 +220,7 @@ class myExperiment(Experiment):
    
         # PREPRATORY PHASE
         elif self.state == self.gStates.WAIT_PREPRATORY:
-            ens_perc            = self.gTrial.EnsPercent/100
+            #ens_perc            = self.gTrial.EnsPercent/100
             #gBoxL.opacity       = 0.4
             #gBoxR.opacity       = 0.4
             #gBoxL.height        = ens_perc
@@ -228,11 +229,9 @@ class myExperiment(Experiment):
             #gEnsbarL.opacity  = 0.5
             #gEnsbarL.fillColor = 'LightPink'
             #gEnsbarR.fillColor = 'LightPink'
-
-            gFinger2.opacity     = 0.7
-            gFinger2.fillColor   = gColorlist[self.gTrial.Digit - 1]
-                        
             gFixation.color     = 'white'
+            for i in gFingers:
+                i.opacity = 0.7
 
             if self.gTimer[2] > prep_time:
                 gFixation.color                     = 'black'
@@ -246,10 +245,7 @@ class myExperiment(Experiment):
         elif self.state == self.gStates.WAIT_RESPONSE:
             # calculate distance from target
             euc_dist    = np.linalg.norm(np.subtract(gFinger.pos,gTarget.pos))
-            bar_height  = gEnsbarL.height
-            box_height  = gBoxL.height
-            
-
+            '''
             if bar_height >= box_height:
                 gFinger.opacity    = 1
                 gFinger.fillColor   = 'red'
@@ -258,16 +254,17 @@ class myExperiment(Experiment):
                 gTarget.opacity     = 0
                 self.state = self.gStates.TRIAL_FAILED
                 self.gTimer.reset(2)
+            '''
 
             if self.gTimer[2] > resp_time:
                 gFinger.opacity     = 0.95
                 gFinger.fillColor   = 'red'
                 gTarget.opacity     = 0
-                self.state          = self.gStates.TRIAL_FAILED
+                self.state          = self.gStates.WAIT_RELEASE
                 self.gTimer.reset(2)
 
             if euc_dist <= gTarget.radius:
-                gFinger1.opacity     = 0.95
+                gFinger.opacity     = 0.95
                 gFinger.fillColor   = 'green'
                 self.state          = self.gStates.WAIT_RELEASE
                 self.gTimer.reset(2)
@@ -285,6 +282,7 @@ class myExperiment(Experiment):
                 self.gTimer.reset(2)
         # TRIAL_FAILED
         elif self.state == self.gStates.TRIAL_FAILED:
+            '''
             gBoxL.opacity = 0
             gBoxR.opacity = 0
             gEnsbarL.opacity = 0
@@ -305,6 +303,8 @@ class myExperiment(Experiment):
                 gWarnings.color = 'black'
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gTimer.reset(2)
+            
+            '''
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:

@@ -90,20 +90,14 @@ class myExperiment(Experiment):
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
-        gWarn       = self.gScreen['warnings']
-        gDigit      = self.gScreen['digit']
-        gPoslist       = self.gScreen['posList']
-
-        gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
-
+        
         # update finger pos and raidus based on hardware readings
-        if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
+        if self.state != self.gStates.START_TRIAL or self.gStates.TRIAL_COMPLETE: #or self.gStates.END_TRIAL:
             pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-            #gFinger.radius  = 0.05 + pos[2]/1.5
+             #gFinger.radius  = 0.05 + pos[2]/1.5
 
-        #update ens bars based on hardware reading
-        if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
+            #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
             ens_perc    = self.gTrial.EnsPercent/100
             max_rms     = np.sqrt((2 * np.square(0.9)))
@@ -113,14 +107,10 @@ class myExperiment(Experiment):
             gEnsbarL.height = min(ens_visual, gBoxL.height)
             gEnsbarR.height = min(ens_visual, gBoxR.height)
 
-        gDigit.pos = gPoslist[(self.gTrial.Digit - 1)]
       
     
         # update target pos based on hardware readings
-        x = self.gTrial.TargetX/10
-        y = self.gTrial.TargetY/10
-        gTarget.pos = (x,y)
-
+     
         #z= self.gTrial.TargetZ
         #gTarget.radius = z
     
@@ -137,32 +127,43 @@ class myExperiment(Experiment):
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         gDigit      = self.gScreen['digit']
+        gPoslist       = self.gScreen['posList']
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
 
         # set time limits for different phases of the trial
-        cue_time = 2000
+        cue_time = 1800
         prep_time = 500
         resp_time  = 1500
-        wait_time  = 1000
-        target_remain = 200
-        dead_time  = 400
+        return_time  = 1000
+        target_remain = 500
+        dead_time  = 200
+        '''
+        within loop, find pos
+        '''
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:
             if self.gTimer[0] > self.gTrial.StartTime:
+                gTarget.opacity = 0
+                x = self.gTrial.TargetX/10
+                y = self.gTrial.TargetY/10
+                gTarget.pos = (x,y)
                 self.state = self.gStates.CUE_PHASE
+                self.gVariables['measStartTime']    = self.gTimer[0]
                 self.gTimer.reset(2)
 
         if self.state == self.gStates.CUE_PHASE:
             gEnsbarL.opacity = 0.0
             gEnsbarR.opacity = 0.0
-
+            gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
             gText.color = 'white'
             gHandimage.opacity  = 0.9
-            gDigit.opacity = 1
+            gDigit.pos = gPoslist[(self.gTrial.Digit - 1)]
             gDigit.fillColor   = gColorlist[self.gTrial.Digit - 1]
+            gDigit.opacity = 1
+
             gFinger.opacity = 0.0
             gBoxR.opacity   = 0.0
             gBoxL.opacity   = 0.0
@@ -171,7 +172,6 @@ class myExperiment(Experiment):
 
             if self.gTimer[2] > cue_time:
                 # log trial start time
-                self.gVariables['measStartTime']    = self.gTimer[0]
                 gHandimage.opacity                  = 0.0
 
                 gDigit.opacity                      = 0.0
@@ -240,18 +240,19 @@ class myExperiment(Experiment):
             if self.gTimer[2] > target_remain:
                 gTarget.opacity = 0
 
-            if (euc_dist <= 0.05) or (self.gTimer[2] > wait_time):
+            if (euc_dist <= 0.05) or (self.gTimer[2] > return_time):
                 gTarget.opacity = 0
                 self.state                          = self.gStates.TRIAL_COMPLETE
+                self.gVariables['measEndTime']      = self.gTimer[0]
+
                 self.gTimer.reset(2)
+
         # TRIAL_FAILED
         elif self.state == self.gStates.TRIAL_FAILED:
             gBoxL.opacity = 0
             gBoxR.opacity = 0
             gEnsbarL.opacity = 0
             gEnsbarR.opacity = 0
-            gBoxL.opacity = 0
-            gBoxL.opacity = 0
             gFinger.opacity = 0
             gTarget.opacity = 0
 
@@ -262,17 +263,24 @@ class myExperiment(Experiment):
                 gWarnings.text = gWarnlist[1]
                 gWarnings.color = 'white'
             
-            if self.gTimer[2] > wait_time:
+            if self.gTimer[2] > return_time:
                 gWarnings.text = ''
                 self.state = self.gStates.TRIAL_COMPLETE
+                self.gVariables['measEndTime']      = self.gTimer[0]
+
                 self.gTimer.reset(2)
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
-            self.gVariables['measEndTime']      = self.gTimer[0]
+            gBoxL.opacity = 0
+            gBoxR.opacity = 0
+            gEnsbarL.opacity = 0
+            gEnsbarR.opacity = 0
 
             if self.gTimer[2] > dead_time:
+                gFinger.opacity = 0
                 self.state          = self.gStates.END_TRIAL
+
 
             
 
