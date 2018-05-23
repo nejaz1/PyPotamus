@@ -22,7 +22,7 @@ class TargetFile:
                 s = "currTrialStr"
                 setattr(self,s,row)
                 for value,index in zip(row,self.headers):
-                    setattr(self,index,int(value))
+                    setattr(self,index,float(value))
 
     # method to increment the trial number
     def nextTrial(self):

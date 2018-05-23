@@ -42,13 +42,14 @@ class myExperiment(Experiment):
         digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+
     
         target.opacity = 0.0
-        ensbarL.opacity = 0.5
-        ensbarR.opacity = 0.5
-        finger.opacity = 0.7
-        boxL.opacity = 0.4
-        boxR.opacity = 0.4
+        ensbarL.opacity = 0.0
+        ensbarR.opacity = 0.0
+        finger.opacity = 0.0
+        boxL.opacity = 0.0
+        boxR.opacity = 0.0
         img.opacity = 0.0
         digit.opacity = 0.0
         text.color  = 'black'
@@ -90,15 +91,17 @@ class myExperiment(Experiment):
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
+        dig = int(self.gTrial.Digit)
         
-        # update finger pos and raidus based on hardware readings
-        if self.state != self.gStates.START_TRIAL or self.gStates.TRIAL_COMPLETE: #or self.gStates.END_TRIAL:
-            pos             = self.gHardware['gHand'].getXYZ(self.gTrial.Digit - 1)
+        # update finger pos and raidus based on hardware readings during the appropriate phases
+        if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
+            
+            pos             = self.gHardware['gHand'].getXYZ(dig - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
              #gFinger.radius  = 0.05 + pos[2]/1.5
 
             #update ens bars based on hardware reading
-            rms         = self.gHardware['gHand'].getXY_RMSForces(self.gTrial.Digit - 1)
+            rms         = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
             ens_perc    = self.gTrial.EnsPercent/100
             max_rms     = np.sqrt((2 * np.square(0.9)))
             rms_lim     = ens_perc*max_rms
@@ -131,154 +134,198 @@ class myExperiment(Experiment):
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
+        dig = int(self.gTrial.Digit)
 
         # set time limits for different phases of the trial
-        cue_time = 1800
-        prep_time = 500
-        resp_time  = 1500
-        return_time  = 1000
-        target_remain = 500
-        dead_time  = 200
+        cue_time = 3000
+        prep_time = 1000
+        resp_time  = 10000
+        return_time  = 5000
+        target_remain = 750
+        finger_remain = 750
+        dead_time  = 3000
         '''
         within loop, find pos
         '''
 
         # START TRIAL
-        if self.state == self.gStates.START_TRIAL:
-            if self.gTimer[0] > self.gTrial.StartTime:
-                gTarget.opacity = 0
-                x = self.gTrial.TargetX/10
-                y = self.gTrial.TargetY/10
-                gTarget.pos = (x,y)
+        if self.state == self.gStates.START_TRIAL:          
+                #set state to cue phase, and log the start of the trial 
                 self.state = self.gStates.CUE_PHASE
                 self.gVariables['measStartTime']    = self.gTimer[0]
-                self.gTimer.reset(2)
+                # set target location for the trial, and hide from view 
+                gTarget.opacity = 0
 
-        if self.state == self.gStates.CUE_PHASE:
-            gEnsbarL.opacity = 0.0
-            gEnsbarR.opacity = 0.0
-            gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
-            gText.color = 'white'
-            gHandimage.opacity  = 0.9
-            gDigit.pos = gPoslist[(self.gTrial.Digit - 1)]
-            gDigit.fillColor   = gColorlist[self.gTrial.Digit - 1]
-            gDigit.opacity = 1
+                x = self.gTrial.TargetX/10
+                
+                y = self.gTrial.TargetY/10
 
-            gFinger.opacity = 0.0
-            gBoxR.opacity   = 0.0
-            gBoxL.opacity   = 0.0
-            gFixation.color = 'black'
-            gTarget.opacity     = 0
+                gTarget.pos = (x,y)
+                gFixation.color = 'black'
+                #set up display to appear during the cue phase
+        
+                gText.text = self.gScreen['fingerLabels'][dig - 1]
+                gText.color = 'white'
+                gHandimage.opacity  = 0.9
+                gDigit.pos = gPoslist[(dig - 1)]
+                gDigit.fillColor   = gColorlist[dig - 1]
+                gDigit.opacity = 1
 
-            if self.gTimer[2] > cue_time:
-                # log trial start time
+                #reset the internal between phase timer (gTimer2)
+                self.gTimer.reset(1)
+
+
+        # CUE PHASE
+        elif self.state == self.gStates.CUE_PHASE:
+            if self.gTimer[1] > cue_time:
+                # hide hand
                 gHandimage.opacity                  = 0.0
-
                 gDigit.opacity                      = 0.0
-                self.state                          = self.gStates.WAIT_PREPRATORY 
-                self.gTimer.reset(2)
+                gText.color = 'black'
+                #display the shapes involved in the next phase
+                ens_perc            = self.gTrial.EnsPercent/100
+                gBoxL.opacity       = 0.4
+                gBoxR.opacity       = 0.4
+                gBoxL.height        = ens_perc
+                gBoxR.height        = ens_perc
+                gEnsbarR.opacity  = 0.5
+                gEnsbarL.opacity  = 0.5
+                gEnsbarL.fillColor = 'LightPink'
+                gEnsbarR.fillColor = 'LightPink'
+                gFinger.opacity     = 0.7
+                gFinger.fillColor   = gColorlist[dig - 1]         
+                gFixation.color     = 'white'
+ 
+                # swtich phase and reset timer
+                self.state                          = self.gStates.WAIT_PREPRATORY
+                self.gTimer.reset(1)
+
    
         # PREPRATORY PHASE
         elif self.state == self.gStates.WAIT_PREPRATORY:
-            ens_perc            = self.gTrial.EnsPercent/100
-            gBoxL.opacity       = 0.4
-            gBoxR.opacity       = 0.4
-            gBoxL.height        = ens_perc
-            gBoxR.height        = ens_perc
-            gEnsbarR.opacity  = 0.5
-            gEnsbarL.opacity  = 0.5
-            gEnsbarL.fillColor = 'LightPink'
-            gEnsbarR.fillColor = 'LightPink'
-
-            gFinger.opacity     = 0.7
-            gFinger.fillColor   = gColorlist[self.gTrial.Digit - 1]
-                        
-            gFixation.color     = 'white'
-
-            if self.gTimer[2] > prep_time:
+            #wait for the time period to be over
+            if self.gTimer[1] > prep_time:
+                # update what is to be shown on screen for next phase
                 gFixation.color                     = 'black'
                 gTarget.opacity                     = 1
                 gTarget.fillColor                   = 'grey'
                 gTarget.lineColor                   = 'white'
+
+                #change phase and reset timer
                 self.state                          = self.gStates.WAIT_RESPONSE
-                self.gTimer.reset(2)
+                self.gTimer.reset(1)
+
                                 
         # WAIT_RESPONSE
         elif self.state == self.gStates.WAIT_RESPONSE:
-            # calculate distance from target
+            # calculate distance from target and keep track of the ens bars continually
             euc_dist    = np.linalg.norm(np.subtract(gFinger.pos,gTarget.pos))
             bar_height  = gEnsbarL.height
             box_height  = gBoxL.height
-            
+            #if the finger reaches the target
+            if euc_dist <= gTarget.radius:
+                gFinger.opacity     = 0.95
+                gFixation.color = 'white'
+                gFinger.fillColor   = 'green'
+                self.state          = self.gStates.WAIT_RELEASE
+                self.gTimer.reset(1)
 
+            # if the ens bars get to large
             if bar_height >= box_height:
-                gFinger.opacity    = 1
+                gFinger.opacity    = 0.95
                 gFinger.fillColor   = 'red'
                 gEnsbarL.fillColor  = 'red'
                 gEnsbarR.fillColor  = 'red'
                 gTarget.opacity     = 0
                 self.state = self.gStates.TRIAL_FAILED
-                self.gTimer.reset(2)
-
-            if self.gTimer[2] > resp_time:
+            # if the resp time is up
+            if self.gTimer[1] > resp_time:
                 gFinger.opacity     = 0.95
                 gFinger.fillColor   = 'red'
                 gTarget.opacity     = 0
                 self.state          = self.gStates.TRIAL_FAILED
-                self.gTimer.reset(2)
+            #checks if we have trigged a failed trial
+            if self.state == self.gStates.TRIAL_FAILED:
+                #if so, what is the reason, and display the appropriate text, and hide the appropriate shapes (and resetting timer)
+                if gEnsbarL.fillColor == 'red':
+                    gFinger.opacity = 0
+                    gWarnings.text = gWarnlist[0]
+                    gWarnings.color = 'white'
+                    self.gTimer.reset(1)
 
-            if euc_dist <= gTarget.radius:
-                gFinger.opacity     = 0.95
-                gFinger.fillColor   = 'green'
-                self.state          = self.gStates.WAIT_RELEASE
-                self.gTimer.reset(2)
+                else:
+                    gFinger.opacity = 0
+                    gWarnings.text = gWarnlist[1]
+                    gWarnings.color = 'white'
+                    gBoxL.opacity = 0
+                    gBoxR.opacity = 0
+                    gEnsbarL.opacity = 0
+                    gEnsbarR.opacity = 0
+                    gFinger.opacity = 0
+                    gTarget.opacity = 0
+                    self.gTimer.reset(1)
+
 
         # WAIT_RELEASE
         elif self.state == self.gStates.WAIT_RELEASE:
-            gFixation.color = 'white'
+            #calculate euclidian distance from finger to fixation cross continually
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
-            if self.gTimer[2] > target_remain:
+
+            #this allows for the target to remain on screen breifly, before leaving
+            if self.gTimer[1] > target_remain:
                 gTarget.opacity = 0
 
-            if (euc_dist <= 0.05) or (self.gTimer[2] > return_time):
+            #check to see if the finger has returned to the cross, and locks finger position 
+            if (euc_dist <= 0.05):  
+                pos = self.gHardware['gHand'].getXY(dig - 1)
+                gFinger.pos                         = pos
                 gTarget.opacity = 0
+                gBoxL.opacity       = 0
+                gBoxR.opacity       = 0
+                gEnsbarR.opacity  = 0
+                gEnsbarL.opacity  = 0
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
+                self.gTimer.reset(1)
 
-                self.gTimer.reset(2)
+
+            # if the time for the phase is over, hide finger and move to next
+            if (self.gTimer[1] > return_time):
+                gFinger.opacity = 0
+                gFixation.color = 'black'
+                gBoxL.opacity       = 0
+                gBoxR.opacity       = 0
+                gEnsbarR.opacity  = 0
+                gEnsbarL.opacity  = 0
+                self.state                          = self.gStates.TRIAL_COMPLETE
+                self.gVariables['measEndTime']      = self.gTimer[0]
+                self.gTimer.reset(1)
+
 
         # TRIAL_FAILED
         elif self.state == self.gStates.TRIAL_FAILED:
-            gBoxL.opacity = 0
-            gBoxR.opacity = 0
-            gEnsbarL.opacity = 0
-            gEnsbarR.opacity = 0
-            gFinger.opacity = 0
-            gTarget.opacity = 0
-
-            if gEnsbarL.fillColor == 'red':
-                gWarnings.text = gWarnlist[0]
-                gWarnings.color = 'white'
-            else:
-                gWarnings.text = gWarnlist[1]
-                gWarnings.color = 'white'
-            
-            if self.gTimer[2] > return_time:
+            # checks to see if time has run out for the phase
+            if self.gTimer[1] > return_time:
+                #hide shapes on screen
                 gWarnings.text = ''
+                gBoxL.opacity = 0
+                gBoxR.opacity = 0
+                gEnsbarL.opacity = 0
+                gEnsbarR.opacity = 0
+                #swtiches state, logs end of the trial time and resests internal timer
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
+                self.gTimer.reset(1)
 
-                self.gTimer.reset(2)
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
-            gBoxL.opacity = 0
-            gBoxR.opacity = 0
-            gEnsbarL.opacity = 0
-            gEnsbarR.opacity = 0
-
-            if self.gTimer[2] > dead_time:
+            if self.gTimer[1] > finger_remain:
                 gFinger.opacity = 0
+                gFixation.color = 'black'
+             
+            #waits for between trial time to elapse, before ending trial
+            if self.gTimer[1] > dead_time:
                 self.state          = self.gStates.END_TRIAL
 
 
@@ -288,7 +335,7 @@ class myExperiment(Experiment):
     def onTrialEnd(self):
         gTrial = self.gTrial
         gVar = self.gVariables
-        self.gData.add_data_record([gTrial.TN, gTrial.StartTime, gTrial.Hand, gTrial.Digit, gVar['measStartTime'], gVar['measEndTime'], gTrial.EnsPercent])
+        self.gData.add_data_record([gTrial.TN, gTrial.Hand, gTrial.Digit, gVar['measStartTime'], gVar['measEndTime'], gTrial.EnsPercent])
 
 
 # ------------------------------------------------------------------------
@@ -308,7 +355,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','startTime','hand','digit','measStartTime','measEndTime', 'EnsPercent'])
+    gExp.set_data_format(['TN','hand','digit','measStartTime','measEndTime', 'EnsPercent'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
