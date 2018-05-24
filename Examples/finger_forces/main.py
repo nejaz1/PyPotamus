@@ -137,13 +137,13 @@ class myExperiment(Experiment):
         dig = int(self.gTrial.Digit)
 
         # set time limits for different phases of the trial
-        cue_time = 3000
+        cue_time = 2500
         prep_time = 1000
-        resp_time  = 10000
-        return_time  = 5000
+        resp_time  = 7000
+        return_time  = 4000
         target_remain = 750
         finger_remain = 750
-        dead_time  = 3000
+        dead_time  = 2000
         '''
         within loop, find pos
         '''
@@ -224,6 +224,13 @@ class myExperiment(Experiment):
             box_height  = gBoxL.height
             #if the finger reaches the target
             if euc_dist <= gTarget.radius:
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
+                self.gVariables['ForceX'] = pos[0]
+                self.gVariables['ForceY'] = pos[1]
+                self.gVariables['ForceZ'] = pos[2]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
+                self.gVariables['Corr']     = 1
+
                 gFinger.opacity     = 0.95
                 gFixation.color = 'white'
                 gFinger.fillColor   = 'green'
@@ -232,6 +239,14 @@ class myExperiment(Experiment):
 
             # if the ens bars get to large
             if bar_height >= box_height:
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
+                self.gVariables['ForceX'] = pos[0]
+                self.gVariables['ForceY'] = pos[1]
+                self.gVariables['ForceZ'] = pos[2]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
+                self.gVariables['Corr']     = 0
+
+
                 gFinger.opacity    = 0.95
                 gFinger.fillColor   = 'red'
                 gEnsbarL.fillColor  = 'red'
@@ -240,6 +255,12 @@ class myExperiment(Experiment):
                 self.state = self.gStates.TRIAL_FAILED
             # if the resp time is up
             if self.gTimer[1] > resp_time:
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
+                self.gVariables['ForceX'] = pos[0]
+                self.gVariables['ForceY'] = pos[1]
+                self.gVariables['ForceZ'] = pos[2]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
+                self.gVariables['Corr']     = 0
                 gFinger.opacity     = 0.95
                 gFinger.fillColor   = 'red'
                 gTarget.opacity     = 0
@@ -278,7 +299,7 @@ class myExperiment(Experiment):
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
                 pos = self.gHardware['gHand'].getXY(dig - 1)
-                gFinger.pos                         = pos
+                gFinger.pos = pos
                 gTarget.opacity = 0
                 gBoxL.opacity       = 0
                 gBoxR.opacity       = 0
@@ -335,7 +356,7 @@ class myExperiment(Experiment):
     def onTrialEnd(self):
         gTrial = self.gTrial
         gVar = self.gVariables
-        self.gData.add_data_record([gTrial.TN, gTrial.Hand, gTrial.Digit, gVar['measStartTime'], gVar['measEndTime'], gTrial.EnsPercent])
+        self.gData.add_data_record([gTrial.TN, gTrial.Hand, gTrial.Digit, gTrial.EnsPercent, gVar['Corr'], gVar['ForceX'], gVar['ForceY'], gVar['ForceZ'], gVar['EnsForce'], gVar['measStartTime'], gVar['measEndTime']])
 
 
 # ------------------------------------------------------------------------
@@ -355,7 +376,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','hand','digit','measStartTime','measEndTime', 'EnsPercent'])
+    gExp.set_data_format(['TN','hand','digit','EnsPercent', 'Corr', 'ForceX', 'ForceY', 'ForceZ', 'EnsForce', 'measStartTime','measEndTime'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
