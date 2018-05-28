@@ -9,7 +9,7 @@ radii = [2.5,5,7]
 target_space = []
 digits = [1,2,3,4,5]
 Hand = 2
-ens_perc = 80
+ens_perc = 0.8
 
 for i in range(num_sampl+1):
     angle = (i*angle_inc)
@@ -22,29 +22,26 @@ for j in radii:
         RM = np.array([[np.cos(i), -np.sin(i)], [np.sin(i), np.cos(i)]])
         new = np.matmul(RM, target_radi)
         new = new.tolist()
+        for i in range(2):
+            new[i] = new[i]/10
+            new[i] = round(new[i], 2)
         target_space.append(new)
-
-print(target_space)
 
 all_trials = []
 
 for i in digits:
-    #print(i)
     for j in target_space:
-        #print(j)
         all_trials.append([i,j[0],j[1]])
 
 random.shuffle(all_trials)
 
-total_trials = num_sampl*len(radii)*len(digits)
+total_trials = num_sampl*len(digits) * len(radii)
 
-
-with open('demo_r4.tgt', 'w', newline='') as tgt:
+with open('demo_r6.tgt', 'w', newline='') as tgt:
     headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 
     writer.writerow(headernames)
-    
 
     for i in range(total_trials):
         row = []
