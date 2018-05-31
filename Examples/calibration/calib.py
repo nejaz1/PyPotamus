@@ -44,13 +44,13 @@ class myExperiment(Experiment):
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
 
         #set time limits for phases
-        CUE_TIME = 2500
-        PREP_TIME = 1000
-        RESP_TIME  = 7000
-        RETURN_TIME  = 4000
-        TRGT_REMAIN = 750
-        FINGER_REMAIN = 750
-        DEAD_TIME  = 2000
+        CUE_TIME = 2000
+        PREP_TIME = 500
+        RESP_TIME  = 5000000
+        RETURN_TIME  = 2000
+        TRGT_REMAIN = 100
+        FINGER_REMAIN = 200
+        DEAD_TIME  = 200
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 

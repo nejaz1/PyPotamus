@@ -7,7 +7,7 @@ angle_inc = 360/num_sampl
 angles = []
 radii = [0.9,0.7,0.5,0.3,0.1]
 target_space = []
-digits = [5]
+digits = [1]
 Hand = 2
 ens_perc = 0
 
@@ -38,7 +38,7 @@ for d in range(5):
 random.shuffle(all_trials)
 
 
-with open('calib_1.tgt', 'w', newline='') as tgt:
+with open('fing1_1.tgt', 'w', newline='') as tgt:
     headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 
