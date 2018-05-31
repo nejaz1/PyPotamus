@@ -130,6 +130,18 @@ class HopkinsHandDevice:
         i = i * 3
         return np.multiply(self.last_data[0+i:3+i],self.multiplier)
 
+    def getXYZAll(self, isRunning, sharedMem, rowIDX):
+        while isRunning = True:
+            a = getXYZ(1)
+            b = getXYZ(2)
+            c = getXYZ(3)
+            d = getXYZ(4)
+            e = getXYZ(5)
+
+            new_list [a,b,c,d,e]
+            rowIDX = rowIDX + 1
+            sharedMem.append(new_list)   
+
     # get only (X,Y) readings for i-th finger
     def getXY(self,i):
         self.update()

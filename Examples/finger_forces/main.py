@@ -453,7 +453,17 @@ if __name__ == "__main__":
     gExp.initialize()
 
     # attached hopkins hand device as part of experiment (call it gHand)
-    gExp.add_hardware('gHand',HopkinsHandDevice())
+     gExp.add_hardware('gHand',HopkinsHandDevice())
+    isWrite = False
+    sharedMem = numpy.array([1,2,3])
+    rowIDX = 0
+    HHD = multiprocessing.Process(target= HopkinsHandDevice.getXYZAll(), args = (self,isWrite, sharedMem, rowIDX,))
+    HHD.start()
+    isWrite = True    
+    self.gTimer.reset(2)
+    if self.gTimer[2] = 5:
+        isWrite = False
+    numpy.savetxt('test.txt', (a,b), fmt="%d")
     gExp.gHardware['gHand'].set_force_multiplier((-3,3,3))
 
     # get user input via console
