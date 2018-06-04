@@ -1,4 +1,5 @@
-# Class to set up shared memory between multiprocesses in python
+# Class to set up a generic hardware device attached to PyPotamus class
+# Provides multithreading, with read/writes to a shared circular buffer array
 #
 # Created:
 # May 18: Naveed Ejaz
@@ -9,7 +10,7 @@ from ctypes import c_int, c_double
 from Timer import Timer
 
 
-class SharedMemory(object):
+class GenericHardware(object):
     # constructor
     def __init__(self, params):
         # parameters used for buffering data in multiprocess
@@ -18,6 +19,7 @@ class SharedMemory(object):
         bf_size             = params['buffer_size']
         self.buffer_size    = bf_size[0] * bf_size[1]        
 
+        # internal timer
         self.timer          = Timer({'num_counter': 2})   
 
         # shared memory and locking        
@@ -26,9 +28,34 @@ class SharedMemory(object):
         self.logging        = Value(c_int, 0, lock=self.lock)        
         self.shared_mem     = Array(c_double,[0]*self.buffer_size, lock=self.lock)
         self.condition      = mp.Condition(self.lock)         
+        
+        # spawn process for logging
+        self.spawnProcess()
+
+    # spawn process to sample data
+    def spawnProcess(self):
+        self.process = mp.Process(target=self.sampling_loop) 
+        self.process.start()            
+        
+    # terminate processes
+    def terminate(self):
+        if self.process.is_alive():
+            self.process.terminate()
+            
+    # start recording data
+    def startRecording(self):
+        with self.lock:
+            self.nsamples.value  = 0
+            self.logging.value   = 1
+            self.condition.notify()
+            
+    # stop recording data
+    def stopRecording(self):
+        with self.lock:
+            self.logging.value = 0
 
     # write to circular buffer
-    def writeTo(self, values):
+    def writeToBuffer(self, values):
         with self.lock:
             self.nsamples.value                     %= self.buffer_size
             self.shared_mem[self.nsamples.value]    = values
@@ -40,7 +67,7 @@ class SharedMemory(object):
             return self.shared_mem[self.nsamples.value-1]
 
     # get copy of all valid items in buffer
-    def getCopy(self):
+    def getBufferCopy(self):
         with self.lock:
             return self.shared_mem[0:self.nsamples.value].copy()
         
@@ -54,13 +81,14 @@ class SharedMemory(object):
         while True:
             with self.lock:
                 if self.logging.value == 0:
-                    print(self.device_name,' asleep')
+                    print('{} is going to sleep'.format(self.device_name))
                     self.condition.wait()
-                    print(self.device_name,' awake')
+                    print('{} woke up'.format(self.device_name))
                     t.reset_all()
                     continue
             
             if t[1] >= self.sampling_freq:
                 t.reset(1)
-                self.writeTo(t[0])                
+                self.writeToBuffer(t[0])                
 #                print(t[0])
+                
