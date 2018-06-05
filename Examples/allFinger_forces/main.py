@@ -107,8 +107,9 @@ class myExperiment(Experiment):
         gFinger5     = self.gScreen['finger5']
         #gDigit      = self.gScreen['digit']
         #gPoslist       = self.gScreen['posList']
+        dig         = int(self.gTrial.Digit)
 
-        gText.text = self.gScreen['fingerLabels'][self.gTrial.Digit - 1]
+        gText.text = self.gScreen['fingerLabels'][dig - 1]
 
         # update finger pos and raidus based on hardware readings
         if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
@@ -166,7 +167,8 @@ class myExperiment(Experiment):
         gFinger4     = self.gScreen['finger4']
         gFinger5     = self.gScreen['finger5']
         gFingers     = self.gScreen['fingers']
-        gFinger      = gFingers[self.gTrial.Digit - 1]
+        dig         = int(self.gTrial.Digit)
+        gFinger      = gFingers[dig - 1]
         #gEnsbarL     = self.gScreen['ensbarL']
         #gEnsbarR     = self.gScreen['ensbarR']
         gTarget     = self.gScreen['target']
@@ -178,6 +180,7 @@ class myExperiment(Experiment):
         gColorlist  = self.gScreen['colorList']
         #gWarnings   = self.gScreen['warnings']
         #gWarnlist   = self.gScreen['warnList']
+        
 
         # set time limits for different phases of the trial
         cue_time = 2000
@@ -189,7 +192,6 @@ class myExperiment(Experiment):
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:
-            if self.gTimer[0] > self.gTrial.StartTime:
                 self.state = self.gStates.CUE_PHASE
                 self.gTimer.reset(2)
 
@@ -319,7 +321,7 @@ class myExperiment(Experiment):
     def onTrialEnd(self):
         gTrial = self.gTrial
         gVar = self.gVariables
-        self.gData.add_data_record([gTrial.TN, gTrial.StartTime, gTrial.Hand, gTrial.Digit, gVar['measStartTime'], gVar['measEndTime'], gTrial.EnsPercent])
+        #self.gData.add_data_record([gTrial.TN, gTrial.StartTime, gTrial.Hand, gTrial.Digit, gVar['measStartTime'], gVar['measEndTime'], gTrial.EnsPercent])
 
 
 # ------------------------------------------------------------------------

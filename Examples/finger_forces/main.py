@@ -9,6 +9,8 @@ from PyPotamus import Experiment
 from HopkinsHandDevice import HopkinsHandDevice
 import numpy as np
 import math
+import multiprocessing
+import time
 import pdb
 
 # ------------------------------------------------------------------------
@@ -30,27 +32,27 @@ class myExperiment(Experiment):
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
         img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
-        warnings = self.gScreen.text(text='', pos=(0,-0.1), color='black')
+        warnings = self.gScreen.text(text='', pos=(0,-0.15), color='black')
         boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         boxR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
         ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         text = self.gScreen.text(text='', pos=(0,0.95), color='white')
-        target = self.gScreen.circle(pos=[0,0], radius = 0.1, lineWidth=4.0, lineColor='black', fillColor='black')
-        finger = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
+        target = self.gScreen.circle(pos=[0,0], radius = 0.08, lineWidth=4.0, lineColor='black', fillColor='black')
+        finger = self.gScreen.circle(pos=[0,0],radius = 0.07, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
         digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
 
         #set time limits for phases
-        CUE_TIME = 2500
+        CUE_TIME = 2000
         PREP_TIME = 1000
-        RESP_TIME  = 7000
+        RESP_TIME  = 15000
         RETURN_TIME  = 4000
         TRGT_REMAIN = 750
         FINGER_REMAIN = 750
-        DEAD_TIME  = 2000
+        DEAD_TIME  = 2500
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -81,7 +83,7 @@ class myExperiment(Experiment):
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
-        self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
+        self.gScreen['warnList']        = ['Too much movement!', "Time's up!", 'Relax Fingers...']
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
         self.gVariables['TRGT_SPACE'] = TRGT_SPACE
@@ -132,9 +134,6 @@ class myExperiment(Experiment):
         
             gEnsbarL.height = min(ens_visual, gBoxL.height)
             gEnsbarR.height = min(ens_visual, gBoxR.height)
-
-      
-
     
     # over-load experimental trial loop function
     def trial(self):
@@ -191,28 +190,25 @@ class myExperiment(Experiment):
                 gDigit.fillColor   = gColorlist[dig - 1]
                 gDigit.opacity = 1
 
-                #reset the internal between phase timer (gTimer2)
+                #reset the internal between phase timer (gTimer1)
                 self.gTimer.reset(1)
 
-                # on trial start, reset certain variables of interest
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
 
 
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
-            self.gHardware['gHand'].zerof(gCueTime)
+            self.gHardware['gHand'].zerof(gCueTime-200)
             if self.gTimer[1] > gCueTime:
                 # hide hand
                 gHandimage.opacity                  = 0.0
                 gDigit.opacity                      = 0.0
-                gText.color = 'black'
                 #display the shapes involved in the next phase
-                ens_perc            = self.gTrial.EnsPercent
                 gBoxL.opacity       = 0.4
                 gBoxR.opacity       = 0.4
-                gBoxL.height        = ens_perc
-                gBoxR.height        = ens_perc
+                gBoxL.height        = self.gTrial.EnsPercent
+                gBoxR.height        = self.gTrial.EnsPercent
                 gEnsbarR.opacity  = 0.5
                 gEnsbarL.opacity  = 0.5
                 gEnsbarL.fillColor = 'LightPink'
@@ -364,7 +360,6 @@ class myExperiment(Experiment):
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
                 pos = self.gHardware['gHand'].getXY(dig - 1)
-                gFinger.pos = pos
                 gTarget.opacity = 0
                 gBoxL.opacity       = 0
                 gBoxR.opacity       = 0
@@ -393,7 +388,8 @@ class myExperiment(Experiment):
             # checks to see if time has run out for the phase
             if self.gTimer[1] > gReturnTime:
                 #hide shapes on screen
-                gWarnings.text = ''
+                gWarnings.text = gWarnlist[2]
+                gWarnings.color = 'white'
                 gBoxL.opacity = 0
                 gBoxR.opacity = 0
                 gEnsbarL.opacity = 0
@@ -408,10 +404,12 @@ class myExperiment(Experiment):
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if self.gTimer[1] > gFingRemain:
                 gFinger.opacity = 0
-                gFixation.color = 'black'
-             
+                gFixation.color = 'black'  
+                gWarnings.text = gWarnlist[2]
+                gWarnings.color = 'white'
             #waits for between trial time to elapse, before ending trial
             if self.gTimer[1] > gDeadTime:
+                gWarnings.text = ''
                 self.state          = self.gStates.END_TRIAL
 
 
@@ -425,9 +423,17 @@ class myExperiment(Experiment):
                                     gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
                                     gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
                                     gVar['measEndTime']])
+'''
+def getXYZAll(isRunning, sharedMem, rowIDX, l):
+    while isRunning == True:
+        row = np.multiply(HopkindsHandDevice.getRaw(), HopkinsHandDevice.set_force_multiplier*5)
+        l.acquire()
+        sharedMem[rowIDX,:] = row
+        l.release()
 
-
-# ------------------------------------------------------------------------
+        rowIDX = rowIDX + 1
+'''     
+# --------------------------w----------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
 
@@ -453,19 +459,24 @@ if __name__ == "__main__":
     gExp.initialize()
 
     # attached hopkins hand device as part of experiment (call it gHand)
-     gExp.add_hardware('gHand',HopkinsHandDevice())
-    isWrite = False
-    sharedMem = numpy.array([1,2,3])
-    rowIDX = 0
-    HHD = multiprocessing.Process(target= HopkinsHandDevice.getXYZAll(), args = (self,isWrite, sharedMem, rowIDX,))
+    gExp.add_hardware('gHand',HopkinsHandDevice())
+    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3])
+    '''
+    #here
+    sharedMem = multiprocessing.Array('f',(100,17))
+    rowIDX = multiprocessing.Value('i', 0)
+    isWrite = multiprocessing.Value('i', 1)
+    lock = multiprocessing.Lock()
+    HHD = multiprocessing.Process(target = getXYZAll, args = (isWrite, sharedMem, rowIDX, lock))
     HHD.start()
-    isWrite = True    
-    self.gTimer.reset(2)
-    if self.gTimer[2] = 5:
-        isWrite = False
-    numpy.savetxt('test.txt', (a,b), fmt="%d")
-    gExp.gHardware['gHand'].set_force_multiplier((-3,3,3))
-
+    time.sleep(5)
+    lock.acquire()
+    isWrite.value = 0  
+    lock.release()
+    HHD.join()
+    np.savetxt('test.txt', sharedMem, fmt="%d")
+    #here
+    '''
     # get user input via console
     # user commands starts/stops experiment
     gExp.control()
@@ -473,3 +484,8 @@ if __name__ == "__main__":
     # gHand.join()
     # gHand.join()
 
+
+
+
+
+#make a function above(that calls the handdevice one and actually gets the data/writes to the memory)
