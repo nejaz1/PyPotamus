@@ -11,6 +11,7 @@ import numpy as np
 import math
 import multiprocessing
 import time
+from psychopy import sound
 import pdb
 
 # ------------------------------------------------------------------------
@@ -44,6 +45,9 @@ class myExperiment(Experiment):
         digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+        soundlist = ['BLOP.mp3']
+        audio = sound.Sound()
+
 
         #set time limits for phases
         CUE_TIME = 1000
@@ -77,7 +81,8 @@ class myExperiment(Experiment):
         self.gScreen['boxR']            = boxR
         self.gScreen['target']          = target
         self.gScreen['text']            = text
-        self.gScreen['warnings']         = warnings
+        self.gScreen['warnings']        = warnings
+        self.gScreen['soundlist']       = soundlist
         
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
@@ -152,6 +157,7 @@ class myExperiment(Experiment):
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
+        gSound      = self.gScreen['soundlist']
         dig         = int(self.gTrial.Digit)
 
         gCueTime = self.gVariables['CUE_TIME']
@@ -356,6 +362,9 @@ class myExperiment(Experiment):
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
             gTarget.radius += 0.02
             gTarget.opacity -= 0.06
+            currSound = soundlist[0]
+            audio.SetSound(currSound)
+            audio.play()
 
             #this allows for the target to remain on screen breifly, before leaving
             #if self.gTimer[1] > gTrgtRemain:
