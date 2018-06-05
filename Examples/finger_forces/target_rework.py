@@ -7,7 +7,7 @@ angle_inc = 360/num_sampl
 angles = []
 radii = [0.8,0.5,0.2]
 target_space = []
-digits = [5]
+digits = [1,2,3,4,5]
 Hand = 2
 ens_perc = 0.8
 
@@ -27,11 +27,9 @@ for j in radii:
         target_space.append(new)
 
 all_trials = []
-
-for d in range(5):
-    for i in digits:
-        for j in target_space:
-            all_trials.append([i,j[0],j[1]])
+for i in digits:
+    for j in target_space:
+        all_trials.append([i,j[0],j[1]])
 
 
 

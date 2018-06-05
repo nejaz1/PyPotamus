@@ -123,8 +123,9 @@ class HopkinsHandDevice:
         fin_i   = np.square(x[i,:]).sum()
         fin_all = np.square(x).sum()
         rms     = np.sqrt(fin_all-fin_i)
+        rms_all = np.sqrt(fin_all)
 
-        return rms
+        return rms, rms_all
 
     # get all (X,Y,Z) readings for i-th finger
     def getXYZ(self,i):
