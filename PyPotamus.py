@@ -124,7 +124,6 @@ class Experiment:
 
             if resp is None:
                 continue
-
             
             elif resp[0] == 'quit':
                 self.exit()
@@ -139,10 +138,7 @@ class Experiment:
                 self.set_subject_id(resp[1])
 
             else:
-                try:
-                    self.define_command(resp[0])
-                except ValueError as e:
-                    continue    
+                self.define_command(resp[0])
 
     # define user commands
     def define_command(self, cmd):
