@@ -7,13 +7,10 @@ expwin_size:            [800, 800]
 expwin_autodraw:        True
 expwin_autolog:         False
 expwin_useFBO:          True
+expwin_waitBlanking:    False
 
 diagnosticwin_pos:      [50, 50]
 diagnosticwin_bgcolor:  [1, 1, 1]
 diagnosticwin_size:     [200, 200]
 diagnosticwin_autodraw: True
 diagnosticwin_useFBO:   True
-
-handdevice_multiplier:  (1,-1,1)
-
-

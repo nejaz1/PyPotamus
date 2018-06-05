@@ -46,13 +46,13 @@ class myExperiment(Experiment):
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
 
         #set time limits for phases
-        CUE_TIME = 2000
+        CUE_TIME = 1000
         PREP_TIME = 1000
         RESP_TIME  = 15000
         RETURN_TIME  = 4000
-        TRGT_REMAIN = 750
+        TRGT_REMAIN = 0
         FINGER_REMAIN = 750
-        DEAD_TIME  = 2500
+        DEAD_TIME  = 1000
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -196,7 +196,6 @@ class myExperiment(Experiment):
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
 
-
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
             self.gHardware['gHand'].zerof(gCueTime-200)
@@ -272,6 +271,7 @@ class myExperiment(Experiment):
                 gFinger.opacity     = 0.95
                 gFixation.color = 'white'
                 gFinger.fillColor   = 'green'
+                
                 #swtich states and reset timer1
                 self.state          = self.gStates.WAIT_RELEASE
                 self.gTimer.reset(1)
@@ -286,7 +286,8 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
                 self.gVariables['Corr']     = 2
  
-                raw = self.gHardware['gHand'].getRaw()
+                self.gHardware['gHand'].update()
+                row = self.gHardware['ghand'].last_data
                 bb = dig*3
                 aa = bb-3
                 rawxyz = raw[aa:bb]
@@ -312,7 +313,8 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
                 self.gVariables['Corr']     = 3
  
-                raw = self.gHardware['gHand'].getRaw()
+                self.gHardware['gHand'].update()
+                raw = self.gHardware['gHand'].last_data
                 bb = dig*3 
                 aa = bb-3
                 rawxyz = raw[aa:bb]
@@ -352,15 +354,17 @@ class myExperiment(Experiment):
         elif self.state == self.gStates.WAIT_RELEASE:
             #calculate euclidian distance from finger to fixation cross continually
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
+            gTarget.radius += 0.02
+            gTarget.opacity -= 0.06
 
             #this allows for the target to remain on screen breifly, before leaving
-            if self.gTimer[1] > gTrgtRemain:
-                gTarget.opacity = 0
+            #if self.gTimer[1] > gTrgtRemain:
 
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
                 pos = self.gHardware['gHand'].getXY(dig - 1)
                 gTarget.opacity = 0
+                gTarget.radius = 0.08
                 gBoxL.opacity       = 0
                 gBoxR.opacity       = 0
                 gEnsbarR.opacity  = 0
