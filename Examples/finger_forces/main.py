@@ -5,13 +5,14 @@
 # 
 # IMPORTANT: Path to PyPotamus needs set to be in PYTHONPATH environment variable
 
-from PyPotamus import Experiment
-from HopkinsHandDevice import HopkinsHandDevice
-import numpy as np
 import math
 import multiprocessing
-import time
 import pdb
+import time
+import numpy as np
+from HopkinsHandDevice import HopkinsHandDevice
+from PyPotamus import Experiment
+from pygame import mixer
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -44,14 +45,16 @@ class myExperiment(Experiment):
         cuefing = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
-
+        #soundlist = ['BLOP.wav']
+        #audio = pygame.mixer.Sound('BLOP.wav')
+        mixer.init()
         #set time limits for phases
-        CUE_TIME = 2000
+        CUE_TIME = 1250
         PREP_TIME = 1000
         RESP_TIME  = 15000
         RETURN_TIME  = 4000
         FINGER_REMAIN = 500
-        DEAD_TIME  = 2000
+        DEAD_TIME  = 1500
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -69,7 +72,7 @@ class myExperiment(Experiment):
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
         self.gScreen['finger']          = finger
-        self.gScreen['cuefing']           = cuefing
+        self.gScreen['cuefing']         = cuefing
         self.gScreen['ensbarL']         = ensbarL
         self.gScreen['ensbarR']         = ensbarR
         self.gScreen['boxL']            = boxL
@@ -77,6 +80,8 @@ class myExperiment(Experiment):
         self.gScreen['target']          = target
         self.gScreen['text']            = text
         self.gScreen['warnings']         = warnings
+        #self.gScreen['soundlist']       = soundlist
+        #self.gScreen['audio']           = audio
         
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
@@ -155,9 +160,8 @@ class myExperiment(Experiment):
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
         gDigit         = int(self.gTrial.Digit)
-
-        gCueTime = self.gVariables['CUE_TIME']
-
+        #gSoundList     = self.gScreen['soundlist']
+        #gAudio      = self.gScreen['audio']
         gCueTime = self.gVariables['CUE_TIME']
         gPrepTime = self.gVariables['PREP_TIME']
         gRespTime =  self.gVariables['RESP_TIME']
@@ -249,6 +253,8 @@ class myExperiment(Experiment):
 
             #if the finger reaches the target
             if euc_dist <= (1/2)*gTarget.radius:
+                audio = mixer.Sound('BLOP.wav')
+                audio.play()
                 #save data for finger forces with scalar applied and show corr trial
                 pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
@@ -270,7 +276,9 @@ class myExperiment(Experiment):
                 gFinger.opacity     = 0.95
                 gFixation.color = 'white'
                 gFinger.fillColor   = 'green'
-                
+
+      
+
                 #swtich states and reset timer1
                 self.state          = self.gStates.WAIT_RELEASE
                 self.gTimer.reset(1)
@@ -355,6 +363,7 @@ class myExperiment(Experiment):
                 pos = self.gHardware['gHand'].getXY(gDigit - 1)
                 gTarget.opacity = 0
                 gTarget.radius = 0.08
+                
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
@@ -402,7 +411,8 @@ class myExperiment(Experiment):
     def onTrialEnd(self):
         gTrial = self.gTrial
         gVar = self.gVariables
-        self.gData.add_data_record([gTrial.TN, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
+        gDat = self.gData
+        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
                                     gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
                                     gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
                                     gVar['measEndTime']])
@@ -433,7 +443,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','hand','gDigit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
