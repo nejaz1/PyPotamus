@@ -3,6 +3,7 @@ import hid
 from struct import unpack
 import numpy as np
 import pdb
+from GenericHardware import GenericHardware
 
 # Main Class to communication with all the hopkins hand device
 #
@@ -11,6 +12,7 @@ import pdb
 
 # Class inherits from multiprocessing class so that it is able to spawn off 
 # a child thread for polling at a faster interval
+
 class HopkinsHandDeviceMultiproc(multiprocessing.Process):
 
     # constructor spawns of multiprocessing thread
@@ -44,13 +46,12 @@ class HopkinsHandDeviceMultiproc(multiprocessing.Process):
         self.exit.set()        
 
 # Base class without multiprocessing
-class HopkinsHandDevice:
+class HopkinsHandDevice(GenericHardware):
 
     # constructor spawns of multiprocessing thread
-    def __init__(self):
-        self.initialize()
-       
-
+    def __init__(self,params):
+        GenericHardware.__init__(self,params)
+        
         self.multiplier = (1,1,1)
 
         self.rot        = np.pi / 4.0
@@ -64,7 +65,10 @@ class HopkinsHandDevice:
         self.zerof(500)
         print('Calibrating zero baseline')
 
+        self.initialize()
+        self.spawnProcess(self.sample_device)
     # initialize connection to hand device
+
     def initialize(self):
         self.handle = hid.device()
 
@@ -73,7 +77,7 @@ class HopkinsHandDevice:
             if d['product_id'] == 1158 and d['usage'] == 512:
                 dev_path = d['path']
                 print('Opened hand device')
-        self.handle.open_path(dev_path)
+        self.handle.open_path(dev_path)  
 
     # initialize connection to hand device (this sometimes doesn't work)
     def initialize_alternative(self):
@@ -115,9 +119,8 @@ class HopkinsHandDevice:
 
     # get (X,Y) summated readings for all fingers except the i-th pair
     def getXY_RMSForces(self,i):
-        self.update()
-        x   = np.reshape(self.last_data,[5,3])
-        x   = np.multiply(x,self.multiplier)
+        x = self.getLastValue()
+        x   = np.reshape(x,[5,3])
         x   = x[:,0:2]
 
         fin_i   = np.square(x[i,:]).sum()
@@ -129,16 +132,20 @@ class HopkinsHandDevice:
 
     # get all (X,Y,Z) readings for i-th finger
     def getXYZ(self,i):
-        self.update()
+        last_value = self.getLastValue() 
         i = i * 3
-        return np.multiply(self.last_data[0+i:3+i],self.multiplier)
+        return np.multiply(last_value[0+i:3+i],self.multiplier)
 
     # get only (X,Y) readings for i-th finger
     def getXY(self,i):
-        self.update()
+        last_value = self.getLastValue() 
         i = i * 3
-        return np.multiply(self.last_data[0+i:2+i],self.multiplier[0:2])
-    
+        return np.multiply(last_value[0+i:2+i],self.multiplier[0:2])
+
+    #get the multiplied readings for all fingers 
+    def getXYZ_all(self):
+        self.update()
+        return np.multiply(self.last_data,(self.multiplier*5))
 
     # zerof calibration of the device
     def zerof(self, num_samples):
@@ -147,4 +154,8 @@ class HopkinsHandDevice:
             t[i,:] = self.getRaw()
 
         self.f_baseline = np.mean(t,axis=0)
-    # estimate enslaving
+
+    # run the sampling loop function provided by generichardware class, with our specific deivce function
+    def sample_device(self):
+        self.initialize()
+        self.sampling_loop(self.getXYZ_all())
