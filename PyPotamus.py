@@ -86,7 +86,6 @@ class Experiment:
         for i in range(self.gTrial.getTrialNum()):
             # run abstract function for each trial
             self.state = 0
-
             while self.state != self.gStates.END_TRIAL:
                 self.trial()
                 self.flip()
@@ -132,7 +131,11 @@ class Experiment:
 
             elif resp[0] == 'run':
                 self.gData.run  = resp[1]
-                self.gTrial     = TargetFile(resp[2])
+                try:
+                    self.gTrial     = TargetFile(resp[2])
+                except FileNotFoundError:
+                    print('Wrong file name. Please try again...')
+                    continue
                 self.start_run()
 
             elif resp[0] == 'subj':
@@ -140,7 +143,6 @@ class Experiment:
 
             else:
                 self.define_command(resp[0])
-
     # define user commands
     def define_command(self, cmd):
         print('unrecognized command')

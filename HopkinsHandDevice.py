@@ -49,6 +49,7 @@ class HopkinsHandDevice:
     # constructor spawns of multiprocessing thread
     def __init__(self):
         self.initialize()
+       
 
         self.multiplier = (1,1,1)
 
@@ -58,6 +59,7 @@ class HopkinsHandDevice:
 
         self.f_baseline  = np.zeros(15)
         self.last_data   = np.zeros(15)
+        self.raw_data    = np.zeros(15)
 
         self.zerof(500)
         print('Calibrating zero baseline')
@@ -100,16 +102,16 @@ class HopkinsHandDevice:
             d[0]    /= 1000.0
             d[2:]   /= 65535.0
 
-            self.last_data[0::3] = d[2::4] * self.cosrot - d[3::4] * self.sinrot    # x
-            self.last_data[1::3] = d[2::4] * self.sinrot + d[3::4] * self.cosrot    # y
-            self.last_data[2::3] = d[4::4] + d[5::4]                                # z
-
-            self.last_data = self.last_data - self.f_baseline
+            self.raw_data[0::3] = d[2::4] * self.cosrot - d[3::4] * self.sinrot    # x
+            self.raw_data[1::3] = d[2::4] * self.sinrot + d[3::4] * self.cosrot    # y
+            self.raw_data[2::3] = d[4::4] + d[5::4]                                # z
+     
+            self.last_data = self.raw_data - self.f_baseline
 
     # get all readings from hand device
     def getRaw(self):
         self.update()
-        return self.last_data
+        return self.raw_data
 
     # get (X,Y) summated readings for all fingers except the i-th pair
     def getXY_RMSForces(self,i):
@@ -121,8 +123,9 @@ class HopkinsHandDevice:
         fin_i   = np.square(x[i,:]).sum()
         fin_all = np.square(x).sum()
         rms     = np.sqrt(fin_all-fin_i)
+        rms_all = np.sqrt(fin_all)
 
-        return rms
+        return rms, rms_all
 
     # get all (X,Y,Z) readings for i-th finger
     def getXYZ(self,i):
@@ -135,6 +138,7 @@ class HopkinsHandDevice:
         self.update()
         i = i * 3
         return np.multiply(self.last_data[0+i:2+i],self.multiplier[0:2])
+    
 
     # zerof calibration of the device
     def zerof(self, num_samples):
@@ -143,5 +147,4 @@ class HopkinsHandDevice:
             t[i,:] = self.getRaw()
 
         self.f_baseline = np.mean(t,axis=0)
-
     # estimate enslaving

@@ -12,7 +12,9 @@ class ExperimentDisplay:
 
     # constructor
     def __init__(self, params):
-        self.handle     = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], pos=params['expwin_pos'], fullscr=params['expwin_fullscreen'], name="ExperimentDisplay")
+        self.handle     = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], 
+                                        pos=params['expwin_pos'], fullscr=params['expwin_fullscreen'], name="ExperimentDisplay", 
+                                        waitBlanking=params['expwin_waitBlanking'])
         self.autodraw   = params['expwin_autodraw']
         self.autoLog    = params['expwin_autolog']
         self.useFBO     = params['expwin_useFBO']
@@ -52,7 +54,14 @@ class ExperimentDisplay:
         vis = visual.Rect(self.handle, **kwargs)
         vis.setAutoDraw(self.autodraw)
         vis.autoLog = self.autoLog
-        return vis        
+        return vis
+    
+    #display hand images
+    def image(self, **kwargs):
+        vis = visual.ImageStim(self.handle, **kwargs)
+        vis.setAutoDraw(self.autodraw)
+        vis.autoLog = self.autoLog
+        return vis
 
     # draw text
     def text(self, **kwargs):
