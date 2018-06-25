@@ -20,7 +20,7 @@ class GenericHardware(object):
         self.buffer_size    = bf_size[0] * bf_size[1]        
 
         # internal timer
-        self.timer          = Timer({'num_counter': 2}) 
+        self.timer          = Timer({'num_counter': 2})   
 
         # shared memory and locking        
         self.lock           = mp.RLock()
@@ -29,9 +29,12 @@ class GenericHardware(object):
         self.shared_mem     = Array(c_double,[0]*self.buffer_size, lock=self.lock)
         self.condition      = mp.Condition(self.lock)         
         
+        # spawn process for logging
+        self.spawnProcess()
+
     # spawn process to sample data
-    def spawnProcess(self, proc):
-        self.process = mp.Process(target=proc()) 
+    def spawnProcess(self):
+        self.process = mp.Process(target=self.sampling_loop) 
         self.process.start()            
         
     # terminate processes
@@ -42,8 +45,8 @@ class GenericHardware(object):
     # start recording data
     def startRecording(self):
         with self.lock:
+            self.nsamples.value  = 0
             self.logging.value   = 1
-            self.nsamples.value = 0
             self.condition.notify()
             
     # stop recording data
@@ -69,20 +72,23 @@ class GenericHardware(object):
             return self.shared_mem[0:self.nsamples.value].copy()
         
     # method that implement buffered sampling into shared memory
-    def sampling_loop(self, data_fxn):
+    def sampling_loop(self):
         print('Preparing to sample {} at {}ms'.format(self.device_name,self.sampling_freq))        
         
         t = self.timer
         t.reset_all()
+        
         while True:
-            if self.logging.value == 0:
-                print('{} is going to sleep'.format(self.device_name))
-                self.condition.wait()
-                print('{} woke up'.format(self.device_name))
-                t.reset_all()
-                continue
-
-            if  t[1] >= self.sampling_freq:
+            with self.lock:
+                if self.logging.value == 0:
+                    print('{} is going to sleep'.format(self.device_name))
+                    self.condition.wait()
+                    print('{} woke up'.format(self.device_name))
+                    t.reset_all()
+                    continue
+            
+            if t[1] >= self.sampling_freq:
                 t.reset(1)
-                data = data_fxn()
-                self.writeToBuffer(data)
+                self.writeToBuffer(t[0])                
+#                print(t[0])
+                
