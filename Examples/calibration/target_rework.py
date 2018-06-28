@@ -5,12 +5,13 @@ import random
 num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
-radii = [0.9,0.7,0.5,0.3,0.1]
+radii =  [0.45, 0.35, 0.25, 0.15, 0.05] #'''[0.95, 0.85, 0.75, 0.65, 0.55 '''
 target_space = []
-digits = [1]
+digits = [1] 
 Hand = 2
 ens_perc = 0
 
+'''
 for i in range(num_sampl):
     angle = (i*angle_inc)
     rad = (angle * (np.pi/180))
@@ -25,21 +26,29 @@ for j in radii:
         for i in range(2):
             new[i] = round(new[i], 2)
         target_space.append(new)
-
+'''
 all_trials = []
+
+target_space = []
+
+for i in radii:
+    target_space.append([0,0,i])
 
 for d in range(5):
     for i in digits:
         for j in target_space:
-            all_trials.append([i,j[0],j[1]])
+            all_trials.append([i, j[0], j[1], j[2]])
 
 
 
 random.shuffle(all_trials)
 
+print(len(all_trials))
 
-with open('fing1_1.tgt', 'w', newline='') as tgt:
-    headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'EnsPercent']
+
+
+with open('fing1_1zTEN.tgt', 'w', newline='') as tgt:
+    headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'TargetZ', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 
     writer.writerow(headernames)
@@ -52,6 +61,7 @@ with open('fing1_1.tgt', 'w', newline='') as tgt:
         row.append(target[0])
         row.append(target[1])
         row.append(target[2])
+        row.append(target[3])       
         row.append(ens_perc)
 
         writer.writerow(row)

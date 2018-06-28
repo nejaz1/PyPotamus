@@ -125,7 +125,7 @@ class myExperiment(Experiment):
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-            #gFinger.radius  = 0.05 + pos[2]/1.5
+            gFinger.radius  = 0.35 + pos[2]/1.3
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -178,13 +178,13 @@ class myExperiment(Experiment):
                 # set target location for the trial, and hide from view 
                 gTarget.opacity = 0
 
-                x = self.gTrial.TargetX
-                self.gVariables['TargetX'] = x
-                
-                y = self.gTrial.TargetY
-                self.gVariables['TargetY'] = y
-               
-                gTarget.pos = (x,y)
+                self.gVariables['TargetX'] = self.gTrial.TargetX
+                self.gVariables['TargetY'] = self.gTrial.TargetY
+                self.gVariables['TargetZ'] = self.gTrial.TargetZ
+
+
+                gTarget.pos = (self.gVariables['TargetX'],self.gVariables['TargetY'])
+                #gTarget.radius = self.gVariables['TargetZ']
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
         
