@@ -45,6 +45,9 @@ class Experiment:
     def set_data_format(self, dataformat):
         self.gData.init_data_manager(dataformat)
 
+    def set_mov_format(self, dataformat):
+        self.gData.init_mov_manager(dataformat)
+
     # set directory in which data is stored
     def set_data_directory(self, data_dir):
         self.gData.set_data_directory(data_dir)

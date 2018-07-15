@@ -98,6 +98,7 @@ class myExperiment(Experiment):
         self.gVariables['FINGER_REMAIN'] = FINGER_REMAIN
         self.gVariables['DEAD_TIME'] = DEAD_TIME
         self.gVariables['RT_THRESH'] = RT_THRESH
+        self.gVariables['MOV_DATA'] = []
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
@@ -125,7 +126,7 @@ class myExperiment(Experiment):
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-            gFinger.radius  = 0.35 + pos[2]/1.3
+            #gFinger.radius  = 0.35 + pos[2]/1.3
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -180,7 +181,7 @@ class myExperiment(Experiment):
 
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
-                self.gVariables['TargetZ'] = self.gTrial.TargetZ
+                #self.gVariables['TargetZ'] = self.gTrial.TargetZ
 
 
                 gTarget.pos = (self.gVariables['TargetX'],self.gVariables['TargetY'])
@@ -247,6 +248,9 @@ class myExperiment(Experiment):
             RT_dist    = np.linalg.norm(np.subtract(gFinger.pos, gFixation.pos))
             bar_height  = gEnsbarL.height
             box_height  = gBoxL.height
+            mov_dat = list(self.gHardware['gHand'].getXYZ_ALL())
+            mov_dat = mov_dat + [self.gTrial.TN] + [self.gData.run] + [self.gTimer[0]]
+            self.gVariables['MOV_DATA'].append(mov_dat)
 
             if (RT_dist > gRTthresh) and (self.gVariables['RT']==0):
                 self.gVariables['RT'] = self.gTimer[2]
@@ -416,16 +420,10 @@ class myExperiment(Experiment):
                                     gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
                                     gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
                                     gVar['measEndTime']])
-'''
-def getXYZAll(isRunning, sharedMem, rowIDX, l):
-    while isRunning == True:
-        row = np.multiply(HopkindsHandDevice.getRaw(), HopkinsHandDevice.set_force_multiplier*5)
-        l.acquire()
-        sharedMem[rowIDX,:] = row
-        l.release()
+        self.gData.add_mov_record(gVar['MOV_DATA'])
+        self.gVariables['MOV_DATA'] = []
 
-        rowIDX = rowIDX + 1
-'''     
+
 # --------------------------w----------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
@@ -444,7 +442,7 @@ if __name__ == "__main__":
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
     gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
-
+    gExp.set_mov_format(['1X', '1Y', '1Z', '2X', '2Y', '2Z', '3X', '3Y', '3Z', '4X', '4Y', '4Z', '5X', '5Y', '5Z', 'TN', 'BN', 'Time'])
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 

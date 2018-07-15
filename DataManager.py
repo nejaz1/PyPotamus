@@ -13,6 +13,7 @@ class DataManager:
     nowtime         = ''
     fname           = []    # file name to save data to
     dbg_fname       = []    # file name to save debug data to
+    mov_fname       = []
 
     data_dir        = ''    # directory where data will be stored
     data            = []    # experimental data in pandas format
@@ -33,9 +34,11 @@ class DataManager:
         if self.subject_id == '':
             self.fname      = '_.txt'
             self.dbg_fname  = '_debug.txt'
+            self.mov_fname = '_.mov'
         else:
             self.fname      = self.subject_id + '.txt'
-            self.dbg_fname  = self.subject_id + '_debug.txt'                
+            self.dbg_fname  = self.subject_id + '_debug.txt'
+            self.mov_fname  = self.subject_id + '.mov'                
 
     # set data directory
     def set_data_directory(self, data_dir_path):
@@ -64,16 +67,23 @@ class DataManager:
 
     # add experimental data record to data store
     def add_data_record(self, values):
-        self.data.loc[len(self.data)] = values        
+        self.data.loc[len(self.data)] = values
 
+    def add_mov_record(self, data):
+        for row in data:
+            self.mov_data.loc[len(self.mov_data)] = row
+
+  
     # what is the data, and in which order should datamanager expect it
     def init_data_manager(self, dataformat):
         # initialize experimental data  
         self.data       = pd.DataFrame(columns=dataformat)
         self.dbg_data   = pd.DataFrame(columns=['time_stamp','subject_id','event'])
-
         # add debug event
         self.add_dbg_event('init')
+
+    def init_mov_manager(self, dataformat):
+        self.mov_data   = pd.DataFrame(columns = dataformat)
 
     # write debug data to file
     def write_dbg_data(self):
@@ -83,4 +93,7 @@ class DataManager:
     # write data to file
     def write_data(self):
         data_fname = os.path.join(self.data_dir,self.fname)
-        self.data.to_csv(data_fname, sep='\t', index=False)        
+        self.data.to_csv(data_fname, sep='\t', index=False)
+           
+        mov_dat = os.path.join(self.data_dir, self.mov_fname)
+        self.mov_data.to_csv(mov_dat, sep='\t', index=False)    

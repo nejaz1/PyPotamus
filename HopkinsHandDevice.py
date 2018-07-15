@@ -132,6 +132,12 @@ class HopkinsHandDevice:
         self.update()
         i = i * 3
         return np.multiply(self.last_data[0+i:3+i],self.multiplier)
+    
+    # get all (X, Y, Z) readings for ALL fingers
+    def getXYZ_ALL(self):
+        self.update()
+        mult = self.multiplier * 5
+        return np.multiply(self.last_data, mult)        
 
     # get only (X,Y) readings for i-th finger
     def getXY(self,i):
