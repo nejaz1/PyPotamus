@@ -45,16 +45,15 @@ class myExperiment(Experiment):
         cuefing = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
-        #soundlist = ['BLOP.wav']
-        #audio = pygame.mixer.Sound('BLOP.wav')
+        #for sound 
         mixer.init()
         #set time limits for phases
-        CUE_TIME = 1250
-        PREP_TIME = 1000
+        CUE_TIME = 1200
+        PREP_TIME = 500
         RESP_TIME  = 15000
         RETURN_TIME  = 4000
         FINGER_REMAIN = 500
-        DEAD_TIME  = 1500
+        DEAD_TIME  = 1000
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -87,7 +86,7 @@ class myExperiment(Experiment):
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
-        self.gScreen['warnList']        = ['Too much movement!', "Time's up!", 'Relax Fingers...']
+        self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
         self.gVariables['TRGT_SPACE'] = TRGT_SPACE
@@ -161,8 +160,7 @@ class myExperiment(Experiment):
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
         gDigit         = int(self.gTrial.Digit)
-        #gSoundList     = self.gScreen['soundlist']
-        #gAudio      = self.gScreen['audio']
+        gAudio = mixer.Sound('BLOP.wav')
         gCueTime = self.gVariables['CUE_TIME']
         gPrepTime = self.gVariables['PREP_TIME']
         gRespTime =  self.gVariables['RESP_TIME']
@@ -257,8 +255,7 @@ class myExperiment(Experiment):
 
             #if the finger reaches the target
             if euc_dist <= (1/2)*gTarget.radius:
-                audio = mixer.Sound('BLOP.wav')
-                audio.play()
+                gAudio.play()
                 #save data for finger forces with scalar applied and show corr trial
                 pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
@@ -361,7 +358,7 @@ class myExperiment(Experiment):
             #calculate euclidian distance from finger to fixation cross continually
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
             gTarget.radius += 0.02
-            gTarget.opacity -= 0.06
+            gTarget.opacity -= 0.05
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
                 pos = self.gHardware['gHand'].getXY(gDigit - 1)
@@ -401,7 +398,6 @@ class myExperiment(Experiment):
             if self.gTimer[1] > gFingRemain:
                 gFinger.opacity = 0
                 gFixation.color = 'black'  
-                gWarnings.text = gWarnlist[2]
                 gWarnings.color = 'white'
             #waits for between trial time to elapse, before ending trial
             if self.gTimer[1] > gDeadTime:
@@ -452,22 +448,7 @@ if __name__ == "__main__":
     # attached hopkins hand device as part of experiment (call it gHand)
     gExp.add_hardware('gHand',HopkinsHandDevice())
     gExp.gHardware['gHand'].set_force_multiplier([-3,3,3])
-    '''
-    #here
-    sharedMem = multiprocessing.Array('f',(100,17))
-    rowIDX = multiprocessing.Value('i', 0)
-    isWrite = multiprocessing.Value('i', 1)
-    lock = multiprocessing.Lock()
-    HHD = multiprocessing.Process(target = getXYZAll, args = (isWrite, sharedMem, rowIDX, lock))
-    HHD.start()
-    time.sleep(5)
-    lock.acquire()
-    isWrite.value = 0  
-    lock.release()
-    HHD.join()
-    np.savetxt('test.txt', sharedMem, fmt="%d")
-    #here
-    '''
+  
     # get user input via console
     # user commands starts/stops experiment
     gExp.control()
