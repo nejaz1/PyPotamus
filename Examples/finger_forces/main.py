@@ -291,7 +291,8 @@ class myExperiment(Experiment):
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                rms                         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 2
  
                 self.gHardware['gHand'].update()
@@ -383,7 +384,7 @@ class myExperiment(Experiment):
             # checks to see if time has run out for the phase
             if self.gTimer[1] > gReturnTime:
                 #hide shapes on screen
-                gWarnings.text = gWarnlist[2]
+                # gWarnings.text = gWarnlist[2]
                 gWarnings.color = 'white'
                 gEnsbarL.fillColor = 'LightPink'
                 gEnsbarR.fillColor = 'LightPink'
