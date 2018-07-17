@@ -383,7 +383,6 @@ class myExperiment(Experiment):
             # checks to see if time has run out for the phase
             if self.gTimer[1] > gReturnTime:
                 #hide shapes on screen
-                gWarnings.text = gWarnlist[2]
                 gWarnings.color = 'white'
                 gEnsbarL.fillColor = 'LightPink'
                 gEnsbarR.fillColor = 'LightPink'
