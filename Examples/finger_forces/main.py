@@ -431,7 +431,7 @@ if __name__ == "__main__":
 
     # turn on diagnostic screen for messages/state variables etc
     if gExp.gPlatform.isMac():
-        gExp.diagnostic('on')
+        gExp.diagnostic('off')
 
     # initialize data directory and format to save during experiment
     if gExp.gPlatform.isMac():
