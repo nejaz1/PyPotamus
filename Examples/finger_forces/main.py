@@ -50,10 +50,11 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 1200
         PREP_TIME = 500
-        RESP_TIME  = 15000
-        RETURN_TIME  = 4000
+        RESP_TIME  = 10000
+        RETURN_TIME  = 3000
         FINGER_REMAIN = 500
-        DEAD_TIME  = 1000
+        FAIL_TIME   = 2000
+        DEAD_TIME  = 700
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -95,9 +96,14 @@ class myExperiment(Experiment):
         self.gVariables['RESP_TIME'] = RESP_TIME
         self.gVariables['RETURN_TIME'] = RETURN_TIME
         self.gVariables['FINGER_REMAIN'] = FINGER_REMAIN
+        self.gVariables['FAIL_TIME'] = FAIL_TIME
         self.gVariables['DEAD_TIME'] = DEAD_TIME
         self.gVariables['RT_THRESH'] = RT_THRESH
         self.gVariables['MOV_DATA'] = []
+        self.gVariables['BLOP_SOUND'] = mixer.Sound('BLOP.wav')
+        self.gVariables['BUZZ_SOUND'] = mixer.Sound('BUZZ.wav')
+        
+
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
@@ -119,6 +125,7 @@ class myExperiment(Experiment):
         gText       = self.gScreen['text']
         gDigit         = int(self.gTrial.Digit)
         gTrgtSpace = self.gVariables['TRGT_SPACE']
+
 
         # update finger pos and raidus based on hardware readings during the appropriate phases
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
@@ -160,14 +167,17 @@ class myExperiment(Experiment):
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
         gDigit         = int(self.gTrial.Digit)
-        gAudio = mixer.Sound('BLOP.wav')
         gCueTime = self.gVariables['CUE_TIME']
         gPrepTime = self.gVariables['PREP_TIME']
         gRespTime =  self.gVariables['RESP_TIME']
         gReturnTime = self.gVariables['RETURN_TIME']
         gFingRemain = self.gVariables['FINGER_REMAIN']
+        gFailTime   = self.gVariables['FAIL_TIME']
         gDeadTime =  self.gVariables['DEAD_TIME']
         gRTthresh = self.gVariables['RT_THRESH']
+        gBlopSound = self.gVariables['BLOP_SOUND']
+        gBuzzSound = self.gVariables['BUZZ_SOUND']
+                        
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:          
@@ -255,7 +265,7 @@ class myExperiment(Experiment):
 
             #if the finger reaches the target
             if euc_dist <= (1/2)*gTarget.radius:
-                gAudio.play()
+                gBlopSound.play()
                 #save data for finger forces with scalar applied and show corr trial
                 pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
@@ -287,6 +297,8 @@ class myExperiment(Experiment):
 
             # if the ens bars get to large
             if bar_height >= box_height:
+                gBuzzSound.play()
+
                 #save data for finger forces with scalar applied 
                 pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
@@ -315,6 +327,7 @@ class myExperiment(Experiment):
                 self.state = self.gStates.TRIAL_FAILED
             # if the resp time is up
             if self.gTimer[1] > gRespTime:
+                gBuzzSound.play()
                 #save data for finger forces with scalar applied 
                 pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
@@ -383,27 +396,24 @@ class myExperiment(Experiment):
 
         # TRIAL_FAILED
         elif self.state == self.gStates.TRIAL_FAILED:
-            # checks to see if time has run out for the phase
-            if self.gTimer[1] > gReturnTime:
-                #hide shapes on screen
-                gWarnings.color = 'white'
+            #swtiches state, logs end of the trial time and resests internal timer
+            if (self.gTimer[1] > gFailTime): 
                 gEnsbarL.fillColor = 'LightPink'
                 gEnsbarR.fillColor = 'LightPink'
-                #swtiches state, logs end of the trial time and resests internal timer
-                self.state = self.gStates.TRIAL_COMPLETE
+                gWarnings.text = ''
+
+                self.state = self.gStates.END_TRIAL
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
 
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
-            if self.gTimer[1] > gFingRemain:
+            if (self.gTimer[1] > gFingRemain):
                 gFinger.opacity = 0
                 gFixation.color = 'black'  
-                gWarnings.color = 'white'
             #waits for between trial time to elapse, before ending trial
-            if self.gTimer[1] > gDeadTime:
-                gWarnings.text = ''
+            if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL
 
 
@@ -438,7 +448,7 @@ if __name__ == "__main__":
     if gExp.gPlatform.isMac():
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
-        gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
+        gExp.set_data_directory('C:/Users/DiedrichsenLab/PyPotamus/Examples/finger_forces/data/')
     gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
     gExp.set_mov_format(['X1', 'Y1', 'Z1', 'X2', 'Y2', 'Z2', 'X3', 'Y3', 'Z3', 'X4', 'Y4', 'Z4', 'X5', 'Y5', 'Z5', 'TN', 'BN', 'Time'])
     # initialize trial states
