@@ -21,9 +21,12 @@ class DiagnosticDisplay:
     def diagnostic(self, mode, params):
         if mode == 'on':
             if self.handle == []:
-                self.handle = visual.Window(params['diagnosticwin_size'], color=params['diagnosticwin_bgcolor'], pos=params['diagnosticwin_pos'], name="DiagnosticDisplay")
+                self.handle = visual.Window(params['diagnosticwin_size'], 
+                                    color=params['diagnosticwin_bgcolor'], pos=params['diagnosticwin_pos'], name="DiagnosticDisplay",
+                                    waitBlanking=params['expwin_waitBlanking'])
                 self.autodraw   = params['diagnosticwin_autodraw']
                 self.useFBO     = params['diagnosticwin_useFBO']
+                
                 self.init_lines()
         elif mode == 'off':
             self.close()
