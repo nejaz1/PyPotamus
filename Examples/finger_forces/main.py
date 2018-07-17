@@ -321,7 +321,7 @@ class myExperiment(Experiment):
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
                 rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
-                self.gVariables['EnsForce'] rms[0]
+                self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 3
  
                 self.gHardware['gHand'].update()
