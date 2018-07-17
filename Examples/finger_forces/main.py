@@ -261,8 +261,7 @@ class myExperiment(Experiment):
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms  = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
-                self.gVariables['EnsForce'] = rms[0]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
                 self.gVariables['Corr']     = 1
                 #add raw froce data from device
                 self.gHardware['gHand'].update()
@@ -292,8 +291,7 @@ class myExperiment(Experiment):
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
-                self.gVariables['EnsForce'] = rms[0]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
                 self.gVariables['Corr']     = 2
  
                 self.gHardware['gHand'].update()
@@ -320,8 +318,7 @@ class myExperiment(Experiment):
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
-                self.gVariables['EnsForce'] = rms[0]
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
                 self.gVariables['Corr']     = 3
  
                 self.gHardware['gHand'].update()
