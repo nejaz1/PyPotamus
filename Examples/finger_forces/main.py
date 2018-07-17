@@ -275,11 +275,14 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 1
                 #add raw froce data from device
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3 
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+
+                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+
+                #self.gHardware['gHand'].update()
+                #raw = self.gHardware['gHand'].last_data
+                #bb = gDigit*3 
+                #aa = bb-3
+                #rawxyz = raw[aa:bb]
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
@@ -308,11 +311,13 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 2
  
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+
+                #self.gHardware['gHand'].update()
+                #raw = self.gHardware['gHand'].last_data
+                #bb = gDigit*3
+                #aa = bb-3
+                #rawxyz = raw[aa:bb]
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
@@ -337,11 +342,13 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 3
  
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3 
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+
+                #self.gHardware['gHand'].update()
+                #raw = self.gHardware['gHand'].last_data
+                #bb = gDigit*3 
+                #aa = bb-3
+                #rawxyz = raw[aa:bb]
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
