@@ -181,6 +181,8 @@ class myExperiment(Experiment):
         gRTthresh = self.gVariables['RT_THRESH']
         gBlopSound = self.gVariables['BLOP_SOUND']
         gBuzzSound = self.gVariables['BUZZ_SOUND']
+        gScaling = self.gVariables['SCALING']
+
                         
 
         # START TRIAL
@@ -196,7 +198,7 @@ class myExperiment(Experiment):
                 #self.gVariables['TargetZ'] = self.gTrial.TargetZ
 
 
-                gTarget.pos = (self.gVariables['TargetX'],self.gVariables['TargetY'])
+                gTarget.pos = (self.gVariables['TargetX']*gScaling, self.gVariables['TargetY']*gScaling)
                 #gTarget.radius = self.gVariables['TargetZ']
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
