@@ -15,3 +15,7 @@ diagnosticwin_size:     [200, 200]
 diagnosticwin_autodraw: True
 diagnosticwin_useFBO:   True
 diagnosticwin_waitBlanking:    False
+
+handdevice_multiplier: [-13.55,13.55,13.55, -9.12,9.12,9.12, -10.49,10.49,10.49, -13.54,13.54,13.54, -10.45,10.45,10.45]
+screen_scaling: [0.8,5]
+

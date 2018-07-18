@@ -49,9 +49,8 @@ class HopkinsHandDevice:
     # constructor spawns of multiprocessing thread
     def __init__(self):
         self.initialize()
-       
 
-        self.multiplier = (1,1,1)
+        self.multiplier = [1,1,1,2,2,2,3,3,3,4,4,4,5,5,5]
 
         self.rot        = np.pi / 4.0
         self.sinrot     = np.sin(self.rot)
@@ -109,15 +108,16 @@ class HopkinsHandDevice:
             self.last_data = self.raw_data - self.f_baseline
 
     # get all readings from hand device
-    def getRaw(self):
+    def getRaw(self,i):
         self.update()
-        return self.raw_data
+        i = i*3
+        return self.last_data[0+i:3+i]
 
     # get (X,Y) summated readings for all fingers except the i-th pair
     def getXY_RMSForces(self,i):
         self.update()
-        x   = np.reshape(self.last_data,[5,3])
-        x   = np.multiply(x,self.multiplier)
+        x   = np.multiply(self.last_data,self.multiplier)
+        x   = np.reshape(x,[5,3])
         x   = x[:,0:2]
 
         fin_i   = np.square(x[i,:]).sum()
@@ -131,26 +131,26 @@ class HopkinsHandDevice:
     def getXYZ(self,i):
         self.update()
         i = i * 3
-        return np.multiply(self.last_data[0+i:3+i],self.multiplier)
+        return np.multiply(self.last_data[0+i:3+i],self.multiplier[0+i:3+i])
     
     # get all (X, Y, Z) readings for ALL fingers
     def getXYZ_ALL(self):
         self.update()
-        mult = self.multiplier * 5
-        return np.multiply(self.last_data, mult)        
+        return np.multiply(self.last_data, self.multiplier)        
 
     # get only (X,Y) readings for i-th finger
     def getXY(self,i):
         self.update()
         i = i * 3
-        return np.multiply(self.last_data[0+i:2+i],self.multiplier[0:2])
+        return np.multiply(self.last_data[0+i:2+i],self.multiplier[0+i:2+i])
     
 
     # zerof calibration of the device
     def zerof(self, num_samples):
         t = np.zeros([num_samples,15])
         for i in range(num_samples):
-            t[i,:] = self.getRaw()
+            self.update()
+            t[i,:] = self.raw_data
 
         self.f_baseline = np.mean(t,axis=0)
     # estimate enslaving

@@ -55,8 +55,9 @@ class myExperiment(Experiment):
         FINGER_REMAIN = 500
         FAIL_TIME   = 2000
         DEAD_TIME  = 700
-        TRGT_SPACE = 0.9
         RT_THRESH = 0.02
+        MAX_FORCE = 5
+
 
 
         target.opacity = 0.0
@@ -90,7 +91,6 @@ class myExperiment(Experiment):
         self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
-        self.gVariables['TRGT_SPACE'] = TRGT_SPACE
         self.gVariables['CUE_TIME'] = CUE_TIME
         self.gVariables['PREP_TIME'] = PREP_TIME
         self.gVariables['RESP_TIME'] = RESP_TIME
@@ -102,7 +102,8 @@ class myExperiment(Experiment):
         self.gVariables['MOV_DATA'] = []
         self.gVariables['BLOP_SOUND'] = mixer.Sound('BLOP.wav')
         self.gVariables['BUZZ_SOUND'] = mixer.Sound('BUZZ.wav')
-        
+        self.gVariables['SCALING'] = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
+        self.gVariables['MAX_FORCE'] = MAX_FORCE
 
 
     # this function is called when diagnostic info is about to be updated
@@ -124,20 +125,23 @@ class myExperiment(Experiment):
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         gDigit         = int(self.gTrial.Digit)
-        gTrgtSpace = self.gVariables['TRGT_SPACE']
+        gScaling = self.gVariables['SCALING']
+        gMaxForce = self.gVariables['MAX_FORCE']
 
 
         # update finger pos and raidus based on hardware readings during the appropriate phases
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+            pos[0]          = gScaling*pos[0]
+            pos[1]          = gScaling*pos[1]     
             gFinger.pos     = [(pos[0]), (pos[1])]
             #gFinger.radius  = 0.35 + pos[2]/1.3
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
             ens_perc    = self.gTrial.EnsPercent
-            max_rms     = np.sqrt((2 * np.square(gTrgtSpace)))
+            max_rms     = np.sqrt((2 * np.square(gMaxForce)))
             rms_lim     = ens_perc*max_rms
             ens_visual  = ens_perc*(rms[0]/rms_lim)
             relax_visual = ens_perc * (rms[1]/rms_lim)
@@ -276,7 +280,7 @@ class myExperiment(Experiment):
                 self.gVariables['Corr']     = 1
                 #add raw froce data from device
 
-                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -311,7 +315,7 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 2
  
-                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -342,7 +346,7 @@ class myExperiment(Experiment):
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 3
  
-                rawxyz = np.divide(pos, self.gHardware['gHand'].multiplier)
+                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -456,8 +460,10 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:/Users/DiedrichsenLab/PyPotamus/Examples/finger_forces/data/')
+    #set data file strucutres
     gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
     gExp.set_mov_format(['X1', 'Y1', 'Z1', 'X2', 'Y2', 'Z2', 'X3', 'Y3', 'Z3', 'X4', 'Y4', 'Z4', 'X5', 'Y5', 'Z5', 'TN', 'BN', 'Time'])
+    
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
@@ -466,7 +472,7 @@ if __name__ == "__main__":
 
     # attached hopkins hand device as part of experiment (call it gHand)
     gExp.add_hardware('gHand',HopkinsHandDevice())
-    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3])
+    gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
   
     # get user input via console
     # user commands starts/stops experiment
