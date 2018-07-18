@@ -8,7 +8,7 @@ from ctypes import c_int, c_double
 import multiprocessing as mp 
 import time
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pandas as pd
 
 def consumer(lock,condition,logging):
