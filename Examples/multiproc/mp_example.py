@@ -5,7 +5,7 @@ Multiprocessing example in python
 from GenericHardware import GenericHardware
 import time
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pandas as pd
 
 class HopkinsHandDevice(GenericHardware):
