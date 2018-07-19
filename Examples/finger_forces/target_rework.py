@@ -24,7 +24,7 @@ for j in radii:
         new = np.matmul(RM, target_radi)
         new = new.tolist()
         for i in range(2):
-            new[i] = round(new[i], 2)
+            new[i] = round(new[i], 3)
         target_space.append(new)
 
 all_trials = []

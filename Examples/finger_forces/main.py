@@ -48,16 +48,15 @@ class myExperiment(Experiment):
         #for sound 
         mixer.init()
         #set time limits for phases
-        CUE_TIME = 1200
+        CUE_TIME = 1000
         PREP_TIME = 500
         RESP_TIME  = 10000
-        RETURN_TIME  = 3000
-        FINGER_REMAIN = 500
-        FAIL_TIME   = 2000
-        DEAD_TIME  = 700
+        RETURN_TIME  = 2000
+        FINGER_REMAIN = 250
+        FAIL_TIME   = 1500
+        DEAD_TIME  = 500
         RT_THRESH = 0.02
         MAX_FORCE = 5
-
 
 
         target.opacity = 0.0
@@ -81,8 +80,6 @@ class myExperiment(Experiment):
         self.gScreen['target']          = target
         self.gScreen['text']            = text
         self.gScreen['warnings']         = warnings
-        #self.gScreen['soundlist']       = soundlist
-        #self.gScreen['audio']           = audio
         
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
@@ -192,7 +189,7 @@ class myExperiment(Experiment):
                 self.gVariables['measStartTime']    = self.gTimer[0]
                 # set target location for the trial, and hide from view 
                 gTarget.opacity = 0
-
+                gTarget.radius = 0.08
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
                 #self.gVariables['TargetZ'] = self.gTrial.TargetZ
