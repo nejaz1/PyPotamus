@@ -79,9 +79,9 @@ class GenericHardware(object):
         while True:
             with self.lock:
                 if self.logging.value == 0:
-                    print('{} is going to sleep'.format(self.device_name))
+                    print('{} stopped recording'.format(self.device_name))
                     self.condition.wait()
-                    print('{} woke up'.format(self.device_name))
+                    print('{} started recording'.format(self.device_name))
                     t.reset_all()
                     continue
             
