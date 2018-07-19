@@ -19,9 +19,6 @@ class GenericHardware(object):
         bf_size             = params['buffer_size']
         self.buffer_size    = bf_size[0] * bf_size[1]        
 
-        # internal timer
-        self.timer          = Timer({'num_counter': 2})   
-
         # shared memory and locking        
         self.lock           = mp.RLock()
         self.nsamples       = Value(c_int, 0, lock=self.lock)
@@ -75,7 +72,8 @@ class GenericHardware(object):
     def sampling_loop(self):
         print('Preparing to sample {} at {}ms'.format(self.device_name,self.sampling_freq))        
         
-        t = self.timer
+        # internal timer 
+        t = Timer({'num_counter': 2})   
         t.reset_all()
         
         while True:
