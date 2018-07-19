@@ -465,16 +465,6 @@ if __name__ == "__main__":
     gExp = myExperiment()
     gExp.load_settings('finger_task.yaml')
 
-    # toggle diagnostic screen for messages/state variables etc
-    if gExp.gPlatform.isMac():
-        gExp.diagnostic('off')
-
-    # setup directory for writing experimental data
-    if gExp.gPlatform.isMac():
-        gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
-    else:
-        gExp.set_data_directory('C:/Users/DiedrichsenLab/PyPotamus/Examples/finger_forces/data/')
-
     # setup experiment data formats
     #   - data_format sets format of data in .dat summary file
     #   - mov_format sets format of data in .mov file

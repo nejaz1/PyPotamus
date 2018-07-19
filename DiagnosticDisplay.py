@@ -11,16 +11,18 @@ class DiagnosticDisplay:
 
     # constructor
     def __init__(self, params):
-        self.handle     = []
-        self.autodraw   = params['diagnosticwin_autodraw']
-        self.numlines   = 5
-        self.pos        = [[0,0.6], [0,0.3], [0,0], [0,-0.3], [0,-0.6]]
-        self.txt        = list()
+        self.mode = params['diagnostic_mode']
+        self.diagnostic(self.mode,params)
 
     # turn diagnostic window on/off
     def diagnostic(self, mode, params):
-        if mode == 'on':
+        if mode is True:
             if self.handle == []:
+                self.autodraw   = params['diagnosticwin_autodraw']
+                self.numlines   = 5
+                self.pos        = [[0,0.6], [0,0.3], [0,0], [0,-0.3], [0,-0.6]]
+                self.txt        = list()
+
                 self.handle = visual.Window(params['diagnosticwin_size'], 
                                     color=params['diagnosticwin_bgcolor'], pos=params['diagnosticwin_pos'], name="DiagnosticDisplay",
                                     waitBlanking=params['expwin_waitBlanking'])
@@ -28,7 +30,7 @@ class DiagnosticDisplay:
                 self.useFBO     = params['diagnosticwin_useFBO']
                 
                 self.init_lines()
-        elif mode == 'off':
+        else:
             self.close()
 
     # write text to diagnostic

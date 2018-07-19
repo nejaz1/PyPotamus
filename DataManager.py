@@ -29,6 +29,9 @@ class DataManager:
         self.subject_id = ''
         self.update_file_names()
 
+        # setup data directory
+        self.set_data_directory(params['data_dir'])
+
     # run this whenever subject name gets updated
     def update_file_names(self):
         if self.subject_id == '':
@@ -44,6 +47,7 @@ class DataManager:
     def set_data_directory(self, data_dir_path):
         self.data_dir = os.path.dirname(data_dir_path)
         self.check_data_directory()
+        print('Data directory is {}'.format(self.data_dir))
 
     # run this to make data directory if it does not exist
     def check_data_directory(self):
