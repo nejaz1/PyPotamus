@@ -458,7 +458,7 @@ class myExperiment(Experiment):
         self.gVariables['MOV_DATA'] = []
 
 
-# --------------------------w----------------------------------------------
+# -------------------------------------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
 
@@ -466,24 +466,33 @@ if __name__ == "__main__":
     gExp = myExperiment()
     gExp.load_settings('finger_task.yaml')
 
-    # turn on diagnostic screen for messages/state variables etc
+    # toggle diagnostic screen for messages/state variables etc
     if gExp.gPlatform.isMac():
         gExp.diagnostic('off')
 
-    # initialize data directory and format to save during experiment
+    # setup directory for writing experimental data
     if gExp.gPlatform.isMac():
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:/Users/DiedrichsenLab/PyPotamus/Examples/finger_forces/data/')
-    #set data file strucutres
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
-    gExp.set_mov_format(['X1', 'Y1', 'Z1', 'X2', 'Y2', 'Z2', 'X3', 'Y3', 'Z3', 'X4', 'Y4', 'Z4', 'X5', 'Y5', 'Z5', 'TN', 'BN', 'Time'])
-    
-    # initialize trial states
-    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
-    # initialize drawing elements on screen for speed (also for diagnostic messages)
-    gExp.initialize()
+    # setup experiment data formats
+    #   - data_format sets format of data in .dat summary file
+    #   - mov_format sets format of data in .mov file
+    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr',
+                          'TargetX', 'TargetY','EnsPercent', 
+                          'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
+                          'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    gExp.set_mov_format(['X1', 'Y1', 'Z1', 
+                         'X2', 'Y2', 'Z2', 
+                         'X3', 'Y3', 'Z3', 
+                         'X4', 'Y4', 'Z4', 
+                         'X5', 'Y5', 'Z5', 
+                         'TN', 'BN', 'Time'])
+    
+    # initialize trial states experiment cycles over
+    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
+                          'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
     # initialize hopkins hand device and add it to the hardware manager
     gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
@@ -492,7 +501,8 @@ if __name__ == "__main__":
     gExp.add_hardware('gHand',gHand)
     gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
   
-    # get user input via console
-    # user commands starts/stops experiment
+    # initialize drawing elements on screen for speed
+    gExp.initialize()
+
     gExp.control()
     gHand.terminate()
