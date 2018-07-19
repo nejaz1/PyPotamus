@@ -10,7 +10,6 @@ import pandas as pd
 from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
 from pygame import mixer
-import pdb
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -478,7 +477,7 @@ if __name__ == "__main__":
                          'X4', 'Y4', 'Z4', 
                          'X5', 'Y5', 'Z5', 
                          'TN', 'BN', 'Time'])
-    
+
     # initialize trial states experiment cycles over
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
                           'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
