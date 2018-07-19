@@ -122,6 +122,10 @@ class Experiment:
 
     # control block
     def control(self):
+        # initialize drawing elements for speed
+        self.initialize()
+
+        # hand over control to user input & game loop
         while True:
             resp = self.gKeyboard.poll(self.get_subject_id())
 
@@ -166,6 +170,12 @@ class Experiment:
     @abc.abstractmethod
     def trial(self):
         """Main experiment trial loop provided by the base class"""
+
+    # initialize drawing elements for speed
+    # called once by experiment class prior to handing over control to the game loop
+    @abc.abstractmethod
+    def initialize(self):
+        """drawing initialization function to be called prior to control"""         
 
     # main drawing function to be called prior to screen refresh
     # provided as an abstract function to be overloaded by inheriting class

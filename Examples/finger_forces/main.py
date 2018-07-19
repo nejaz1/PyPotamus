@@ -10,6 +10,7 @@ import pandas as pd
 from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
 from pygame import mixer
+import pdb
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -431,8 +432,6 @@ class myExperiment(Experiment):
                 self.state          = self.gStates.END_TRIAL
 
 
-            
-
     # adding trial data on trial end
     def onTrialEnd(self):
         # stop recording data
@@ -442,7 +441,7 @@ class myExperiment(Experiment):
         m = gHand.getBufferCopy()
         y = pd.DataFrame(m).round(0)
         x = pd.DataFrame(np.diff(m))
-        print('Sampling resolution for trial is: {}'.format(x.mean()))
+        print('Sampling resolution for trial is: {}ms'.format(x.mean()[0].round(2)))
 
         # log data to file
         gTrial  = self.gTrial
@@ -496,13 +495,11 @@ if __name__ == "__main__":
 
     # initialize hopkins hand device and add it to the hardware manager
     gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
-                               'sampling_freq': 1,
+                               'sampling_freq': 5,
                                'buffer_size': [100000, 1]})
     gExp.add_hardware('gHand',gHand)
     gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
   
-    # initialize drawing elements on screen for speed
-    gExp.initialize()
-
+    # hand over control to the game loop
     gExp.control()
     gHand.terminate()
