@@ -5,11 +5,8 @@
 # 
 # IMPORTANT: Path to PyPotamus needs set to be in PYTHONPATH environment variable
 
-import math
-import multiprocessing
-import pdb
-import time
 import numpy as np
+import pandas as pd
 from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
 from pygame import mixer
@@ -187,9 +184,13 @@ class myExperiment(Experiment):
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:          
-                #set state to cue phase, and log the start of the trial 
-                self.state = self.gStates.CUE_PHASE
+                # set state to cue phase
+                #   - log the start of the trial 
+                #   - start logging data
+                self.state                          = self.gStates.CUE_PHASE
                 self.gVariables['measStartTime']    = self.gTimer[0]
+                gHand.startRecording()
+
                 # set target location for the trial, and hide from view 
                 gTarget.opacity = 0
 
@@ -434,13 +435,25 @@ class myExperiment(Experiment):
 
     # adding trial data on trial end
     def onTrialEnd(self):
-        gTrial = self.gTrial
-        gVar = self.gVariables
-        gDat = self.gData
-        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
-                                    gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
-                                    gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
-                                    gVar['measEndTime']])
+        # stop recording data
+        #   - temp (compute time delta)
+        gHand.stopRecording()
+
+        m = gHand.getBufferCopy()
+        y = pd.DataFrame(m).round(0)
+        x = pd.DataFrame(np.diff(m))
+        print('Sampling resolution for trial is: {}'.format(x.mean()))
+
+        # log data to file
+        gTrial  = self.gTrial
+        gVar    = self.gVariables
+        gDat    = self.gData
+        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],
+                                    gVar['TargetX'], gVar['TargetY'],gTrial.EnsPercent, 
+                                    gVar['RawX'], gVar['RawY'], gVar['RawZ'], 
+                                    gVar['ForceX'], gVar['ForceY'], gVar['ForceZ'], 
+                                    gVar['RT'], gVar['MT'], gVar['EnsForce'], 
+                                    gVar['measStartTime'], gVar['measEndTime']])
         self.gData.add_mov_record(gVar['MOV_DATA'])
         self.gVariables['MOV_DATA'] = []
 
@@ -472,8 +485,11 @@ if __name__ == "__main__":
     # initialize drawing elements on screen for speed (also for diagnostic messages)
     gExp.initialize()
 
-    # attached hopkins hand device as part of experiment (call it gHand)
-    gExp.add_hardware('gHand',HopkinsHandDevice())
+    # initialize hopkins hand device and add it to the hardware manager
+    gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
+                               'sampling_freq': 5,
+                               'buffer_size': [100000, 1]})
+    gExp.add_hardware('gHand',gHand)
     gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
   
     # get user input via console

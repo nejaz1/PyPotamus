@@ -88,5 +88,5 @@ class GenericHardware(object):
             if t[1] >= self.sampling_freq:
                 t.reset(1)
                 self.writeToBuffer(t[0])                
-#                print(t[0])
+                # print(t[0])
                 
