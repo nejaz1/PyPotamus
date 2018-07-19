@@ -487,7 +487,7 @@ if __name__ == "__main__":
 
     # initialize hopkins hand device and add it to the hardware manager
     gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
-                               'sampling_freq': 5,
+                               'sampling_freq': 1,
                                'buffer_size': [100000, 1]})
     gExp.add_hardware('gHand',gHand)
     gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
@@ -495,12 +495,4 @@ if __name__ == "__main__":
     # get user input via console
     # user commands starts/stops experiment
     gExp.control()
-    # gHand.terminate()
-    # gHand.join()
-    # gHand.join()
-
-
-
-
-
-#make a function above(that calls the handdevice one and actually gets the data/writes to the memory)
+    gHand.terminate()

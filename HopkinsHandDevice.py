@@ -43,15 +43,6 @@ class HopkinsHandDevice(GenericHardware):
                 print('Opened hand device')
         self.handle.open_path(dev_path)
 
-    # initialize connection to hand device (this sometimes doesn't work)
-    def initialize_alternative(self):
-        self.handle = hid.device()
-        self.handle.open(0x16c0, 0x486)
-        self.handle.set_nonblocking(1)
-
-        self.handle.write([0] * 64)
-        print('Opened hand device')
-
     # set force baseline
     def set_force_baseline(self, fBaseline):
         self.f_baseline = fBaseline
