@@ -29,43 +29,51 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
-        img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
-        warnings = self.gScreen.text(text='', pos=(0,-0.15), color='black')
-        boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        boxR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
-        ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
-        ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
-        text = self.gScreen.text(text='', pos=(0,0.95), color='white')
-        target = self.gScreen.circle(pos=[0,0], radius = 0.08, lineWidth=4.0, lineColor='black', fillColor='black')
-        finger = self.gScreen.circle(pos=[0,0],radius = 0.07, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
-        cuefing = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
-        posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
-        colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
-        #for sound 
+        img         = self.gScreen.image(image="hand.png", pos=(0,0), units="pix")
+        warnings    = self.gScreen.text(text='', pos=(0,-0.15), color='black')
+        boxL        = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth=5, 
+                                        lineColor='white', fillColor='white')
+        boxR        = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth=5, 
+                                        lineColor='white', fillColor='white')
+        fixation    = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
+        ensbarL     = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth=1, 
+                                        lineColor='black', fillColor='LightPink')
+        ensbarR     = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth=1, 
+                                        lineColor='black', fillColor='LightPink')
+        text        = self.gScreen.text(text='', pos=(0,0.95), color='white')
+        target      = self.gScreen.circle(pos=[0,0], radius=0.08, lineWidth=4.0, lineColor='black', 
+                                          fillColor='black')
+        finger      = self.gScreen.circle(pos=[0,0], radius=0.07, lineWidth=3.0, lineColor='white',
+                                          fillColor='grey')
+        cuefing     = self.gScreen.circle(pos=[0,0], radius=0.05, lineWidth=3.0, lineColor='white', 
+                                          fillColor='blue')
+
+        posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
+        colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+        
+        # for sound 
         mixer.init()
-        #set time limits for phases
-        CUE_TIME = 1200
-        PREP_TIME = 500
-        RESP_TIME  = 10000
-        RETURN_TIME  = 3000
-        FINGER_REMAIN = 500
-        FAIL_TIME   = 2000
-        DEAD_TIME  = 700
-        RT_THRESH = 0.02
-        MAX_FORCE = 5
+        
+        # set time limits for trial phases
+        CUE_TIME        = 1200
+        PREP_TIME       = 500
+        RESP_TIME       = 10000
+        RETURN_TIME     = 3000
+        FINGER_REMAIN   = 500
+        FAIL_TIME       = 2000
+        DEAD_TIME       = 700
+        RT_THRESH       = 0.02
+        MAX_FORCE       = 5
 
-
-
-        target.opacity = 0.0
+        target.opacity  = 0.0
         ensbarL.opacity = 0.0
         ensbarR.opacity = 0.0
-        finger.opacity = 0.0
-        boxL.opacity = 0.0
-        boxR.opacity = 0.0
-        img.opacity = 0.0
+        finger.opacity  = 0.0
+        boxL.opacity    = 0.0
+        boxR.opacity    = 0.0
+        img.opacity     = 0.0
         cuefing.opacity = 0.0
-        text.color  = 'black'
+        text.color      = 'black'
 
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
@@ -77,10 +85,9 @@ class myExperiment(Experiment):
         self.gScreen['boxR']            = boxR
         self.gScreen['target']          = target
         self.gScreen['text']            = text
-        self.gScreen['warnings']         = warnings
+        self.gScreen['warnings']        = warnings
         #self.gScreen['soundlist']       = soundlist
         #self.gScreen['audio']           = audio
-        
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
@@ -88,20 +95,19 @@ class myExperiment(Experiment):
         self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
-        self.gVariables['CUE_TIME'] = CUE_TIME
-        self.gVariables['PREP_TIME'] = PREP_TIME
-        self.gVariables['RESP_TIME'] = RESP_TIME
-        self.gVariables['RETURN_TIME'] = RETURN_TIME
-        self.gVariables['FINGER_REMAIN'] = FINGER_REMAIN
-        self.gVariables['FAIL_TIME'] = FAIL_TIME
-        self.gVariables['DEAD_TIME'] = DEAD_TIME
-        self.gVariables['RT_THRESH'] = RT_THRESH
-        self.gVariables['MOV_DATA'] = []
-        self.gVariables['BLOP_SOUND'] = mixer.Sound('BLOP.wav')
-        self.gVariables['BUZZ_SOUND'] = mixer.Sound('BUZZ.wav')
-        self.gVariables['SCALING'] = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
-        self.gVariables['MAX_FORCE'] = MAX_FORCE
-
+        self.gVariables['CUE_TIME']         = CUE_TIME
+        self.gVariables['PREP_TIME']        = PREP_TIME
+        self.gVariables['RESP_TIME']        = RESP_TIME
+        self.gVariables['RETURN_TIME']      = RETURN_TIME
+        self.gVariables['FINGER_REMAIN']    = FINGER_REMAIN
+        self.gVariables['FAIL_TIME']        = FAIL_TIME
+        self.gVariables['DEAD_TIME']        = DEAD_TIME
+        self.gVariables['RT_THRESH']        = RT_THRESH
+        self.gVariables['MOV_DATA']         = []
+        self.gVariables['BLOP_SOUND']       = mixer.Sound('BLOP.wav')
+        self.gVariables['BUZZ_SOUND']       = mixer.Sound('BUZZ.wav')
+        self.gVariables['SCALING']  = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
+        self.gVariables['MAX_FORCE']        = MAX_FORCE
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
@@ -130,18 +136,18 @@ class myExperiment(Experiment):
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
-            pos[0]          = gScaling*pos[0]
-            pos[1]          = gScaling*pos[1]     
+            pos[0]          = gScaling * pos[0]
+            pos[1]          = gScaling * pos[1]     
             gFinger.pos     = [(pos[0]), (pos[1])]
-            #gFinger.radius  = 0.35 + pos[2]/1.3
+            # gFinger.radius  = 0.35 + pos[2]/1.3
 
-            #update ens bars based on hardware reading
+            # update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
             ens_perc    = self.gTrial.EnsPercent
             max_rms     = np.sqrt((2 * np.square(gMaxForce)))
-            rms_lim     = ens_perc*max_rms
-            ens_visual  = ens_perc*(rms[0]/rms_lim)
-            relax_visual = ens_perc * (rms[1]/rms_lim)
+            rms_lim     = ens_perc * max_rms
+            ens_visual  = ens_perc * (rms[0] / rms_lim)
+            relax_visual = ens_perc * (rms[1] / rms_lim)
 
             if self.state == self.gStates.TRIAL_COMPLETE:
                 gEnsbarL.height = min(relax_visual, gBoxL.height)
@@ -167,18 +173,18 @@ class myExperiment(Experiment):
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
-        gDigit         = int(self.gTrial.Digit)
-        gCueTime = self.gVariables['CUE_TIME']
-        gPrepTime = self.gVariables['PREP_TIME']
-        gRespTime =  self.gVariables['RESP_TIME']
+        gDigit      = int(self.gTrial.Digit)
+        gCueTime    = self.gVariables['CUE_TIME']
+        gPrepTime   = self.gVariables['PREP_TIME']
+        gRespTime   = self.gVariables['RESP_TIME']
         gReturnTime = self.gVariables['RETURN_TIME']
         gFingRemain = self.gVariables['FINGER_REMAIN']
         gFailTime   = self.gVariables['FAIL_TIME']
-        gDeadTime =  self.gVariables['DEAD_TIME']
-        gRTthresh = self.gVariables['RT_THRESH']
-        gBlopSound = self.gVariables['BLOP_SOUND']
-        gBuzzSound = self.gVariables['BUZZ_SOUND']
-        gScaling = self.gVariables['SCALING']
+        gDeadTime   = self.gVariables['DEAD_TIME']
+        gRTthresh   = self.gVariables['RT_THRESH']
+        gBlopSound  = self.gVariables['BLOP_SOUND']
+        gBuzzSound  = self.gVariables['BUZZ_SOUND']
+        gScaling    = self.gVariables['SCALING']
 
                         
 
@@ -199,7 +205,7 @@ class myExperiment(Experiment):
                 #self.gVariables['TargetZ'] = self.gTrial.TargetZ
 
 
-                gTarget.pos = (self.gVariables['TargetX']*gScaling, self.gVariables['TargetY']*gScaling)
+                gTarget.pos = (self.gVariables['TargetX'] * gScaling, self.gVariables['TargetY'] * gScaling)
                 #gTarget.radius = self.gVariables['TargetZ']
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
