@@ -5,11 +5,8 @@
 # 
 # IMPORTANT: Path to PyPotamus needs set to be in PYTHONPATH environment variable
 
-import math
-import multiprocessing
-import pdb
-import time
 import numpy as np
+import pandas as pd
 from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
 from pygame import mixer
@@ -32,42 +29,51 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
-        img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
-        warnings = self.gScreen.text(text='', pos=(0,-0.15), color='black')
-        boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        boxR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
-        ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
-        ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
-        text = self.gScreen.text(text='', pos=(0,0.95), color='white')
-        target = self.gScreen.circle(pos=[0,0], radius = 0.08, lineWidth=4.0, lineColor='black', fillColor='black')
-        finger = self.gScreen.circle(pos=[0,0],radius = 0.07, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
-        cuefing = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
-        posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
-        colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
-        #for sound 
+        img         = self.gScreen.image(image="hand.png", pos=(0,0), units="pix")
+        warnings    = self.gScreen.text(text='', pos=(0,-0.15), color='black')
+        boxL        = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth=5, 
+                                        lineColor='white', fillColor='white')
+        boxR        = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth=5, 
+                                        lineColor='white', fillColor='white')
+        fixation    = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
+        ensbarL     = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth=1, 
+                                        lineColor='black', fillColor='LightPink')
+        ensbarR     = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth=1, 
+                                        lineColor='black', fillColor='LightPink')
+        text        = self.gScreen.text(text='', pos=(0,0.95), color='white')
+        target      = self.gScreen.circle(pos=[0,0], radius=0.08, lineWidth=4.0, lineColor='black', 
+                                          fillColor='black')
+        finger      = self.gScreen.circle(pos=[0,0], radius=0.07, lineWidth=3.0, lineColor='white',
+                                          fillColor='grey')
+        cuefing     = self.gScreen.circle(pos=[0,0], radius=0.05, lineWidth=3.0, lineColor='white', 
+                                          fillColor='blue')
+
+        posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
+        colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+        
+        # for sound 
         mixer.init()
-        #set time limits for phases
-        CUE_TIME = 1000
-        PREP_TIME = 500
-        RESP_TIME  = 1000000
-        RETURN_TIME  = 2000
-        FINGER_REMAIN = 250
-        FAIL_TIME   = 1500
-        DEAD_TIME  = 500
-        RT_THRESH = 0.02
-        MAX_FORCE = 5
+        
+        # set time limits for trial phases
+        CUE_TIME        = 1200
+        PREP_TIME       = 500
+        RESP_TIME       = 10000
+        RETURN_TIME     = 3000
+        FINGER_REMAIN   = 500
+        FAIL_TIME       = 2000
+        DEAD_TIME       = 700
+        RT_THRESH       = 0.02
+        MAX_FORCE       = 5
 
-
-        target.opacity = 0.0
+        target.opacity  = 0.0
         ensbarL.opacity = 0.0
         ensbarR.opacity = 0.0
-        finger.opacity = 0.0
-        boxL.opacity = 0.0
-        boxR.opacity = 0.0
-        img.opacity = 0.0
+        finger.opacity  = 0.0
+        boxL.opacity    = 0.0
+        boxR.opacity    = 0.0
+        img.opacity     = 0.0
         cuefing.opacity = 0.0
-        text.color  = 'black'
+        text.color      = 'black'
 
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
@@ -79,8 +85,9 @@ class myExperiment(Experiment):
         self.gScreen['boxR']            = boxR
         self.gScreen['target']          = target
         self.gScreen['text']            = text
-        self.gScreen['warnings']         = warnings
-        
+        self.gScreen['warnings']        = warnings
+        #self.gScreen['soundlist']       = soundlist
+        #self.gScreen['audio']           = audio
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
@@ -88,20 +95,19 @@ class myExperiment(Experiment):
         self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
-        self.gVariables['CUE_TIME'] = CUE_TIME
-        self.gVariables['PREP_TIME'] = PREP_TIME
-        self.gVariables['RESP_TIME'] = RESP_TIME
-        self.gVariables['RETURN_TIME'] = RETURN_TIME
-        self.gVariables['FINGER_REMAIN'] = FINGER_REMAIN
-        self.gVariables['FAIL_TIME'] = FAIL_TIME
-        self.gVariables['DEAD_TIME'] = DEAD_TIME
-        self.gVariables['RT_THRESH'] = RT_THRESH
-        self.gVariables['MOV_DATA'] = []
-        self.gVariables['BLOP_SOUND'] = mixer.Sound('BLOP.wav')
-        self.gVariables['BUZZ_SOUND'] = mixer.Sound('BUZZ.wav')
-        self.gVariables['SCALING'] = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
-        self.gVariables['MAX_FORCE'] = MAX_FORCE
-
+        self.gVariables['CUE_TIME']         = CUE_TIME
+        self.gVariables['PREP_TIME']        = PREP_TIME
+        self.gVariables['RESP_TIME']        = RESP_TIME
+        self.gVariables['RETURN_TIME']      = RETURN_TIME
+        self.gVariables['FINGER_REMAIN']    = FINGER_REMAIN
+        self.gVariables['FAIL_TIME']        = FAIL_TIME
+        self.gVariables['DEAD_TIME']        = DEAD_TIME
+        self.gVariables['RT_THRESH']        = RT_THRESH
+        self.gVariables['MOV_DATA']         = []
+        self.gVariables['BLOP_SOUND']       = mixer.Sound('BLOP.wav')
+        self.gVariables['BUZZ_SOUND']       = mixer.Sound('BUZZ.wav')
+        self.gVariables['SCALING']  = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
+        self.gVariables['MAX_FORCE']        = MAX_FORCE
 
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
@@ -130,18 +136,18 @@ class myExperiment(Experiment):
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
-            pos[0]          = gScaling*pos[0]
-            pos[1]          = gScaling*pos[1]     
+            pos[0]          = gScaling * pos[0]
+            pos[1]          = gScaling * pos[1]     
             gFinger.pos     = [(pos[0]), (pos[1])]
-            #gFinger.radius  = 0.35 + pos[2]/1.3
+            # gFinger.radius  = 0.35 + pos[2]/1.3
 
-            #update ens bars based on hardware reading
+            # update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
             ens_perc    = self.gTrial.EnsPercent
             max_rms     = np.sqrt((2 * np.square(gMaxForce)))
-            rms_lim     = ens_perc*max_rms
-            ens_visual  = ens_perc*(rms[0]/rms_lim)
-            relax_visual = ens_perc * (rms[1]/rms_lim)
+            rms_lim     = ens_perc * max_rms
+            ens_visual  = ens_perc * (rms[0] / rms_lim)
+            relax_visual = ens_perc * (rms[1] / rms_lim)
 
             if self.state == self.gStates.TRIAL_COMPLETE:
                 gEnsbarL.height = min(relax_visual, gBoxL.height)
@@ -167,35 +173,39 @@ class myExperiment(Experiment):
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
-        gDigit         = int(self.gTrial.Digit)
-        gCueTime = self.gVariables['CUE_TIME']
-        gPrepTime = self.gVariables['PREP_TIME']
-        gRespTime =  self.gVariables['RESP_TIME']
+        gDigit      = int(self.gTrial.Digit)
+        gCueTime    = self.gVariables['CUE_TIME']
+        gPrepTime   = self.gVariables['PREP_TIME']
+        gRespTime   = self.gVariables['RESP_TIME']
         gReturnTime = self.gVariables['RETURN_TIME']
         gFingRemain = self.gVariables['FINGER_REMAIN']
         gFailTime   = self.gVariables['FAIL_TIME']
-        gDeadTime =  self.gVariables['DEAD_TIME']
-        gRTthresh = self.gVariables['RT_THRESH']
-        gBlopSound = self.gVariables['BLOP_SOUND']
-        gBuzzSound = self.gVariables['BUZZ_SOUND']
-        gScaling = self.gVariables['SCALING']
+        gDeadTime   = self.gVariables['DEAD_TIME']
+        gRTthresh   = self.gVariables['RT_THRESH']
+        gBlopSound  = self.gVariables['BLOP_SOUND']
+        gBuzzSound  = self.gVariables['BUZZ_SOUND']
+        gScaling    = self.gVariables['SCALING']
 
                         
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:          
-                #set state to cue phase, and log the start of the trial 
-                self.state = self.gStates.CUE_PHASE
+                # set state to cue phase
+                #   - log the start of the trial 
+                #   - start logging data
+                self.state                          = self.gStates.CUE_PHASE
                 self.gVariables['measStartTime']    = self.gTimer[0]
+                gHand.startRecording()
+
                 # set target location for the trial, and hide from view 
                 gTarget.opacity = 0
-                gTarget.radius = 0.08
+
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
                 #self.gVariables['TargetZ'] = self.gTrial.TargetZ
 
 
-                gTarget.pos = (self.gVariables['TargetX']*gScaling, self.gVariables['TargetY']*gScaling)
+                gTarget.pos = (self.gVariables['TargetX'] * gScaling, self.gVariables['TargetY'] * gScaling)
                 #gTarget.radius = self.gVariables['TargetZ']
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
@@ -203,7 +213,7 @@ class myExperiment(Experiment):
                 gText.text = self.gScreen['fingerLabels'][gDigit - 1]
                 gText.color = 'white'
                 gHandimage.opacity  = 0.9
-                gCueFing.pos = (0.82,0.82)
+                gCueFing.pos = gPoslist[(gDigit - 1)]
                 gCueFing.fillColor   = gColorlist[gDigit - 1]
                 gCueFing.opacity = 1
 
@@ -427,22 +437,32 @@ class myExperiment(Experiment):
                 self.state          = self.gStates.END_TRIAL
 
 
-            
-
     # adding trial data on trial end
     def onTrialEnd(self):
-        gTrial = self.gTrial
-        gVar = self.gVariables
-        gDat = self.gData
-        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
-                                    gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
-                                    gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
-                                    gVar['measEndTime']])
+        # stop recording data
+        #   - temp (compute time delta)
+        gHand.stopRecording()
+
+        m = gHand.getBufferCopy()
+        y = pd.DataFrame(m).round(0)
+        x = pd.DataFrame(np.diff(m))
+        print('Sampling resolution for trial is: {}ms'.format(x.mean()[0].round(2)))
+
+        # log data to file
+        gTrial  = self.gTrial
+        gVar    = self.gVariables
+        gDat    = self.gData
+        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],
+                                    gVar['TargetX'], gVar['TargetY'],gTrial.EnsPercent, 
+                                    gVar['RawX'], gVar['RawY'], gVar['RawZ'], 
+                                    gVar['ForceX'], gVar['ForceY'], gVar['ForceZ'], 
+                                    gVar['RT'], gVar['MT'], gVar['EnsForce'], 
+                                    gVar['measStartTime'], gVar['measEndTime']])
         self.gData.add_mov_record(gVar['MOV_DATA'])
         self.gVariables['MOV_DATA'] = []
 
 
-# --------------------------w----------------------------------------------
+# -------------------------------------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
 
@@ -450,38 +470,31 @@ if __name__ == "__main__":
     gExp = myExperiment()
     gExp.load_settings('finger_task.yaml')
 
-    # turn on diagnostic screen for messages/state variables etc
-    if gExp.gPlatform.isMac():
-        gExp.diagnostic('off')
+    # setup experiment data formats
+    #   - data_format sets format of data in .dat summary file
+    #   - mov_format sets format of data in .mov file
+    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr',
+                          'TargetX', 'TargetY','EnsPercent', 
+                          'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
+                          'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    gExp.set_mov_format(['X1', 'Y1', 'Z1', 
+                         'X2', 'Y2', 'Z2', 
+                         'X3', 'Y3', 'Z3', 
+                         'X4', 'Y4', 'Z4', 
+                         'X5', 'Y5', 'Z5', 
+                         'TN', 'BN', 'Time'])
 
-    # initialize data directory and format to save during experiment
-    if gExp.gPlatform.isMac():
-        gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
-    else:
-        gExp.set_data_directory('C:/Users/DiedrichsenLab/PyPotamus/Examples/finger_forces/data/')
-    #set data file strucutres
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
-    gExp.set_mov_format(['X1', 'Y1', 'Z1', 'X2', 'Y2', 'Z2', 'X3', 'Y3', 'Z3', 'X4', 'Y4', 'Z4', 'X5', 'Y5', 'Z5', 'TN', 'BN', 'Time'])
-    
-    # initialize trial states
-    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
+    # initialize trial states experiment cycles over
+    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
+                          'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
-    # initialize drawing elements on screen for speed (also for diagnostic messages)
-    gExp.initialize()
-
-    # attached hopkins hand device as part of experiment (call it gHand)
-    gExp.add_hardware('gHand',HopkinsHandDevice())
+    # initialize hopkins hand device and add it to the hardware manager
+    gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
+                               'sampling_freq': 5,
+                               'buffer_size': [100000, 1]})
+    gExp.add_hardware('gHand',gHand)
     gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
   
-    # get user input via console
-    # user commands starts/stops experiment
+    # hand over control to the game loop
     gExp.control()
-    # gHand.terminate()
-    # gHand.join()
-    # gHand.join()
-
-
-
-
-
-#make a function above(that calls the handdevice one and actually gets the data/writes to the memory)
+    gHand.terminate()

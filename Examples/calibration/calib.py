@@ -5,11 +5,14 @@
 # 
 # IMPORTANT: Path to PyPotamus needs set to be in PYTHONPATH environment variable
 
-from PyPotamus import Experiment
-from HopkinsHandDevice import HopkinsHandDevice
-import numpy as np
 import math
+import multiprocessing
 import pdb
+import time
+import numpy as np
+from HopkinsHandDevice import HopkinsHandDevice
+from PyPotamus import Experiment
+from pygame import mixer
 
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
@@ -30,18 +33,22 @@ class myExperiment(Experiment):
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
         img = self.gScreen.image(image = "hand.png", pos=(0,0), units = "pix")
-        warnings = self.gScreen.text(text='', pos=(0,-0.1), color='black')
+        warnings = self.gScreen.text(text='', pos=(0,-0.15), color='black')
         boxL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         boxR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=1, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         fixation = self.gScreen.text(text='+', pos=[0,0.02], color='white', height=0.3)
         ensbarL = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         ensbarR = self.gScreen.rect(pos=[0.95,0], width=0.05, height=0.0, lineWidth = 1, lineColor = 'black', fillColor = 'LightPink')
         text = self.gScreen.text(text='', pos=(0,0.95), color='white')
-        target = self.gScreen.circle(pos=[0,0], radius = 0.1, lineWidth=4.0, lineColor='black', fillColor='black')
-        finger = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
-        digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
+        target = self.gScreen.circle(pos=[0,0], radius = 0.08, lineWidth=4.0, lineColor='black', fillColor='black')
+        finger = self.gScreen.circle(pos=[0,0],radius = 0.07, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
+        cuefing = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
-        color
+        colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+        #soundlist = ['BLOP.wav']
+        #audio = pygame.mixer.Sound('BLOP.wav')
+        #mixer.init()
+        #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
         RESP_TIME  = 150000
@@ -118,7 +125,7 @@ class myExperiment(Experiment):
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-           # gFinger.radius  = 0.5 + pos[2]/1.2
+            gFinger.radius  = 0.5 + pos[2]/1.2
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -173,9 +180,11 @@ class myExperiment(Experiment):
 
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
+                self.gVariables['TargetZ'] = self.gTrial.TargetZ
 
 
                 gTarget.pos = (self.gVariables['TargetX'],self.gVariables['TargetY'])
+                gTarget.radius = self.gVariables['TargetZ']
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
         
@@ -405,7 +414,7 @@ class myExperiment(Experiment):
         gTrial = self.gTrial
         gVar = self.gVariables
         gDat = self.gData
-        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
+        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'], gVar['TargetZ'],
                                     gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
                                     gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
                                     gVar['measEndTime']])
@@ -436,7 +445,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY', 'EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY', 'TargetZ', 'EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
@@ -446,7 +455,7 @@ if __name__ == "__main__":
 
     # attached hopkins hand device as part of experiment (call it gHand)
     gExp.add_hardware('gHand',HopkinsHandDevice())
-    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3]*5)
+    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3])
     '''
     #here
     sharedMem = multiprocessing.Array('f',(100,17))

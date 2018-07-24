@@ -1,4 +1,0 @@
-time_stamp	subject_id	event
-July 20, 2018 at 08:44PM		init
-July 20, 2018 at 08:44PM	fing1_1dev2	starting run 1
-July 20, 2018 at 09:06PM	fing1_1dev2	run successfully completed

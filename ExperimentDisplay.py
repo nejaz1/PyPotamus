@@ -12,12 +12,14 @@ class ExperimentDisplay:
 
     # constructor
     def __init__(self, params):
-        self.handle     = visual.Window(params['expwin_size'], color=params['expwin_bgcolor'], 
-                                        pos=params['expwin_pos'], fullscr=params['expwin_fullscreen'], name="ExperimentDisplay", 
-                                        waitBlanking=params['expwin_waitBlanking'])
-        self.autodraw   = params['expwin_autodraw']
-        self.autoLog    = params['expwin_autolog']
-        self.useFBO     = params['expwin_useFBO']
+        params = params['expwin']
+
+        self.handle     = visual.Window(params['size'], color=params['bgcolor'], 
+                                        pos=params['pos'], fullscr=params['fullscreen'], name="ExperimentDisplay", 
+                                        waitBlanking=params['waitBlanking'])
+        self.autodraw   = params['autodraw']
+        self.autoLog    = params['autolog']
+        self.useFBO     = params['useFBO']
         self.stim_dict  = dict()
 
     # sets the current line to the diagnostic text

@@ -5,7 +5,7 @@ import random
 num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
-radii = [2,4]
+radii = [5,2.5]
 target_space = []
 digits = [1,2,3,4,5]
 Hand = 2
@@ -24,7 +24,7 @@ for j in radii:
         new = np.matmul(RM, target_radi)
         new = new.tolist()
         for i in range(2):
-            new[i] = round(new[i], 3)
+            new[i] = round(new[i], 2)
         target_space.append(new)
 
 all_trials = []
