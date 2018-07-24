@@ -5,7 +5,7 @@ import random
 num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
-radii = [5,2.5]
+radii = [2,4]
 target_space = []
 digits = [1,2,3,4,5]
 Hand = 2

@@ -50,7 +50,7 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 1000
         PREP_TIME = 500
-        RESP_TIME  = 10000
+        RESP_TIME  = 1000000
         RETURN_TIME  = 2000
         FINGER_REMAIN = 250
         FAIL_TIME   = 1500
@@ -203,7 +203,7 @@ class myExperiment(Experiment):
                 gText.text = self.gScreen['fingerLabels'][gDigit - 1]
                 gText.color = 'white'
                 gHandimage.opacity  = 0.9
-                gCueFing.pos = gPoslist[(gDigit - 1)]
+                gCueFing.pos = (0.82,0.82)
                 gCueFing.fillColor   = gColorlist[gDigit - 1]
                 gCueFing.opacity = 1
 

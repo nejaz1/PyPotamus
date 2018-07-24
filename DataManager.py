@@ -95,5 +95,5 @@ class DataManager:
         data_fname = os.path.join(self.data_dir,self.fname)
         self.data.to_csv(data_fname, sep='\t', index=False)
            
-        mov_dat = os.path.join(self.data_dir, self.mov_fname)
-        self.mov_data.to_csv(mov_dat, sep='\t', index=False)    
+        #mov_dat = os.path.join(self.data_dir, self.mov_fname)
+        #self.mov_data.to_csv(mov_dat, sep='\t', index=False)    
