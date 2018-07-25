@@ -1,3 +1,4 @@
+
 # Experiment for hand assessment using the hopkins hand device
 #
 # Created:
@@ -41,13 +42,16 @@ class myExperiment(Experiment):
         finger = self.gScreen.circle(pos=[0,0],radius = 0.08, lineWidth = 3.0, lineColor = 'white', fillColor = 'grey')
         digit = self.gScreen.circle(pos=[0,0],radius = 0.05, lineWidth = 3.0, lineColor = 'white', fillColor = 'blue')
         posList = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
-        color
+        colorList = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
+
+        #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
-        RESP_TIME  = 150000
-        RETURN_TIME  = 1000
+        RESP_TIME  = 100000
+        RETURN_TIME  = 3000
+        TRGT_REMAIN = 500
         FINGER_REMAIN = 500
-        DEAD_TIME  = 2000
+        DEAD_TIME  = 1000
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -59,13 +63,13 @@ class myExperiment(Experiment):
         boxL.opacity = 0.0
         boxR.opacity = 0.0
         img.opacity = 0.0
-        cuefing.opacity = 0.0
+        digit.opacity = 0.0
         text.color  = 'black'
 
         #   - save objects to dictionary for easy access
         #self.gScreen['finger1']          = finger1
         self.gScreen['finger']          = finger
-        self.gScreen['cuefing']         = cuefing
+        self.gScreen['digit']           = digit
         self.gScreen['ensbarL']         = ensbarL
         self.gScreen['ensbarR']         = ensbarR
         self.gScreen['boxL']            = boxL
@@ -73,14 +77,12 @@ class myExperiment(Experiment):
         self.gScreen['target']          = target
         self.gScreen['text']            = text
         self.gScreen['warnings']         = warnings
-        #self.gScreen['soundlist']       = soundlist
-        #self.gScreen['audio']           = audio
         
         self.gScreen['fixation']        = fixation 
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
-        self.gScreen['warnList']        = ['Too much movement!', "Time's up!", 'Relax Fingers...']
+        self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
         self.gVariables['TRGT_SPACE'] = TRGT_SPACE
@@ -88,6 +90,7 @@ class myExperiment(Experiment):
         self.gVariables['PREP_TIME'] = PREP_TIME
         self.gVariables['RESP_TIME'] = RESP_TIME
         self.gVariables['RETURN_TIME'] = RETURN_TIME
+        self.gVariables['TRGT_REMAIN'] = TRGT_REMAIN
         self.gVariables['FINGER_REMAIN'] = FINGER_REMAIN
         self.gVariables['DEAD_TIME'] = DEAD_TIME
         self.gVariables['RT_THRESH'] = RT_THRESH
@@ -110,30 +113,30 @@ class myExperiment(Experiment):
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
-        gDigit         = int(self.gTrial.Digit)
-        gTrgtSpace = self.gVariables['TRGT_SPACE']
+        dig = int(self.gTrial.Digit)
 
-        # update finger pos and radius based on hardware readings during the appropriate phases
+        gTrgtSpace = self.gVariables['TRGT_SPACE']
+        # update finger pos and raidus based on hardware readings during the appropriate phases
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
-            pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+            pos             = self.gHardware['gHand'].getXYZ(dig - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-           # gFinger.radius  = 0.5 + pos[2]/1.2
+             #gFinger.radius  = 0.05 + pos[2]/1.5
 
             #update ens bars based on hardware reading
-            rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+        
+            rms         = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
+            rms = rms[0]
             ens_perc    = self.gTrial.EnsPercent
             max_rms     = np.sqrt((2 * np.square(gTrgtSpace)))
             rms_lim     = ens_perc*max_rms
-            ens_visual  = ens_perc*(rms[0]/rms_lim)
-            relax_visual = ens_perc * (rms[1]/rms_lim)
+            ens_visual  = ens_perc*(rms/rms_lim)
+        
+            gEnsbarL.height = min(ens_visual, gBoxL.height)
+            gEnsbarR.height = min(ens_visual, gBoxR.height)
 
-            if self.state == self.gStates.TRIAL_COMPLETE:
-                gEnsbarL.height = min(relax_visual, gBoxL.height)
-                gEnsbarR.height = min(relax_visual, gBoxR.height)
-            else:
-                gEnsbarL.height = min(ens_visual, gBoxL.height)
-                gEnsbarR.height = min(ens_visual, gBoxR.height)
+      
+
     
     # over-load experimental trial loop function
     def trial(self):
@@ -147,18 +150,20 @@ class myExperiment(Experiment):
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
-        gCueFing    = self.gScreen['cuefing']
+        gDigit      = self.gScreen['digit']
         gPoslist    = self.gScreen['posList']
         gColorlist  = self.gScreen['colorList']
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
-        gDigit         = int(self.gTrial.Digit)
-        #gSoundList     = self.gScreen['soundlist']
-        #gAudio      = self.gScreen['audio']
+        dig         = int(self.gTrial.Digit)
+
+        gCueTime = self.gVariables['CUE_TIME']
+
         gCueTime = self.gVariables['CUE_TIME']
         gPrepTime = self.gVariables['PREP_TIME']
         gRespTime =  self.gVariables['RESP_TIME']
         gReturnTime = self.gVariables['RETURN_TIME']
+        gTrgtRemain = self.gVariables['TRGT_REMAIN']
         gFingRemain = self.gVariables['FINGER_REMAIN']
         gDeadTime =  self.gVariables['DEAD_TIME']
         gRTthresh = self.gVariables['RT_THRESH']
@@ -171,26 +176,30 @@ class myExperiment(Experiment):
                 # set target location for the trial, and hide from view 
                 gTarget.opacity = 0
 
-                self.gVariables['TargetX'] = self.gTrial.TargetX
-                self.gVariables['TargetY'] = self.gTrial.TargetY
-
-
-                gTarget.pos = (self.gVariables['TargetX'],self.gVariables['TargetY'])
+                x = self.gTrial.TargetX
+                self.gVariables['TargetX'] = x
+                
+                y = self.gTrial.TargetY
+                self.gVariables['TargetY'] = y
+               
+                gTarget.pos = (x,y)
                 gFixation.color = 'black'
                 #set up display to appear during the cue phase
         
-                gText.text = self.gScreen['fingerLabels'][gDigit - 1]
+                gText.text = self.gScreen['fingerLabels'][dig - 1]
                 gText.color = 'white'
                 gHandimage.opacity  = 0.9
-                gCueFing.pos = gPoslist[(gDigit - 1)]
-                gCueFing.fillColor   = gColorlist[gDigit - 1]
-                gCueFing.opacity = 1
+                gDigit.pos = gPoslist[(dig - 1)]
+                gDigit.fillColor   = gColorlist[dig - 1]
+                gDigit.opacity = 1
 
-                #reset the internal between phase timer (gTimer1)
+                #reset the internal between phase timer (gTimer2)
                 self.gTimer.reset(1)
 
+                # on trial start, reset certain variables of interest
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
+
 
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
@@ -198,16 +207,20 @@ class myExperiment(Experiment):
             if self.gTimer[1] > gCueTime:
                 # hide hand
                 gHandimage.opacity                  = 0.0
-                gCueFing.opacity                      = 0.0
+                gDigit.opacity                      = 0.0
+                gText.color = 'black'
                 #display the shapes involved in the next phase
+                ens_perc            = self.gTrial.EnsPercent
                 gBoxL.opacity       = 0.4
                 gBoxR.opacity       = 0.4
-                gBoxL.height        = self.gTrial.EnsPercent
-                gBoxR.height        = self.gTrial.EnsPercent
+                gBoxL.height        = ens_perc
+                gBoxR.height        = ens_perc
                 gEnsbarR.opacity  = 0.5
                 gEnsbarL.opacity  = 0.5
+                gEnsbarL.fillColor = 'LightPink'
+                gEnsbarR.fillColor = 'LightPink'
                 gFinger.opacity     = 0.7
-                gFinger.fillColor   = gColorlist[gDigit - 1]         
+                gFinger.fillColor   = gColorlist[dig - 1]         
                 gFixation.color     = 'white'
  
                 # swtich phase and reset timer
@@ -239,28 +252,22 @@ class myExperiment(Experiment):
             RT_dist    = np.linalg.norm(np.subtract(gFinger.pos, gFixation.pos))
             bar_height  = gEnsbarL.height
             box_height  = gBoxL.height
-            trgt_rad = round(float(gTarget.radius),3)
-            fing_rad = round(float(gFinger.radius),3)
+
             if (RT_dist > gRTthresh) and (self.gVariables['RT']==0):
                 self.gVariables['RT'] = self.gTimer[2]
 
             #if the finger reaches the target
-            if euc_dist <= gTarget.radius and trgt_rad == fing_rad:
-                #audio = mixer.Sound('BLOP.wav')
-                #audio.play()
+            if euc_dist <= (1/2)*gTarget.radius:
                 #save data for finger forces with scalar applied and show corr trial
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
                 self.gVariables['Corr']     = 1
                 #add raw froce data from device
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3 
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+                raw = self.gHardware['gHand'].getRaw(dig -1)
+                rawxyz = raw
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
@@ -269,9 +276,6 @@ class myExperiment(Experiment):
                 gFinger.opacity     = 0.95
                 gFixation.color = 'white'
                 gFinger.fillColor   = 'green'
-
-      
-
                 #swtich states and reset timer1
                 self.state          = self.gStates.WAIT_RELEASE
                 self.gTimer.reset(1)
@@ -279,18 +283,15 @@ class myExperiment(Experiment):
             # if the ens bars get to large
             if bar_height >= box_height:
                 #save data for finger forces with scalar applied 
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
                 self.gVariables['Corr']     = 2
  
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+                raw = self.gHardware['gHand'].getRaw(dig -1)
+                rawxyz = raw
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
@@ -306,18 +307,15 @@ class myExperiment(Experiment):
             # if the resp time is up
             if self.gTimer[1] > gRespTime:
                 #save data for finger forces with scalar applied 
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = self.gHardware['gHand'].getXYZ(dig - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                self.gVariables['EnsForce'] = self.gHardware['gHand'].getXY_RMSForces(dig - 1)
                 self.gVariables['Corr']     = 3
  
-                self.gHardware['gHand'].update()
-                raw = self.gHardware['gHand'].last_data
-                bb = gDigit*3 
-                aa = bb-3
-                rawxyz = raw[aa:bb]
+                raw = self.gHardware['gHand'].getRaw(dig -1)
+                rawxyz = raw
                 self.gVariables['RawX'] = rawxyz[0]
                 self.gVariables['RawY'] = rawxyz[1]
                 self.gVariables['RawZ'] = rawxyz[2]
@@ -341,30 +339,46 @@ class myExperiment(Experiment):
                     gFinger.opacity = 0
                     gWarnings.text = gWarnlist[1]
                     gWarnings.color = 'white'
+                    gBoxL.opacity = 0
+                    gBoxR.opacity = 0
+                    gEnsbarL.opacity = 0
+                    gEnsbarR.opacity = 0
                     gFinger.opacity = 0
                     gTarget.opacity = 0
                     self.gTimer.reset(1)
+
 
         # WAIT_RELEASE
         elif self.state == self.gStates.WAIT_RELEASE:
             #calculate euclidian distance from finger to fixation cross continually
             euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
-            gTarget.radius += 0.02
-            gTarget.opacity -= 0.06
+
+            #this allows for the target to remain on screen breifly, before leaving
+            if self.gTimer[1] > gTrgtRemain:
+                gTarget.opacity = 0
+
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
-                pos = self.gHardware['gHand'].getXY(gDigit - 1)
+                pos = self.gHardware['gHand'].getXY(dig - 1)
+                gFinger.pos = pos
                 gTarget.opacity = 0
-                gTarget.radius = 0.08
-                
+                gBoxL.opacity       = 0
+                gBoxR.opacity       = 0
+                gEnsbarR.opacity  = 0
+                gEnsbarL.opacity  = 0
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
+
 
             # if the time for the phase is over, hide finger and move to next
             if (self.gTimer[1] > gReturnTime):
                 gFinger.opacity = 0
                 gFixation.color = 'black'
+                gBoxL.opacity       = 0
+                gBoxR.opacity       = 0
+                gEnsbarR.opacity  = 0
+                gEnsbarL.opacity  = 0
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
@@ -375,10 +389,11 @@ class myExperiment(Experiment):
             # checks to see if time has run out for the phase
             if self.gTimer[1] > gReturnTime:
                 #hide shapes on screen
-                gWarnings.text = gWarnlist[2]
-                gWarnings.color = 'white'
-                gEnsbarL.fillColor = 'LightPink'
-                gEnsbarR.fillColor = 'LightPink'
+                gWarnings.text = ''
+                gBoxL.opacity = 0
+                gBoxR.opacity = 0
+                gEnsbarL.opacity = 0
+                gEnsbarR.opacity = 0
                 #swtiches state, logs end of the trial time and resests internal timer
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
@@ -389,12 +404,10 @@ class myExperiment(Experiment):
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if self.gTimer[1] > gFingRemain:
                 gFinger.opacity = 0
-                gFixation.color = 'black'  
-                gWarnings.text = gWarnlist[2]
-                gWarnings.color = 'white'
+                gFixation.color = 'black'
+             
             #waits for between trial time to elapse, before ending trial
             if self.gTimer[1] > gDeadTime:
-                gWarnings.text = ''
                 self.state          = self.gStates.END_TRIAL
 
 
@@ -404,22 +417,13 @@ class myExperiment(Experiment):
     def onTrialEnd(self):
         gTrial = self.gTrial
         gVar = self.gVariables
-        gDat = self.gData
-        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
+        self.gData.add_data_record([gTrial.TN, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'],
                                     gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
                                     gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
                                     gVar['measEndTime']])
-'''
-def getXYZAll(isRunning, sharedMem, rowIDX, l):
-    while isRunning == True:
-        row = np.multiply(HopkindsHandDevice.getRaw(), HopkinsHandDevice.set_force_multiplier*5)
-        l.acquire()
-        sharedMem[rowIDX,:] = row
-        l.release()
 
-        rowIDX = rowIDX + 1
-'''     
-# --------------------------w----------------------------------------------
+
+# ------------------------------------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
 
@@ -436,7 +440,7 @@ if __name__ == "__main__":
         gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
     else:
         gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY', 'EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    gExp.set_data_format(['TN','hand','digit', 'Corr', 'TargetX', 'TargetY','EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
 
     # initialize trial states
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
@@ -447,31 +451,10 @@ if __name__ == "__main__":
     # attached hopkins hand device as part of experiment (call it gHand)
     gExp.add_hardware('gHand',HopkinsHandDevice())
     gExp.gHardware['gHand'].set_force_multiplier([-3,3,3]*5)
-    '''
-    #here
-    sharedMem = multiprocessing.Array('f',(100,17))
-    rowIDX = multiprocessing.Value('i', 0)
-    isWrite = multiprocessing.Value('i', 1)
-    lock = multiprocessing.Lock()
-    HHD = multiprocessing.Process(target = getXYZAll, args = (isWrite, sharedMem, rowIDX, lock))
-    HHD.start()
-    time.sleep(5)
-    lock.acquire()
-    isWrite.value = 0  
-    lock.release()
-    HHD.join()
-    np.savetxt('test.txt', sharedMem, fmt="%d")
-    #here
-    '''
+
     # get user input via console
     # user commands starts/stops experiment
     gExp.control()
     # gHand.terminate()
     # gHand.join()
     # gHand.join()
-
-
-
-
-
-#make a function above(that calls the handdevice one and actually gets the data/writes to the memory)

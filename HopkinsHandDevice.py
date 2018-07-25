@@ -1,22 +1,53 @@
-from GenericHardware import GenericHardware
+import multiprocessing
 import hid
 from struct import unpack
 import numpy as np
-
+import pdb
 
 # Main Class to communication with all the hopkins hand device
 #
 # Created:
 # Dec 10: Naveed Ejaz
 
-# Base class without multiprocessing
-class HopkinsHandDevice(GenericHardware):
-    # constructor
-    def __init__(self, params):
-        # call base constructor
-        GenericHardware.__init__(self,params)
+# Class inherits from multiprocessing class so that it is able to spawn off 
+# a child thread for polling at a faster interval
+class HopkinsHandDeviceMultiproc(multiprocessing.Process):
 
-        # initialize hand device
+    # constructor spawns of multiprocessing thread
+    def __init__(self, params):
+        multiprocessing.Process.__init__(self)  # inherited multiprocess constructor
+        print('Opening thread...')        
+        self.initialize()
+
+    # initialize connection to hand device
+    def initialize(self):
+        self.handle = hid.device()
+        self.handle.open(0x16c0, 0x486)
+        self.handle.set_nonblocking(1)
+        print('Opened hand device')
+
+    # get readings from hand device
+    def run(self):
+        print('Thread running...')
+        self.handle.write([0]*64)
+
+        while True:
+            d = bytearray(self.handle.read(46))
+            if d:
+                x = unpack('>LhHHHHHHHHHHHHHHHHHHHH', d)
+                print(x)
+
+    # shutdown thread
+    def shutdown(self):
+        print('Exiting thread')
+        self.handle.close()
+        self.exit.set()        
+
+# Base class without multiprocessing
+class HopkinsHandDevice:
+
+    # constructor spawns of multiprocessing thread
+    def __init__(self):
         self.initialize()
 
         self.multiplier = [1,1,1,2,2,2,3,3,3,4,4,4,5,5,5]
@@ -42,6 +73,15 @@ class HopkinsHandDevice(GenericHardware):
                 dev_path = d['path']
                 print('Opened hand device')
         self.handle.open_path(dev_path)
+
+    # initialize connection to hand device (this sometimes doesn't work)
+    def initialize_alternative(self):
+        self.handle = hid.device()
+        self.handle.open(0x16c0, 0x486)
+        self.handle.set_nonblocking(1)
+
+        self.handle.write([0] * 64)
+        print('Opened hand device')
 
     # set force baseline
     def set_force_baseline(self, fBaseline):
