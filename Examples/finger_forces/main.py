@@ -11,6 +11,9 @@ from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
 from pygame import mixer
 
+import pdb
+import multiprocessing as mp
+
 # ------------------------------------------------------------------------
 # 1. Inherited Experiment class in PyPotamus module
 class myExperiment(Experiment):
@@ -187,6 +190,8 @@ class myExperiment(Experiment):
         gScaling    = self.gVariables['SCALING']
 
                         
+        # set state for hand device
+        gHand.setState(self.get_runno(),round(self.gTrial.TN),self.state)
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:          
@@ -198,7 +203,8 @@ class myExperiment(Experiment):
                 gHand.startRecording()
 
                 # set target location for the trial, and hide from view 
-                gTarget.opacity = 0
+                gTarget.opacity     = 0
+                gTarget.radius      = 0.08
 
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
@@ -219,6 +225,7 @@ class myExperiment(Experiment):
 
                 #reset the internal between phase timer (gTimer1)
                 self.gTimer.reset(1)
+                
 
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
@@ -435,18 +442,21 @@ class myExperiment(Experiment):
             #waits for between trial time to elapse, before ending trial
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL
+                gHand.stopRecording()
 
 
     # adding trial data on trial end
     def onTrialEnd(self):
-        # stop recording data
-        #   - temp (compute time delta)
-        gHand.stopRecording()
+        # get data from hand device hardware thread and write to mov file
+        m = gHand.getBufferAsArray()
+        self.gData.add_mov_record_array(m)
 
-        m = gHand.getBufferCopy()
-        y = pd.DataFrame(m).round(0)
-        x = pd.DataFrame(np.diff(m))
-        print('Sampling resolution for trial is: {}ms'.format(x.mean()[0].round(2)))
+        # print sampling stats
+        # m = gHand.getBufferAsDataFrame()
+        # x = pd.DataFrame(np.diff(m[0]))
+        # xmean   = x.mean()[0].round(2)
+        # xstd    = x.std()[0].round(2)
+        # print('Sampling resolution for trial is: {} pm {} ms'.format(xmean,xstd))
 
         # log data to file
         gTrial  = self.gTrial
@@ -458,8 +468,14 @@ class myExperiment(Experiment):
                                     gVar['ForceX'], gVar['ForceY'], gVar['ForceZ'], 
                                     gVar['RT'], gVar['MT'], gVar['EnsForce'], 
                                     gVar['measStartTime'], gVar['measEndTime']])
-        self.gData.add_mov_record(gVar['MOV_DATA'])
+        # self.gData.add_mov_record(gVar['MOV_DATA'])
         self.gVariables['MOV_DATA'] = []
+
+    # adding data on run end
+    def onRunEnd(self):
+        print('Run complete')
+        pd.DataFrame(self.gData.mov_data[0:self.gData.mov_idx], columns=self.gParams['data_format']['trial']).to_csv('s01_mov.txt')
+        pdb.set_trace()
 
 
 # -------------------------------------------------------------------------
@@ -467,34 +483,27 @@ class myExperiment(Experiment):
 if __name__ == "__main__": 
 
     # 1. Set up experiment and initalize using default parameters in yaml file
+    #   - all options are now available in the dictionary gExp.gParams 
     gExp = myExperiment()
     gExp.load_settings('finger_task.yaml')
 
     # setup experiment data formats
     #   - data_format sets format of data in .dat summary file
     #   - mov_format sets format of data in .mov file
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr',
-                          'TargetX', 'TargetY','EnsPercent', 
-                          'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
-                          'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
-    gExp.set_mov_format(['X1', 'Y1', 'Z1', 
-                         'X2', 'Y2', 'Z2', 
-                         'X3', 'Y3', 'Z3', 
-                         'X4', 'Y4', 'Z4', 
-                         'X5', 'Y5', 'Z5', 
-                         'TN', 'BN', 'Time'])
+    opt = gExp.gParams['data_format']
+    gExp.set_summary_data_format(opt['summary'])
+    gExp.set_trial_data_format(opt['trial'])
 
     # initialize trial states experiment cycles over
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
                           'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
-    # initialize hopkins hand device and add it to the hardware manager
-    gHand = HopkinsHandDevice({'device_name': 'hopkins hand device',
-                               'sampling_freq': 5,
-                               'buffer_size': [100000, 1]})
+    # initialize hopkins hand device (right handed) and add it to the hardware manager
+    opt     = gExp.gParams['right_hand']
+    gHand   = HopkinsHandDevice(opt)
     gExp.add_hardware('gHand',gHand)
-    gExp.gHardware['gHand'].set_force_multiplier(gExp.gParams['handdevice_multiplier'])
-  
+
     # hand over control to the game loop
+    print('I am in : ' + gHand.processName())
     gExp.control()
     gHand.terminate()

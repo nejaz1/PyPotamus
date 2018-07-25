@@ -2,7 +2,7 @@ from GenericHardware import GenericHardware
 import hid
 from struct import unpack
 import numpy as np
-
+import pdb
 
 # Main Class to communication with all the hopkins hand device
 #
@@ -13,13 +13,7 @@ import numpy as np
 class HopkinsHandDevice(GenericHardware):
     # constructor
     def __init__(self, params):
-        # call base constructor
-        GenericHardware.__init__(self,params)
-
-        # initialize hand device
-        self.initialize()
-
-        self.multiplier = [1,1,1,2,2,2,3,3,3,4,4,4,5,5,5]
+        self.multiplier = params['multiplier']
 
         self.rot        = np.pi / 4.0
         self.sinrot     = np.sin(self.rot)
@@ -28,12 +22,23 @@ class HopkinsHandDevice(GenericHardware):
         self.f_baseline  = np.zeros(15)
         self.last_data   = np.zeros(15)
         self.raw_data    = np.zeros(15)
+        
+        # call base constructor
+        GenericHardware.__init__(self,params)
+        
+        self.initialize()
+
+    # implementation of virtual initialization function
+    # DO NOT CALL, WILL BE CALLED IMPLICITLY
+    def initialize(self):
+        # make connection to hand device and calibrate zero value
+        self.connect()
 
         self.zerof(500)
         print('Calibrating zero baseline')
-
-    # initialize connection to hand device
-    def initialize(self):
+ 
+    # make connection to hand device
+    def connect(self):
         self.handle = hid.device()
 
         dev_path = ''
@@ -41,6 +46,7 @@ class HopkinsHandDevice(GenericHardware):
             if d['product_id'] == 1158 and d['usage'] == 512:
                 dev_path = d['path']
                 print('Opened hand device')
+        
         self.handle.open_path(dev_path)
 
     # set force baseline
@@ -103,7 +109,6 @@ class HopkinsHandDevice(GenericHardware):
         self.update()
         i = i * 3
         return np.multiply(self.last_data[0+i:2+i],self.multiplier[0+i:2+i])
-    
 
     # zerof calibration of the device
     def zerof(self, num_samples):
@@ -114,3 +119,9 @@ class HopkinsHandDevice(GenericHardware):
 
         self.f_baseline = np.mean(t,axis=0)
     # estimate enslaving
+
+    # this function is called every time GenericHardware multiprocessing loop is updated
+    # return the data to be written to buffer
+    def onUpdate(self):
+        return self.getXYZ_ALL()
+        

@@ -1,10 +1,10 @@
 num_counter:            3
-
-data_dir:               '/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/'
+data_dir:               'C:\Users\DiedrichsenLab\PyPotamus\Examples\finger_forces'
+screen_scaling:         [0.8,5]
 
 expwin: {
   fullscreen:      False,
-  pos:             [300, 50],
+  pos:             [25, 50],
   bgcolor:         [-1, -1, -1],
   size:            [800, 800],
   autodraw:        True,
@@ -17,6 +17,23 @@ diagnosticwin: {
   mode:         False
 }
 
-handdevice_multiplier: [-13.55,13.55,13.55, -9.12,9.12,9.12, -10.49,10.49,10.49, -13.54,13.54,13.54, -10.45,10.45,10.45]
-screen_scaling: [0.8,5]
+data_format: {
+  summary:  ['TN','BN','Hand','Digit', 'Corr',
+            'TargetX', 'TargetY','EnsPercent', 
+            'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
+            'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'],
+  trial:    ['time',BN','TN','state',
+            X1', 'Y1', 'Z1', 
+            'X2', 'Y2', 'Z2', 
+            'X3', 'Y3', 'Z3', 
+            'X4', 'Y4', 'Z4', 
+            'X5', 'Y5', 'Z5']
+}
+
+right_hand: {
+  device_name:    'hopkins_hand_device',
+  sampling_freq:  2,
+  buffer_size:    [10000, 19],
+  multiplier:     [-13.55,13.55,13.55, -9.12,9.12,9.12, -10.49,10.49,10.49, -13.54,13.54,13.54, -10.45,10.45,10.45]     
+}
 

@@ -5,6 +5,7 @@
 import yaml
 import abc
 import sys
+import multiprocessing as mp
 
 # Load PyPotamus libraries
 from ExperimentDisplay import ExperimentDisplay
@@ -41,11 +42,12 @@ class Experiment:
         self.gVariables     = Variables(self.gParams)           # experiment variables
         self.gStates        = []                                # trial states 
 
-    # initialize data manager and provide format to expect data in
-    def set_data_format(self, dataformat):
+    # initialize data manager and provide format to expect summary data in
+    def set_summary_data_format(self, dataformat):
         self.gData.init_data_manager(dataformat)
 
-    def set_mov_format(self, dataformat):
+    # initialize data manager and provide format to expect trial data in
+    def set_trial_data_format(self, dataformat):
         self.gData.init_mov_manager(dataformat)
 
     # set directory in which data is stored
@@ -77,6 +79,10 @@ class Experiment:
     def diagnostic(self,mode):
         self.gDiagnostic.diagnostic(mode,self.gParams)
 
+    # name of process pypotamus is running under
+    def processName(self):
+        return mp.current_process().name
+        
     # start run in experiment
     def start_run(self):
         # posting run starting message  
@@ -97,11 +103,14 @@ class Experiment:
             # save trial data to file
             # go to next trial
             self.onTrialEnd()
-            self.gData.write_data()
             self.gTrial.nextTrial()
 
+        # calling function to cleanup and write data when run ends
         # posting run ending message  
         # save debug and raw data
+        self.onRunEnd()
+        self.gData.write_data()
+        
         self.gData.add_dbg_event('run successfully completed')
         self.gData.write_dbg_data()
 
@@ -150,6 +159,7 @@ class Experiment:
 
             else:
                 self.define_command(resp[0])
+
     # define user commands
     def define_command(self, cmd):
         print('unrecognized command')
@@ -193,3 +203,9 @@ class Experiment:
     @abc.abstractmethod
     def onTrialEnd(self):
         """main function to be called when trial ends"""         
+
+    # function is called when run ends, can be used to save data
+    # provided as an abstract function to be overloaded by inheriting class
+    @abc.abstractmethod
+    def onRunEnd(self):
+        """main function to be called when run ends"""                 

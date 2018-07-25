@@ -3,6 +3,8 @@
 # Created:
 # Nov 20: Naveed Ejaz
 import pandas as pd
+import numpy as np
+import pdb
 from datetime import datetime
 import os
 
@@ -28,6 +30,8 @@ class DataManager:
         self.update_date_string()
         self.subject_id = ''
         self.update_file_names()
+
+        self.mov_nrows = 2000000 
 
         # setup data directory
         self.set_data_directory(params['data_dir'])
@@ -77,7 +81,15 @@ class DataManager:
         for row in data:
             self.mov_data.loc[len(self.mov_data)] = row
 
-  
+    def add_mov_record_array(self, data):
+        (nrows,ncols) = data.shape
+
+        self.mov_data[self.mov_idx:self.mov_idx + nrows] = data
+        self.mov_idx = self.mov_idx + nrows
+        # pdb.set_trace()
+        # for row in data:
+        #     self.mov_data.loc[len(self.mov_data)] = row
+
     # what is the data, and in which order should datamanager expect it
     def init_data_manager(self, dataformat):
         # initialize experimental data  
@@ -87,7 +99,11 @@ class DataManager:
         self.add_dbg_event('init')
 
     def init_mov_manager(self, dataformat):
-        self.mov_data   = pd.DataFrame(columns = dataformat)
+        self.mov_ncols  = len(dataformat)
+        # self.mov_data   = pd.DataFrame(columns = dataformat)
+
+        self.mov_data   = np.array([0.0] * self.mov_nrows * self.mov_ncols).reshape(self.mov_nrows,self.mov_ncols)
+        self.mov_idx    = 0
 
     # write debug data to file
     def write_dbg_data(self):
@@ -95,6 +111,7 @@ class DataManager:
         self.dbg_data.to_csv(dbg_fname, sep='\t', index=False)
 
     # write data to file
+    # this should be done at the end of the block
     def write_data(self):
         data_fname = os.path.join(self.data_dir,self.fname)
         self.data.to_csv(data_fname, sep='\t', index=False)

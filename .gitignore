@@ -4,3 +4,4 @@
 *.code-workspace
 
 Examples/finger_forces/main_5fing.py
+Examples/finger_forces/movfile.mov
