@@ -450,7 +450,7 @@ if __name__ == "__main__":
 
     # attached hopkins hand device as part of experiment (call it gHand)
     gExp.add_hardware('gHand',HopkinsHandDevice())
-    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3]*5)
+    gExp.gHardware['gHand'].set_force_multiplier([-1.5,1.5,1.5]*5)
 
     # get user input via console
     # user commands starts/stops experiment

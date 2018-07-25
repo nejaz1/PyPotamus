@@ -1,0 +1,6 @@
+time_stamp	subject_id	event
+July 25, 2018 at 04:40PM		init
+July 25, 2018 at 04:40PM	probfing2	starting run 1
+July 25, 2018 at 04:42PM	probfing2	run successfully completed
+July 25, 2018 at 04:42PM	probfing2	starting run 1
+July 25, 2018 at 04:42PM	probfing2	run successfully completed

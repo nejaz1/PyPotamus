@@ -5,7 +5,7 @@ import random
 num_sampl = 4
 angle_inc = 360/num_sampl
 angles = []
-radii = [0.1,0.3,0.5,0.7,0.9]
+radii = [0.8,0.4]
 target_space = []
 digits = [4]
 Hand = 2
@@ -32,7 +32,7 @@ for i in digits:
     for j in target_space:
         all_trials.append([i,j[0],j[1]])
 
-all_trials = all_trials*5
+all_trials = all_trials*10
 
 random.shuffle(all_trials)
 
