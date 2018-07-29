@@ -470,12 +470,13 @@ class myExperiment(Experiment):
                                     gVar['measStartTime'], gVar['measEndTime']])
         # self.gData.add_mov_record(gVar['MOV_DATA'])
         self.gVariables['MOV_DATA'] = []
+        # pdb.set_trace()
 
     # adding data on run end
     def onRunEnd(self):
         print('Run complete')
-        pd.DataFrame(self.gData.mov_data[0:self.gData.mov_idx], columns=self.gParams['data_format']['trial']).to_csv('s01_mov.txt')
-        pdb.set_trace()
+        # pd.DataFrame(self.gData.mov_data[0:self.gData.mov_idx], columns=self.gParams['data_format']['trial']).to_csv('s01_mov.txt')
+        # pdb.set_trace()
 
 
 # -------------------------------------------------------------------------

@@ -1,0 +1,4 @@
+time_stamp	subject_id	event
+July 29, 2018 at 04:00PM		init
+July 29, 2018 at 04:00PM	test	starting run 1
+July 29, 2018 at 04:01PM	test	run successfully completed

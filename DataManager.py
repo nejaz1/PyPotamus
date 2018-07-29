@@ -7,6 +7,7 @@ import numpy as np
 import pdb
 from datetime import datetime
 import os
+import pdb
 
 # Class to manage data generated during experiment
 class DataManager:
@@ -93,14 +94,16 @@ class DataManager:
     # what is the data, and in which order should datamanager expect it
     def init_data_manager(self, dataformat):
         # initialize experimental data  
+        self.summary_dataformat = dataformat
         self.data       = pd.DataFrame(columns=dataformat)
         self.dbg_data   = pd.DataFrame(columns=['time_stamp','subject_id','event'])
         # add debug event
         self.add_dbg_event('init')
 
     def init_mov_manager(self, dataformat):
+        self.trial_dataformat = dataformat
         self.mov_ncols  = len(dataformat)
-        # self.mov_data   = pd.DataFrame(columns = dataformat)
+        # self.mov_data   = pd.DataFrame(columns=dataformat)
 
         self.mov_data   = np.array([0.0] * self.mov_nrows * self.mov_ncols).reshape(self.mov_nrows,self.mov_ncols)
         self.mov_idx    = 0
@@ -117,4 +120,6 @@ class DataManager:
         self.data.to_csv(data_fname, sep='\t', index=False)
            
         mov_dat = os.path.join(self.data_dir, self.mov_fname)
-        self.mov_data.to_csv(mov_dat, sep='\t', index=False)    
+        d = pd.DataFrame(self.mov_data[0:self.mov_idx], columns=self.trial_dataformat)
+        d.to_csv(mov_dat, sep='\t', index=False)
+        # self.mov_data.to_csv(mov_dat, sep='\t', index=False)    
