@@ -1,19 +1,39 @@
 num_counter:            3
+data_dir:               'C:\Users\DiedrichsenLab\PyPotamus\Examples\finger_forces\data\'
+screen_scaling:         [1,5] # screen units, N force 
 
-expwin_fullscreen:      False
-expwin_pos:             [300, 50]
-expwin_bgcolor:         [-1, -1, -1]
-expwin_size:            [800, 800]
-expwin_autodraw:        True
-expwin_autolog:         False
-expwin_useFBO:          True
+expwin: {
+  fullscreen:      False,
+  pos:             [25, 50],
+  bgcolor:         [-1, -1, -1],
+  size:            [800, 800],
+  autodraw:        True,
+  autolog:         False,
+  useFBO:          True,
+  waitBlanking:    False
+}
 
-diagnosticwin_pos:      [50, 50]
-diagnosticwin_bgcolor:  [1, 1, 1]
-diagnosticwin_size:     [200, 200]
-diagnosticwin_autodraw: True
-diagnosticwin_useFBO:   True
+diagnosticwin: {
+  mode:         False
+}
 
-handdevice_multiplier:  (1,-1,1)
+data_format: {
+  summary:  ['TN','BN','Hand','Digit', 'Corr',
+            'TargetX', 'TargetY','EnsPercent', 
+            'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
+            'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'],
+  trial:    ['time','BN','TN','state',
+            'X1', 'Y1', 'Z1', 
+            'X2', 'Y2', 'Z2', 
+            'X3', 'Y3', 'Z3', 
+            'X4', 'Y4', 'Z4', 
+            'X5', 'Y5', 'Z5']
+}
 
+right_hand: {
+  device_name:    'hopkins_hand_device',
+  sampling_freq:  5,
+  buffer_size:    [10000, 19],
+  multiplier:     [-1,1,1, -1,1,1, -1,1,1, -1,1,1, -1,1,1]     
+}
 

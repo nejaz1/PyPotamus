@@ -1,6 +1,6 @@
 num_counter:            3
 data_dir:               'C:\Users\DiedrichsenLab\PyPotamus\Examples\finger_forces\data\'
-screen_scaling:         [0.8,5]
+screen_scaling:         [1,5] # screen units, N force 
 
 expwin: {
   fullscreen:      False,
@@ -22,8 +22,8 @@ data_format: {
             'TargetX', 'TargetY','EnsPercent', 
             'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
             'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'],
-  trial:    ['time',BN','TN','state',
-            X1', 'Y1', 'Z1', 
+  trial:    ['time','BN','TN','state',
+            'X1', 'Y1', 'Z1', 
             'X2', 'Y2', 'Z2', 
             'X3', 'Y3', 'Z3', 
             'X4', 'Y4', 'Z4', 
@@ -34,6 +34,6 @@ right_hand: {
   device_name:    'hopkins_hand_device',
   sampling_freq:  5,
   buffer_size:    [10000, 19],
-  multiplier:     [-13.55,13.55,13.55, -9.12,9.12,9.12, -10.49,10.49,10.49, -13.54,13.54,13.54, -10.45,10.45,10.45]     
+  multiplier:  [-10.4,10.2,54.0, -9.60,8.60,44.90, -10.30,11.10,46.90, -11.60,15.70,59.90, -10.40,10.60,1]       
 }
 

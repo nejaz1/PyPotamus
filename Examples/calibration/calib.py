@@ -51,10 +51,10 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
-        RESP_TIME  = 150000
+        RESP_TIME  = 5000
         RETURN_TIME  = 1000
         FINGER_REMAIN = 500
-        DEAD_TIME  = 2000
+        DEAD_TIME  = 4000
         TRGT_SPACE = 0.9
         RT_THRESH = 0.02
 
@@ -125,7 +125,7 @@ class myExperiment(Experiment):
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-            gFinger.radius  = 0.5 + pos[2]/1.2
+            gFinger.radius  = 0.1 + pos[2]/1.2
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -411,76 +411,62 @@ class myExperiment(Experiment):
 
     # adding trial data on trial end
     def onTrialEnd(self):
-        gTrial = self.gTrial
-        gVar = self.gVariables
-        gDat = self.gData
-        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],gVar['TargetX'], gVar['TargetY'], gVar['TargetZ'],
-                                    gTrial.EnsPercent, gVar['RawX'], gVar['RawY'], gVar['RawZ'], gVar['ForceX'], gVar['ForceY'], 
-                                    gVar['ForceZ'], gVar['RT'], gVar['MT'], gVar['EnsForce'], gVar['measStartTime'], 
-                                    gVar['measEndTime']])
-'''
-def getXYZAll(isRunning, sharedMem, rowIDX, l):
-    while isRunning == True:
-        row = np.multiply(HopkindsHandDevice.getRaw(), HopkinsHandDevice.set_force_multiplier*5)
-        l.acquire()
-        sharedMem[rowIDX,:] = row
-        l.release()
+        m = gHand.getBufferAsArray()
+        self.gData.add_mov_record_array(m)
 
-        rowIDX = rowIDX + 1
-'''     
+        # print sampling stats
+        # m = gHand.getBufferAsDataFrame()
+        # x = pd.DataFrame(np.diff(m[0]))
+        # xmean   = x.mean()[0].round(2)
+        # xstd    = x.std()[0].round(2)
+        # print('Sampling resolution for trial is: {} pm {} ms'.format(xmean,xstd))
+
+        # log data to file
+        gTrial  = self.gTrial
+        gVar    = self.gVariables
+        gDat    = self.gData
+        self.gData.add_data_record([gTrial.TN, gDat.run, gTrial.Hand, gTrial.Digit, gVar['Corr'],
+                                    gVar['TargetX'], gVar['TargetY'],gTrial.EnsPercent, 
+                                    gVar['RawX'], gVar['RawY'], gVar['RawZ'], 
+                                    gVar['ForceX'], gVar['ForceY'], gVar['ForceZ'], 
+                                    gVar['RT'], gVar['MT'], gVar['EnsForce'], 
+                                    gVar['measStartTime'], gVar['measEndTime']])
+        # self.gData.add_mov_record(gVar['MOV_DATA'])
+        self.gVariables['MOV_DATA'] = []
+        # pdb.set_trace()
+
+    # adding data on run end
+    def onRunEnd(self):
+        print('Run complete')
+        # pd.DataFrame(self.gData.mov_data[0:self.gData.mov_idx], columns=self.gParams['data_format']['trial']).to_csv('s01_mov.txt')
+        # pdb.set_trace()
 # --------------------------w----------------------------------------------
 # 3. Main entry point of program
 if __name__ == "__main__": 
 
+ 
     # 1. Set up experiment and initalize using default parameters in yaml file
+    #   - all options are now available in the dictionary gExp.gParams 
     gExp = myExperiment()
     gExp.load_settings('finger_task.yaml')
 
-    # turn on diagnostic screen for messages/state variables etc
-    if gExp.gPlatform.isMac():
-        gExp.diagnostic('on')
+    # setup experiment data formats
+    #   - data_format sets format of data in .dat summary file
+    #   - mov_format sets format of data in .mov file
+    opt = gExp.gParams['data_format']
+    gExp.set_summary_data_format(opt['summary'])
+    gExp.set_trial_data_format(opt['trial'])
 
-    # initialize data directory and format to save during experiment
-    if gExp.gPlatform.isMac():
-        gExp.set_data_directory('/Users/naveed/Dropbox/Code/toolboxes/PyPotamus/Examples/finger_forces/data/')
-    else:
-        gExp.set_data_directory('C:\\Users\DiedrichsenLab\\PyPotamus\\Examples\\finger_forces\\data')
-    gExp.set_data_format(['TN','BN','Hand','Digit', 'Corr', 'TargetX', 'TargetY', 'TargetZ', 'EnsPercent', 'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'])
+    # initialize trial states experiment cycles over
+    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
+                          'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
 
-    # initialize trial states
-    gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE', 'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
+    # initialize hopkins hand device (right handed) and add it to the hardware manager
+    opt     = gExp.gParams['right_hand']
+    gHand   = HopkinsHandDevice(opt)
+    gExp.add_hardware('gHand',gHand)
 
-    # initialize drawing elements on screen for speed (also for diagnostic messages)
-    gExp.initialize()
-
-    # attached hopkins hand device as part of experiment (call it gHand)
-    gExp.add_hardware('gHand',HopkinsHandDevice())
-    gExp.gHardware['gHand'].set_force_multiplier([-3,3,3])
-    '''
-    #here
-    sharedMem = multiprocessing.Array('f',(100,17))
-    rowIDX = multiprocessing.Value('i', 0)
-    isWrite = multiprocessing.Value('i', 1)
-    lock = multiprocessing.Lock()
-    HHD = multiprocessing.Process(target = getXYZAll, args = (isWrite, sharedMem, rowIDX, lock))
-    HHD.start()
-    time.sleep(5)
-    lock.acquire()
-    isWrite.value = 0  
-    lock.release()
-    HHD.join()
-    np.savetxt('test.txt', sharedMem, fmt="%d")
-    #here
-    '''
-    # get user input via console
-    # user commands starts/stops experiment
+    # hand over control to the game loop
+    print('I am in : ' + gHand.processName())
     gExp.control()
-    # gHand.terminate()
-    # gHand.join()
-    # gHand.join()
-
-
-
-
-
-#make a function above(that calls the handdevice one and actually gets the data/writes to the memory)
+    gHand.terminate()

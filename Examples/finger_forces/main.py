@@ -60,13 +60,13 @@ class myExperiment(Experiment):
         # set time limits for trial phases
         CUE_TIME        = 1200
         PREP_TIME       = 500
-        RESP_TIME       = 10000
+        RESP_TIME       = 6000
         RETURN_TIME     = 3000
-        FINGER_REMAIN   = 500
+        FINGER_REMAIN   = 400
         FAIL_TIME       = 2000
-        DEAD_TIME       = 700
-        RT_THRESH       = 0.02
-        MAX_FORCE       = 5
+        DEAD_TIME       = 1700
+        RT_THRESH       = 0.25 #in N
+        MAX_FORCE       = 4 # in N
 
         target.opacity  = 0.0
         ensbarL.opacity = 0.0
@@ -95,7 +95,7 @@ class myExperiment(Experiment):
         self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
-        self.gScreen['warnList']        = ['Too much movement!', "Time's up!"]
+        self.gScreen['warnList']        = ['Too much movement!', "Time's up!", 'Relax Fingers...']
         self.gScreen['fingerLabels']    = ['THUMB','INDEX','MIDDLE','RING','LITTLE']
 
         self.gVariables['CUE_TIME']         = CUE_TIME
@@ -142,7 +142,7 @@ class myExperiment(Experiment):
             pos[0]          = gScaling * pos[0]
             pos[1]          = gScaling * pos[1]     
             gFinger.pos     = [(pos[0]), (pos[1])]
-            # gFinger.radius  = 0.35 + pos[2]/1.3
+           # gFinger.radius  = 0.35 + pos[2]/1.3
 
             # update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -280,7 +280,7 @@ class myExperiment(Experiment):
             mov_dat = mov_dat + [self.gTrial.TN] + [self.gData.run] + [self.gTimer[0]]
             self.gVariables['MOV_DATA'].append(mov_dat)
 
-            if (RT_dist > gRTthresh) and (self.gVariables['RT']==0):
+            if (RT_dist > gRTthresh * gScaling) and (self.gVariables['RT']==0):
                 self.gVariables['RT'] = self.gTimer[2]
 
             #if the finger reaches the target
@@ -438,10 +438,16 @@ class myExperiment(Experiment):
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if (self.gTimer[1] > gFingRemain):
                 gFinger.opacity = 0
-                gFixation.color = 'black'  
+                gFixation.color = 'black' 
+                gWarnings.text = gWarnlist[2]
+                gWarnings.color = 'white'
+
+            if self.gTimer[1] > (gFingRemain + 200):
+                self.gHardware['gHand'].zerof(1000)
             #waits for between trial time to elapse, before ending trial
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL
+                gWarnings.text = ''
                 gHand.stopRecording()
 
 
