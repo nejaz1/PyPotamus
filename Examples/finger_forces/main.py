@@ -59,12 +59,12 @@ class myExperiment(Experiment):
         
         # set time limits for trial phases
         CUE_TIME        = 1200
-        PREP_TIME       = 500
+        PREP_TIME       = 400
         RESP_TIME       = 6000
         RETURN_TIME     = 3000
         FINGER_REMAIN   = 400
         FAIL_TIME       = 2000
-        DEAD_TIME       = 1700
+        DEAD_TIME       = 750
         RT_THRESH       = 0.25 #in N
         MAX_FORCE       = 4 # in N
 
@@ -139,10 +139,13 @@ class myExperiment(Experiment):
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
-            pos[0]          = gScaling * pos[0]
-            pos[1]          = gScaling * pos[1]     
-            gFinger.pos     = [(pos[0]), (pos[1])]
-           # gFinger.radius  = 0.35 + pos[2]/1.3
+            if gDigit == 1:
+                X = pos[0] * gScaling
+                Y = pos[2] * gScaling
+            else:
+                X = gScaling * pos[0]
+                Y = gScaling * pos[1]     
+            gFinger.pos     = [X,Y]
 
             # update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
@@ -150,14 +153,9 @@ class myExperiment(Experiment):
             max_rms     = np.sqrt((2 * np.square(gMaxForce)))
             rms_lim     = ens_perc * max_rms
             ens_visual  = ens_perc * (rms[0] / rms_lim)
-            relax_visual = ens_perc * (rms[1] / rms_lim)
 
-            if self.state == self.gStates.TRIAL_COMPLETE:
-                gEnsbarL.height = min(relax_visual, gBoxL.height)
-                gEnsbarR.height = min(relax_visual, gBoxR.height)
-            else:
-                gEnsbarL.height = min(ens_visual, gBoxL.height)
-                gEnsbarR.height = min(ens_visual, gBoxR.height)
+            gEnsbarL.height = min(ens_visual, gBoxL.height)
+            gEnsbarR.height = min(ens_visual, gBoxR.height)
     
     # over-load experimental trial loop function
     def trial(self):
@@ -276,9 +274,9 @@ class myExperiment(Experiment):
             RT_dist    = np.linalg.norm(np.subtract(gFinger.pos, gFixation.pos))
             bar_height  = gEnsbarL.height
             box_height  = gBoxL.height
-            mov_dat = list(self.gHardware['gHand'].getXYZ_ALL())
-            mov_dat = mov_dat + [self.gTrial.TN] + [self.gData.run] + [self.gTimer[0]]
-            self.gVariables['MOV_DATA'].append(mov_dat)
+            #mov_dat = list(self.gHardware['gHand'].getXYZ_ALL())
+            #mov_dat = mov_dat + [self.gTrial.TN] + [self.gData.run] + [self.gTimer[0]]
+            #self.gVariables['MOV_DATA'].append(mov_dat)
 
             if (RT_dist > gRTthresh * gScaling) and (self.gVariables['RT']==0):
                 self.gVariables['RT'] = self.gTimer[2]
@@ -439,11 +437,6 @@ class myExperiment(Experiment):
             if (self.gTimer[1] > gFingRemain):
                 gFinger.opacity = 0
                 gFixation.color = 'black' 
-                gWarnings.text = gWarnlist[2]
-                gWarnings.color = 'white'
-
-            if self.gTimer[1] > (gFingRemain + 200):
-                self.gHardware['gHand'].zerof(1000)
             #waits for between trial time to elapse, before ending trial
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL

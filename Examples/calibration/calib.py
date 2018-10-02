@@ -51,7 +51,7 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
-        RESP_TIME  = 5000
+        RESP_TIME  = 10000
         RETURN_TIME  = 1000
         FINGER_REMAIN = 500
         DEAD_TIME  = 4000
@@ -125,7 +125,7 @@ class myExperiment(Experiment):
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
             gFinger.pos     = [(pos[0]), (pos[1])]
-            gFinger.radius  = 0.1 + pos[2]/1.2
+            #gFinger.radius  = 0.1 + pos[2]/1.2
 
             #update ens bars based on hardware reading
             rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
