@@ -5,7 +5,7 @@ import random
 num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
-radii = [4,2]
+radii = [3,1.5]
 target_space = []
 digits = [1,2,3,4,5]
 Hand = 2
@@ -37,7 +37,7 @@ for i in digits:
 random.shuffle(all_trials)
 
 
-with open('target9.tgt', 'w', newline='') as tgt:
+with open('target1.tgt', 'w', newline='') as tgt:
     headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 

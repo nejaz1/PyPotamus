@@ -63,8 +63,8 @@ class myExperiment(Experiment):
         RESP_TIME       = 6000
         RETURN_TIME     = 3000
         FINGER_REMAIN   = 400
-        FAIL_TIME       = 2000
-        DEAD_TIME       = 750
+        FAIL_TIME       = 1200
+        DEAD_TIME       = 2000
         RT_THRESH       = 0.25 #in N
         MAX_FORCE       = 4 # in N
 
@@ -409,6 +409,11 @@ class myExperiment(Experiment):
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
+                gWarnings.text = gWarnlist[2] 
+                gWarnings.color = 'white'
+                self.gHardware['gHand'].zerof(1000)
+                
+
 
             # if the time for the phase is over, hide finger and move to next
             if (self.gTimer[1] > gReturnTime):
@@ -417,6 +422,11 @@ class myExperiment(Experiment):
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
+                gWarnings.text = gWarnlist[2] 
+                gWarnings.color = 'white'
+
+                self.gHardware['gHand'].zerof(1000)
+                
 
 
         # TRIAL_FAILED
@@ -425,18 +435,22 @@ class myExperiment(Experiment):
             if (self.gTimer[1] > gFailTime): 
                 gEnsbarL.fillColor = 'LightPink'
                 gEnsbarR.fillColor = 'LightPink'
-                gWarnings.text = ''
+                gWarnings.text = gWarnlist[2] 
 
-                self.state = self.gStates.END_TRIAL
+                self.state = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
+                self.gHardware['gHand'].zerof(1000)
+
+
 
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if (self.gTimer[1] > gFingRemain):
                 gFinger.opacity = 0
-                gFixation.color = 'black' 
+                gFixation.color = 'black'
+
             #waits for between trial time to elapse, before ending trial
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL

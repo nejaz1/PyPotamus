@@ -2,12 +2,12 @@ import numpy as np
 import csv
 import random
 
-num_sampl = 4
+num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
 radii = [0.2,0.4,0.6]
 target_space = []
-digits = [5]
+digits = [4]
 Hand = 2
 ens_perc = 0.8
 
@@ -32,7 +32,7 @@ for i in digits:
     for j in target_space:
         all_trials.append([i,j[0],j[1]])
 
-
+all_trials = all_trials * 10
 random.shuffle(all_trials)
 
 
