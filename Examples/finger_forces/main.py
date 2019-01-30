@@ -20,7 +20,8 @@ class myExperiment(Experiment):
     # define user commands
     def define_command(self, cmd):
         if cmd == 'zerof':
-            self.gHardware['gHand'].zerof(1000)
+            self.gHardware['gHand_R'].zerof(1000)
+            self.gHardware['gHand_L'].zerof(1000)
         else:
             print('unrecognized command')
 
@@ -111,7 +112,13 @@ class myExperiment(Experiment):
         self.gVariables['BUZZ_SOUND']       = mixer.Sound('BUZZ.wav')
         self.gVariables['SCALING']  = (self.gParams['screen_scaling'][0]/self.gParams['screen_scaling'][1])
         self.gVariables['MAX_FORCE']        = MAX_FORCE
+        righthand =  self.gHardware['gHand_R']
+        lefthand = self.gHardware['gHand_L']
+        hands = {1:lefthand, 2:righthand}
+        
+        self.gVariables['HAND_DEVICES'] = hands
 
+        
     # this function is called when diagnostic info is about to be updated
     def updateDiagnostic(self):        
         self.gDiagnostic[0] = 'Subj:' + self.get_subject_id()
@@ -130,15 +137,20 @@ class myExperiment(Experiment):
         gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
-        gDigit         = int(self.gTrial.Digit)
+        gDigit      = int(self.gTrial.Digit)
+        gInstHand   = self.gVariables['HAND_DEVICES'][int(self.gTrial.Hand)]
         gScaling = self.gVariables['SCALING']
         gMaxForce = self.gVariables['MAX_FORCE']
+
+        
+ 
+        
 
 
         # update finger pos and raidus based on hardware readings during the appropriate phases
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
-            pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+            pos             = gInstHand.getXYZ(gDigit - 1)
             if gDigit == 1:
                 X = pos[0] * gScaling
                 Y = pos[2] * gScaling
@@ -148,7 +160,7 @@ class myExperiment(Experiment):
             gFinger.pos     = [X,Y]
 
             # update ens bars based on hardware reading
-            rms         = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+            rms         = gInstHand.getXY_RMSForces(gDigit - 1)
             ens_perc    = self.gTrial.EnsPercent
             max_rms     = np.sqrt((2 * np.square(gMaxForce)))
             rms_lim     = ens_perc * max_rms
@@ -175,6 +187,7 @@ class myExperiment(Experiment):
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
         gDigit      = int(self.gTrial.Digit)
+        gInstHand = self.gVariables['HAND_DEVICES'][int(self.gTrial.Hand)]
         gCueTime    = self.gVariables['CUE_TIME']
         gPrepTime   = self.gVariables['PREP_TIME']
         gRespTime   = self.gVariables['RESP_TIME']
@@ -189,7 +202,8 @@ class myExperiment(Experiment):
 
                         
         # set state for hand device
-        gHand.setState(self.get_runno(),round(self.gTrial.TN),self.state)
+        gHand_R.setState(self.get_runno(),round(self.gTrial.TN),self.state)
+        gHand_L.setState(self.get_runno(),round(self.gTrial.TN),self.state)
 
         # START TRIAL
         if self.state == self.gStates.START_TRIAL:          
@@ -198,7 +212,10 @@ class myExperiment(Experiment):
                 #   - start logging data
                 self.state                          = self.gStates.CUE_PHASE
                 self.gVariables['measStartTime']    = self.gTimer[0]
-                gHand.startRecording()
+                gHand_R.startRecording()
+                gHand_L.startRecording()
+                    
+                
 
                 # set target location for the trial, and hide from view 
                 gTarget.opacity     = 0
@@ -207,6 +224,8 @@ class myExperiment(Experiment):
                 self.gVariables['TargetX'] = self.gTrial.TargetX
                 self.gVariables['TargetY'] = self.gTrial.TargetY
                 #self.gVariables['TargetZ'] = self.gTrial.TargetZ
+
+
 
 
                 gTarget.pos = (self.gVariables['TargetX'] * gScaling, self.gVariables['TargetY'] * gScaling)
@@ -285,16 +304,16 @@ class myExperiment(Experiment):
             if euc_dist <= (1/2)*gTarget.radius:
                 gBlopSound.play()
                 #save data for finger forces with scalar applied and show corr trial
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = gInstHand.getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                rms = gInstHand.getXY_RMSForces(gDigit - 1)
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 1
                 #add raw froce data from device
 
-                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
+                rawxyz = gInstHand.getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -321,15 +340,15 @@ class myExperiment(Experiment):
                 gBuzzSound.play()
 
                 #save data for finger forces with scalar applied 
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = gInstHand.getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                rms = gInstHand.getXY_RMSForces(gDigit - 1)
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 2
  
-                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
+                rawxyz = gInstHand.getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -352,15 +371,15 @@ class myExperiment(Experiment):
             if self.gTimer[1] > gRespTime:
                 gBuzzSound.play()
                 #save data for finger forces with scalar applied 
-                pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
+                pos             = gInstHand.getXYZ(gDigit - 1)
                 self.gVariables['ForceX'] = pos[0]
                 self.gVariables['ForceY'] = pos[1]
                 self.gVariables['ForceZ'] = pos[2]
-                rms = self.gHardware['gHand'].getXY_RMSForces(gDigit - 1)
+                rms = gInstHand.getXY_RMSForces(gDigit - 1)
                 self.gVariables['EnsForce'] = rms[0]
                 self.gVariables['Corr']     = 3
  
-                rawxyz = self.gHardware['gHand'].getRaw(gDigit - 1)
+                rawxyz = gInstHand.getRaw(gDigit - 1)
 
                 #self.gHardware['gHand'].update()
                 #raw = self.gHardware['gHand'].last_data
@@ -402,7 +421,7 @@ class myExperiment(Experiment):
             gTarget.opacity -= 0.05
             #check to see if the finger has returned to the cross, and locks finger position 
             if (euc_dist <= 0.05):  
-                pos = self.gHardware['gHand'].getXY(gDigit - 1)
+                pos = gInstHand.getXY(gDigit - 1)
                 gTarget.opacity = 0
                 gTarget.radius = 0.08
                 
@@ -411,7 +430,9 @@ class myExperiment(Experiment):
                 self.gTimer.reset(1)
                 gWarnings.text = gWarnlist[2] 
                 gWarnings.color = 'white'
-                self.gHardware['gHand'].zerof(1000)
+
+                self.gHardware['gHand_L'].zerof(1000)
+                self.gHardware['gHand_R'].zerof(1000)
                 
 
 
@@ -425,7 +446,9 @@ class myExperiment(Experiment):
                 gWarnings.text = gWarnlist[2] 
                 gWarnings.color = 'white'
 
-                self.gHardware['gHand'].zerof(1000)
+                
+                self.gHardware['gHand_L'].zerof(1000)
+                self.gHardware['gHand_R'].zerof(1000)
                 
 
 
@@ -440,7 +463,8 @@ class myExperiment(Experiment):
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
-                self.gHardware['gHand'].zerof(1000)
+                self.gHardware['gHand_L'].zerof(1000)
+                self.gHardware['gHand_R'].zerof(1000)
 
 
 
@@ -455,14 +479,28 @@ class myExperiment(Experiment):
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL
                 gWarnings.text = ''
-                gHand.stopRecording()
+                gHand_R.stopRecording()
+                gHand_L.stopRecording()
+
 
 
     # adding trial data on trial end
     def onTrialEnd(self):
         # get data from hand device hardware thread and write to mov file
-        m = gHand.getBufferAsArray()
-        self.gData.add_mov_record_array(m)
+        m_r = gHand_R.getBufferAsArray()
+        m_l = gHand_L.getBufferAsArray()
+        rows = min([int(m_r.size/19), int(m_l.size/19)])
+        righthandcols = list(range(19))
+        righthandcols = righthandcols[4:]
+        m_l = m_l[list(range(rows)), :]
+        m_r = m_r[list(range(rows)), :]
+        m_r = m_r[:, righthandcols]
+
+      
+
+
+        m = np.concatenate((m_l,m_r), axis = 1)
+        self.gData.add_mov_record_array(m) # * check for arrays to do this.
 
         # print sampling stats
         # m = gHand.getBufferAsDataFrame()
@@ -511,13 +549,16 @@ if __name__ == "__main__":
     # initialize trial states experiment cycles over
     gExp.set_trial_states('START_TRIAL', 'CUE_PHASE', 'WAIT_PREPRATORY', 'WAIT_RESPONSE','WAIT_RELEASE',
                           'TRIAL_FAILED', 'TRIAL_COMPLETE','END_TRIAL')
-
     # initialize hopkins hand device (right handed) and add it to the hardware manager
-    opt     = gExp.gParams['right_hand']
-    gHand   = HopkinsHandDevice(opt)
-    gExp.add_hardware('gHand',gHand)
+    opt_R     = gExp.gParams['right_hand']
+    gHand_R   = HopkinsHandDevice(opt_R)
+    gExp.add_hardware('gHand_R',gHand_R)
+    opt_L     = gExp.gParams['left_hand']
+    gHand_L   = HopkinsHandDevice(opt_L)
+    gExp.add_hardware('gHand_L',gHand_L)
 
     # hand over control to the game loop
-    print('I am in : ' + gHand.processName())
+    print('I am in : ' + gHand_R.processName() + ' and ' + gHand_L.processName())
     gExp.control()
-    gHand.terminate()
+    gHand_R.terminate()
+    gHand_L.terminate()

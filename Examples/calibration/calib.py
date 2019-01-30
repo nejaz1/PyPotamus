@@ -51,7 +51,7 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
-        RESP_TIME  = 10000
+        RESP_TIME  = 100000
         RETURN_TIME  = 1000
         FINGER_REMAIN = 500
         DEAD_TIME  = 4000
@@ -254,7 +254,7 @@ class myExperiment(Experiment):
                 self.gVariables['RT'] = self.gTimer[2]
 
             #if the finger reaches the target
-            if euc_dist <= gTarget.radius and trgt_rad == fing_rad:
+            if euc_dist <= gTarget.radius: #and trgt_rad == fing_rad:
                 #audio = mixer.Sound('BLOP.wav')
                 #audio.play()
                 #save data for finger forces with scalar applied and show corr trial

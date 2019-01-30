@@ -34,6 +34,6 @@ right_hand: {
   device_name:    'hopkins_hand_device',
   sampling_freq:  5,
   buffer_size:    [10000, 19],
-  multiplier:     [-1,1,2, -1,1,2, -1,1,2, -1,1,2, -1.5,1.5,2]     
+  multiplier:     [-1,1,2, -1,1,2, -2,2,2, -1,1,2, -1.5,1.5,2]     
 }
 

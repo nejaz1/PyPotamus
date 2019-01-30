@@ -14,6 +14,8 @@ class HopkinsHandDevice(GenericHardware):
     # constructor
     def __init__(self, params):
         self.multiplier = params['multiplier']
+        self.hand = params['serial_number']
+        self.name = params['device_name']
 
         self.rot        = np.pi / 4.0
         self.sinrot     = np.sin(self.rot)
@@ -26,6 +28,7 @@ class HopkinsHandDevice(GenericHardware):
         # call base constructor
         GenericHardware.__init__(self,params)
         
+
         self.initialize()
 
     # implementation of virtual initialization function
@@ -43,11 +46,13 @@ class HopkinsHandDevice(GenericHardware):
 
         dev_path = ''
         for d in hid.enumerate():
-            if d['product_id'] == 1158 and d['usage'] == 512:
+            if d['product_id'] == 1158 and d['usage'] == 512 and d['serial_number'] == self.hand :
                 dev_path = d['path']
-                print('Opened hand device')
+                print('Opened ' + self.name)
+
         
         self.handle.open_path(dev_path)
+
 
     # set force baseline
     def set_force_baseline(self, fBaseline):

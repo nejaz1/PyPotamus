@@ -5,3 +5,12 @@
 
 Examples/finger_forces/main_5fing.py
 Examples/finger_forces/movfile.mov
+*.tgt
+*.mov
+*.txt
+*.txt
+Examples/finger_forces/data/_.mov
+Examples/finger_forces/data/_.txt
+Examples/finger_forces/data/HHD_testlist (version 2).xlsb.xlsx
+Examples/finger_forces/data/~$HHD_testlist.xlsx
+Examples/finger_forces/data/HHD_testlist.xlsx

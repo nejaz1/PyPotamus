@@ -31,6 +31,7 @@ class Experiment:
             self.gPlatform.printPythonVer()
 
     # initialize experiment with defaults provided in yaml file
+    # import pdb, block w/ pdb.set_trace()
     def load_settings(self, filepath):
         self.gParams = yaml.load(open(filepath))                # load defaults
         self.gScreen = ExperimentDisplay(self.gParams)          # exp display
