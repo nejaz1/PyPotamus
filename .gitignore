@@ -5,3 +5,8 @@
 
 Examples/finger_forces/main_5fing.py
 Examples/finger_forces/movfile.mov
+*.txt
+*.mov
+*.xlsx
+*.tgt
+Examples/finger_forces/target_rework.py
