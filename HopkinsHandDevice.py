@@ -78,6 +78,10 @@ class HopkinsHandDevice(GenericHardware):
      
             self.last_data = self.raw_data - self.f_baseline
 
+            if self.name == 'hopkins_hand_device_left':
+                listform = self.last_data.tolist()
+                self.last_data = np.array(listform[12:15] + listform[9:12]+ listform[6:9]+ listform[3:6]+ listform[0:3])
+
     # get all readings from hand device
     def getRaw(self,i):
         self.update()

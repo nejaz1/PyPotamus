@@ -14,3 +14,9 @@ Examples/finger_forces/data/_.txt
 Examples/finger_forces/data/HHD_testlist (version 2).xlsb.xlsx
 Examples/finger_forces/data/~$HHD_testlist.xlsx
 Examples/finger_forces/data/HHD_testlist.xlsx
+*.mov
+*.txt
+Examples/finger_forces/data/_debug.txt
+*.xlsx
+Examples/finger_forces/finger_task.yaml
+Examples/finger_forces/target_rework.py

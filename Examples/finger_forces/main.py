@@ -33,7 +33,10 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
-        img         = self.gScreen.image(image="hand.png", pos=(0,0), units="pix")
+        img_r         = self.gScreen.image(image="hand_r.png", pos=(0,0), units="pix")
+        img_l         = self.gScreen.image(image="hand_l.png", pos=(0,0), units="pix")
+        img = [img_l, img_r]
+
         warnings    = self.gScreen.text(text='', pos=(0,-0.15), color='black')
         boxL        = self.gScreen.rect(pos=[-0.95,0], width=0.05, height=1, lineWidth=5, 
                                         lineColor='white', fillColor='white')
@@ -52,7 +55,7 @@ class myExperiment(Experiment):
         cuefing     = self.gScreen.circle(pos=[0,0], radius=0.05, lineWidth=3.0, lineColor='white', 
                                           fillColor='blue')
 
-        posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
+        posList     = [ [(0.45,0.01),(0.21, 0.42),(-0.03,0.5),(-0.22,0.48),(-0.38,0.28)], [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]]
         colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
         
         # for sound 
@@ -63,9 +66,9 @@ class myExperiment(Experiment):
         PREP_TIME       = 400
         RESP_TIME       = 6000
         RETURN_TIME     = 3000
-        FINGER_REMAIN   = 400
+        FINGER_REMAIN   = 250
         FAIL_TIME       = 1200
-        DEAD_TIME       = 2000
+        DEAD_TIME       = 2500
         RT_THRESH       = 0.25 #in N
         MAX_FORCE       = 4 # in N
 
@@ -75,7 +78,8 @@ class myExperiment(Experiment):
         finger.opacity  = 0.0
         boxL.opacity    = 0.0
         boxR.opacity    = 0.0
-        img.opacity     = 0.0
+        img_r.opacity     = 0.0
+        img_l.opacity     = 0.0 
         cuefing.opacity = 0.0
         text.color      = 'black'
 
@@ -135,12 +139,14 @@ class myExperiment(Experiment):
         gTarget     = self.gScreen['target']
         gBoxL       = self.gScreen['boxL']
         gBoxR       = self.gScreen['boxR']
-        gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         gDigit      = int(self.gTrial.Digit)
-        gInstHand   = self.gVariables['HAND_DEVICES'][int(self.gTrial.Hand)]
+        gHand = int(self.gTrial.Hand)
+        gInstHand   = self.gVariables['HAND_DEVICES'][gHand]
         gScaling = self.gVariables['SCALING']
         gMaxForce = self.gVariables['MAX_FORCE']
+        gHandimage  = self.gScreen['handimage'][gHand-1]
+
 
         
  
@@ -179,7 +185,6 @@ class myExperiment(Experiment):
         gTarget     = self.gScreen['target']
         gBoxL       = self.gScreen['boxL']
         gBoxR       = self.gScreen['boxR']
-        gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         gCueFing    = self.gScreen['cuefing']
         gPoslist    = self.gScreen['posList']
@@ -187,7 +192,8 @@ class myExperiment(Experiment):
         gWarnings   = self.gScreen['warnings']
         gWarnlist   = self.gScreen['warnList']
         gDigit      = int(self.gTrial.Digit)
-        gInstHand = self.gVariables['HAND_DEVICES'][int(self.gTrial.Hand)]
+        gHand       = int(self.gTrial.Hand)
+        gInstHand = self.gVariables['HAND_DEVICES'][gHand]
         gCueTime    = self.gVariables['CUE_TIME']
         gPrepTime   = self.gVariables['PREP_TIME']
         gRespTime   = self.gVariables['RESP_TIME']
@@ -199,6 +205,8 @@ class myExperiment(Experiment):
         gBlopSound  = self.gVariables['BLOP_SOUND']
         gBuzzSound  = self.gVariables['BUZZ_SOUND']
         gScaling    = self.gVariables['SCALING']
+        gHandimage  = self.gScreen['handimage'][gHand-1]
+
 
                         
         # set state for hand device
@@ -236,7 +244,7 @@ class myExperiment(Experiment):
                 gText.text = self.gScreen['fingerLabels'][gDigit - 1]
                 gText.color = 'white'
                 gHandimage.opacity  = 0.9
-                gCueFing.pos = gPoslist[(gDigit - 1)]
+                gCueFing.pos = gPoslist[gHand-1][(gDigit - 1)]
                 gCueFing.fillColor   = gColorlist[gDigit - 1]
                 gCueFing.opacity = 1
 
@@ -431,8 +439,7 @@ class myExperiment(Experiment):
                 gWarnings.text = gWarnlist[2] 
                 gWarnings.color = 'white'
 
-                self.gHardware['gHand_L'].zerof(1000)
-                self.gHardware['gHand_R'].zerof(1000)
+              
                 
 
 
@@ -447,8 +454,6 @@ class myExperiment(Experiment):
                 gWarnings.color = 'white'
 
                 
-                self.gHardware['gHand_L'].zerof(1000)
-                self.gHardware['gHand_R'].zerof(1000)
                 
 
 
@@ -463,8 +468,7 @@ class myExperiment(Experiment):
                 self.state = self.gStates.TRIAL_COMPLETE
                 self.gVariables['measEndTime']      = self.gTimer[0]
                 self.gTimer.reset(1)
-                self.gHardware['gHand_L'].zerof(1000)
-                self.gHardware['gHand_R'].zerof(1000)
+
 
 
 
@@ -472,6 +476,8 @@ class myExperiment(Experiment):
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if (self.gTimer[1] > gFingRemain):
+                self.gHardware['gHand_L'].zerof(1000)
+                self.gHardware['gHand_R'].zerof(1000)
                 gFinger.opacity = 0
                 gFixation.color = 'black'
 

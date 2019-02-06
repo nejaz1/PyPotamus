@@ -37,7 +37,7 @@ for i in digits:
 random.shuffle(all_trials)
 
 
-with open('target10.tgt', 'w', newline='') as tgt:
+with open('target.tgt', 'w', newline='') as tgt:
     headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 
