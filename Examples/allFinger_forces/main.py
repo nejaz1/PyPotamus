@@ -8,6 +8,7 @@
 from PyPotamus import Experiment
 from HopkinsHandDevice import HopkinsHandDevice
 import numpy as np
+import linalg as la
 import math
 import pdb
 
@@ -107,9 +108,9 @@ class myExperiment(Experiment):
         gFinger5     = self.gScreen['finger5']
         #gDigit      = self.gScreen['digit']
         #gPoslist       = self.gScreen['posList']
-        dig         = int(self.gTrial.Digit)
+        #dig         = int(self.gTrial.Digit)
 
-        gText.text = self.gScreen['fingerLabels'][dig - 1]
+        #gText.text = self.gScreen['fingerLabels'][dig - 1]
 
         # update finger pos and raidus based on hardware readings
         if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
@@ -134,7 +135,7 @@ class myExperiment(Experiment):
             gFinger5.pos     = [(pos5[0]+0.4), (pos5[1])]
             gFinger5.radius  = 0.07 + pos5[2]/1.5
 
-
+            gDimBar = gVariables['dimension']
       
         #update ens bars based on hardware reading
         #if self.state != self.gStates.TRIAL_COMPLETE or self.gStates.END_TRIAL:
@@ -171,7 +172,6 @@ class myExperiment(Experiment):
         gFinger      = gFingers[dig - 1]
         #gEnsbarL     = self.gScreen['ensbarL']
         #gEnsbarR     = self.gScreen['ensbarR']
-        gTarget     = self.gScreen['target']
         #gBoxL       = self.gScreen['boxL']
         #gBoxR       = self.gScreen['boxR']
         gHandimage  = self.gScreen['handimage']
@@ -186,7 +186,7 @@ class myExperiment(Experiment):
         cue_time = 2000
         prep_time = 500
         resp_time  = 1500
-        wait_time  = 1000
+        wait_time  = 1000 # ** move these to top
         target_remain = 200
         dead_time  = 400
 
@@ -202,12 +202,7 @@ class myExperiment(Experiment):
                 gFingers[i].opacity = 0
                 gFingers[i].fillColor = gColorlist[i] 
             gText.color = 'white'
-            gHandimage.opacity  = 0.9
-            #gDigit.opacity = 1
-            #gDigit.fillColor   = gColorlist[self.gTrial.Digit - 1]
-           
-            #gBoxR.opacity   = 0.0
-            #gBoxL.opacity   = 0.0
+            
             gFixation.color = 'black'
             gTarget.opacity     = 0
 
@@ -222,15 +217,7 @@ class myExperiment(Experiment):
    
         # PREPRATORY PHASE
         elif self.state == self.gStates.WAIT_PREPRATORY:
-            #ens_perc            = self.gTrial.EnsPercent/100
-            #gBoxL.opacity       = 0.4
-            #gBoxR.opacity       = 0.4
-            #gBoxL.height        = ens_perc
-            #gBoxR.height        = ens_perc
-            #gEnsbarR.opacity  = 0.5
-            #gEnsbarL.opacity  = 0.5
-            #gEnsbarL.fillColor = 'LightPink'
-            #gEnsbarR.fillColor = 'LightPink'
+     
             gFixation.color     = 'white'
             for i in gFingers:
                 i.opacity = 0.7
@@ -246,67 +233,27 @@ class myExperiment(Experiment):
         # WAIT_RESPONSE
         elif self.state == self.gStates.WAIT_RESPONSE:
             # calculate distance from target
-            euc_dist    = np.linalg.norm(np.subtract(gFinger.pos,gTarget.pos))
-            '''
-            if bar_height >= box_height:
-                gFinger.opacity    = 1
-                gFinger.fillColor   = 'red'
-                gEnsbarL.fillColor  = 'red'
-                gEnsbarR.fillColor  = 'red'
-                gTarget.opacity     = 0
-                self.state = self.gStates.TRIAL_FAILED
-                self.gTimer.reset(2)
-            '''
+            #take the eig values and add to thing
+            
 
-            if self.gTimer[2] > resp_time:
-                gFinger.opacity     = 0.95
-                gFinger.fillColor   = 'red'
-                gTarget.opacity     = 0
-                self.state          = self.gStates.WAIT_RELEASE
-                self.gTimer.reset(2)
+                if gTimer[2] > 30000:  #** add new variable
+                    self.state = self.gStates.WAIT_RELEASE
+                    break
 
-            if euc_dist <= gTarget.radius:
-                gFinger.opacity     = 0.95
-                gFinger.fillColor   = 'green'
-                self.state          = self.gStates.WAIT_RELEASE
-                self.gTimer.reset(2)
+
+            
+        
 
         # WAIT_RELEASE
         elif self.state == self.gStates.WAIT_RELEASE:
             gFixation.color = 'white'
-            euc_dist = np.linalg.norm(np.subtract(gFinger.pos,gFixation.pos))
-            if self.gTimer[2] > target_remain:
-                gTarget.opacity = 0
+            #
+            # * text displaying score
+           
 
-            if (euc_dist <= 0.05) or (self.gTimer[2] > wait_time):
-                gTarget.opacity = 0
+            if self.gTimer[2] > wait_time:
                 self.state                          = self.gStates.TRIAL_COMPLETE
                 self.gTimer.reset(2)
-        # TRIAL_FAILED
-        elif self.state == self.gStates.TRIAL_FAILED:
-            '''
-            gBoxL.opacity = 0
-            gBoxR.opacity = 0
-            gEnsbarL.opacity = 0
-            gEnsbarRL.opacity = 0
-            gBoxL.opacity = 0
-            gBoxL.opacity = 0
-            gFinger.opacity = 0
-            gTarget.opacity = 0
-
-            if gEnsbarL.fillColor == 'red':
-                gWarnings.text = gWarnlist[0]
-                gWarnings.color = 'white'
-            else:
-                gWarnings.text = gWarnlist[1]
-                gWarnings.color = 'white'
-            
-            if gTimer[2] > wait_time:
-                gWarnings.color = 'black'
-                self.state = self.gStates.TRIAL_COMPLETE
-                self.gTimer.reset(2)
-            
-            '''
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
@@ -314,6 +261,7 @@ class myExperiment(Experiment):
 
             if self.gTimer[2] > dead_time:
                 self.state          = self.gStates.END_TRIAL
+                flag = 1 
 
             
 

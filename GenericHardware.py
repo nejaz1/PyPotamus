@@ -19,7 +19,8 @@ class GenericHardware(object):
         self.device_name    = params['device_name']             
         self.sampling_freq  = params['sampling_freq']
         self.shape          = params['buffer_size']     
-        self.buffer_size    = self.shape[0] * self.shape[1]        
+        self.buffer_size    = self.shape[0] * self.shape[1]
+        self.last = 0     
 
         # shared memory and locking        
         self.lock           = mp.RLock()
@@ -110,6 +111,19 @@ class GenericHardware(object):
             ncol    = self.shape[1] 
 
             return pd.DataFrame(np.array(d).reshape((nrow,ncol)))
+
+    def getBufferAsArrayLatest(self)
+        with self.lock:
+             d       = self.shared_mem[self.last:self.nsamples.value].copy()
+            
+            nrow    = round(len(d)/self.shape[1])
+            ncol    = self.shape[1] 
+            
+            self.last = nsamples.value
+            return np.array(d).reshape((nrow,ncol))
+            
+        
+            
 
     # get copy of all valid items in buffer as a list
     def getBufferAsArray(self):
