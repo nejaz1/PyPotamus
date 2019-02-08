@@ -28,6 +28,7 @@ data_format: {
             'L_X3', 'L_Y3', 'L_Z3', 
             'L_X4', 'L_Y4', 'L_Z4', 
             'L_X5', 'L_Y5', 'L_Z5',
+            'time','BN','TN','state',
             'R_X1', 'R_Y1', 'R_Z1', 
             'R_X2', 'R_Y2', 'R_Z2',
             'R_X3', 'R_Y3', 'R_Z3', 

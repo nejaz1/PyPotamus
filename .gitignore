@@ -20,3 +20,6 @@ Examples/finger_forces/data/_debug.txt
 *.xlsx
 Examples/finger_forces/finger_task.yaml
 Examples/finger_forces/target_rework.py
+Examples/finger_forces/data/_debug.txt
+Examples/finger_forces/data/_.txt
+Examples/finger_forces/data/_.mov

@@ -80,8 +80,8 @@ class HopkinsHandDevice(GenericHardware):
 
                 #look for a faster way****8
             if self.name == 'hopkins_hand_device_left':
-                listform = self.last_data.tolist()
-                self.last_data = np.array(listform[12:15] + listform[9:12]+ listform[6:9]+ listform[3:6]+ listform[0:3])
+                b = np.array_split(self.last_data, 5)
+                self.last_data = np.hstack((b[4], b[3], b[2], b[1], b[0]))
 
     # get all readings from hand device
     def getRaw(self,i):

@@ -495,16 +495,19 @@ class myExperiment(Experiment):
         # get data from hand device hardware thread and write to mov file
         m_r = gHand_R.getBufferAsArray()
         m_l = gHand_L.getBufferAsArray()
-        rows = min([int(m_r.size/19), int(m_l.size/19)])
-        righthandcols = list(range(19))
-        righthandcols = righthandcols[4:]
-        m_l = m_l[list(range(rows)), :]
-        m_r = m_r[list(range(rows)), :]
-        m_r = m_r[:, righthandcols]
 
-      
+        rows_max = max([int(m_r.size/19), int(m_l.size/19)])
+        rows_min = min([int(m_r.size/19), int(m_l.size/19)])
+        rows = rows_max - rows_min
+        filler = np.full([rows, 19], np.nan)
 
+        idx = [int(m_r.size/19), int(m_l.size/19)].index(rows_min)
+        if idx == 0:
+            m_r = np.vstack((m_r, filler))
+        else:
+            m_l = np.vstack((m_l, filler))
 
+        pdb.set_trace()
         m = np.concatenate((m_l,m_r), axis = 1)
         self.gData.add_mov_record_array(m) # * check for arrays to do this.
 
@@ -532,6 +535,8 @@ class myExperiment(Experiment):
     # adding data on run end
     def onRunEnd(self):
         print('Run complete')
+        print('Score : '+ str(np.sum(self.gData.data['Corr']==1)) )
+        print('Passive Finger Movement: '+ str(np.mean(self.gData.data['EnsForce'])) )
         # pd.DataFrame(self.gData.mov_data[0:self.gData.mov_idx], columns=self.gParams['data_format']['trial']).to_csv('s01_mov.txt')
         # pdb.set_trace()
 
