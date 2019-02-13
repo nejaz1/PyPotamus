@@ -507,7 +507,6 @@ class myExperiment(Experiment):
         else:
             m_l = np.vstack((m_l, filler))
 
-        pdb.set_trace()
         m = np.concatenate((m_l,m_r), axis = 1)
         self.gData.add_mov_record_array(m) # * check for arrays to do this.
 
