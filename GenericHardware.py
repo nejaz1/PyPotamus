@@ -12,6 +12,7 @@ import abc
 import numpy as np
 import pandas as pd
 
+import pdb
 class GenericHardware(object):
     # constructor
     def __init__(self, params):
@@ -19,7 +20,8 @@ class GenericHardware(object):
         self.device_name    = params['device_name']             
         self.sampling_freq  = params['sampling_freq']
         self.shape          = params['buffer_size']     
-        self.buffer_size    = self.shape[0] * self.shape[1]        
+        self.buffer_size    = self.shape[0] * self.shape[1]     
+        self.last_idx       = 0   
 
         # shared memory and locking        
         self.lock           = mp.RLock()
@@ -120,7 +122,21 @@ class GenericHardware(object):
             ncol    = self.shape[1] 
 
             return np.array(d).reshape((nrow,ncol))
-        
+
+    def getBufferAsArrayLAST(self):
+        with self.lock:
+            print(self.last_idx)
+            print(self.nsamples.value)
+            d = self.shared_mem[self.last_idx:self.nsamples.value].copy()
+            self.last_idx = self.nsamples.value    
+
+            nrow = round(len(d)/self.shape[1])
+            ncol = self.shape[1]
+
+            matrix = np.array(d).reshape((nrow,ncol)) 
+            return matrix[:,4:]   
+
+
     # method that implement buffered sampling into shared memory
     def sampling_loop(self):
         print('Preparing to sample {} at {}ms'.format(self.processName(),self.sampling_freq))        
