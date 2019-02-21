@@ -476,8 +476,8 @@ class myExperiment(Experiment):
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
             if (self.gTimer[1] > gFingRemain):
-                self.gHardware['gHand_L'].zerof(1000)
-                self.gHardware['gHand_R'].zerof(1000)
+                self.gHardware['gHand_L'].zerof(500)
+                self.gHardware['gHand_R'].zerof(500)
                 gFinger.opacity = 0
                 gFixation.color = 'black'
 
