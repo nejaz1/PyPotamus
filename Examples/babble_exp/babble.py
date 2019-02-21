@@ -6,6 +6,7 @@
 # IMPORTANT: Path to PyPotamus needs set to be in PYTHONPATH environment variable
 
 import numpy as np
+from scipy import linalg as la
 import pandas as pd
 from HopkinsHandDevice import HopkinsHandDevice
 from PyPotamus import Experiment
@@ -32,7 +33,6 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
-        img         = self.gScreen.image(image="hand.png", pos=(0,0), units="pix")
         warnings    = self.gScreen.text(text='', pos=(0,0.2), color='black')
         dim_box        = self.gScreen.rect(pos=[0,-0.8], width=1, height=0.05, lineWidth=5, 
                                         lineColor='white', fillColor='white')
@@ -66,7 +66,6 @@ class myExperiment(Experiment):
         RT_THRESH       = 0.25 #in N
         MAX_FORCE       = 4 # in N
 
-        img.opacity     = 0.0
         dim_box.opacity = 0.7
         dim_bar.opacity = 0.8
         text.color      = 'black'
@@ -85,7 +84,6 @@ class myExperiment(Experiment):
         #self.gScreen['soundlist']       = soundlist
         #self.gScreen['audio']           = audio
         self.gScreen['fixation']        = fixation 
-        self.gScreen['handimage']       = img
         self.gScreen['posList']         = posList
         self.gScreen['colorList']       = colorList
         self.gScreen['warnList']        = ['Too much movement!', "Time's up!", 'Relax Fingers...']
@@ -116,10 +114,10 @@ class myExperiment(Experiment):
         self.gDiagnostic[3] = 'TN:' + str(self.gTrial.TN)        
 
     def updateDIM(self):
-        diags = np.diagonal(self.gVariables['DIM_MATRIX'])
-        pdb.set_trace()
-        top = np.square(np.sum(diags))
-        bottom = np.sum(np.square(diags))
+        e_vals,e_vecs = la.eig(self.gVariables['DIM_MATRIX'])
+        s_vals = np.sqrt(e_vals)
+        top = np.square(np.sum(s_vals))
+        bottom = np.sum(np.square(s_vals))
         if bottom != 0:
             dim = top/bottom
             self.gVariables['DIM_NUMBER'] = dim
@@ -133,7 +131,6 @@ class myExperiment(Experiment):
         gFinger5     = self.gScreen['finger5']
         gDimBar     = self.gScreen['dim_bar']
         gDimBox     = self.gScreen['dim_box']
-        gHandimage  = self.gScreen['handimage']
         gText       = self.gScreen['text']
         gScaling = self.gVariables['SCALING']
         gMaxForce = self.gVariables['MAX_FORCE']
@@ -175,27 +172,26 @@ class myExperiment(Experiment):
         gFinger3     = self.gScreen['finger3']
         gFinger4     = self.gScreen['finger4']
         gFinger5     = self.gScreen['finger5']
-        gFixation   = self.gScreen['fixation']
-        gDimBar    = self.gScreen['dim_bar']
-        gDimBox    = self.gScreen['dim_box']
-        gHandimage  = self.gScreen['handimage']
-        gText       = self.gScreen['text']
-        gPoslist    = self.gScreen['posList']
-        gColorlist  = self.gScreen['colorList']
-        gWarnings   = self.gScreen['warnings']
-        gWarnlist   = self.gScreen['warnList']
-        gCueTime    = self.gVariables['CUE_TIME']
-        gPrepTime   = self.gVariables['PREP_TIME']
-        gRespTime   = self.gVariables['RESP_TIME']
-        gReturnTime = self.gVariables['RETURN_TIME']
-        gFingRemain = self.gVariables['FINGER_REMAIN']
-        gFailTime   = self.gVariables['FAIL_TIME']
-        gDeadTime   = self.gVariables['DEAD_TIME']
-        gRTthresh   = self.gVariables['RT_THRESH']
-        gBlopSound  = self.gVariables['BLOP_SOUND']
-        gBuzzSound  = self.gVariables['BUZZ_SOUND']
-        gScaling    = self.gVariables['SCALING']
-        gDimMatrix = self.gVariables['DIM_MATRIX']
+        gFixation    = self.gScreen['fixation']
+        gDimBar      = self.gScreen['dim_bar']
+        gDimBox      = self.gScreen['dim_box']
+        gText        = self.gScreen['text']
+        gPoslist     = self.gScreen['posList']
+        gColorlist   = self.gScreen['colorList']
+        gWarnings    = self.gScreen['warnings']
+        gWarnlist    = self.gScreen['warnList']
+        gCueTime     = self.gVariables['CUE_TIME']
+        gPrepTime    = self.gVariables['PREP_TIME']
+        gRespTime    = self.gVariables['RESP_TIME']
+        gReturnTime  = self.gVariables['RETURN_TIME']
+        gFingRemain  = self.gVariables['FINGER_REMAIN']
+        gFailTime    = self.gVariables['FAIL_TIME']
+        gDeadTime    = self.gVariables['DEAD_TIME']
+        gRTthresh    = self.gVariables['RT_THRESH']
+        gBlopSound   = self.gVariables['BLOP_SOUND']
+        gBuzzSound   = self.gVariables['BUZZ_SOUND']
+        gScaling     = self.gVariables['SCALING']
+        gDimMatrix   = self.gVariables['DIM_MATRIX']
 
                         
         # set state for hand device
@@ -218,14 +214,14 @@ class myExperiment(Experiment):
                 #set up display to appear during the cue phase
         
                 gWarnings.color = 'white' #*****change text
-                gHandimage.opacity  = 0.9
                 gDimBar.opacity = 0.9
                 gDimBox.opcaity = 0.8
-                gFinger1.fillColor   = gColorlist[0]
-                gFinger2.fillColor   = gColorlist[1]         
-                gFinger3.fillColor   = gColorlist[2]         
-                gFinger4.fillColor   = gColorlist[3]         
-                gFinger5.fillColor   = gColorlist[4]         
+                gFinger1.opacity   = 0
+                gFinger2.opacity = 0       
+                gFinger3.opacity = 0       
+                gFinger4.opacity = 0       
+                gFinger5.opacity = 0       
+
          
 
                 #reset the internal between phase timer (gTimer1)
@@ -239,7 +235,6 @@ class myExperiment(Experiment):
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
             if self.gTimer[1] > 500 and self.gTimer[1] < 550:
-                gHandimage.opacity  = 0.0
                 gWarnings.text = '3'
                 self.gTimer.reset(2)
             
@@ -251,11 +246,11 @@ class myExperiment(Experiment):
                 gWarnings.text = "GO!"
                 # hide hand
                 #display the shapes involved in the next phase
-                gFinger1.opacity     = 0.7
-                gFinger2.opacity     = 0.7
-                gFinger3.opacity     = 0.7
-                gFinger4.opacity     = 0.7
-                gFinger5.opacity     = 0.7
+                gFinger1.opacity     = 0
+                gFinger2.opacity     = 0
+                gFinger3.opacity     = 0
+                gFinger4.opacity     = 0
+                gFinger5.opacity     = 0
  
                 # swtich phase and reset timer
                 self.state                          = self.gStates.WAIT_RESPONSE
@@ -283,9 +278,8 @@ class myExperiment(Experiment):
             if (self.gTimer[1] > gDeadTime):
                 self.state          = self.gStates.END_TRIAL
                 gWarnings.text = ''
-                self.gVariables['measStopTime'] = self.gTimer[0]
+                self.gVariables['measEndTime'] = self.gTimer[0]
                 gHand.stopRecording()
-                pdb.set_trace()
 
 
     # adding trial data on trial end
@@ -293,6 +287,17 @@ class myExperiment(Experiment):
         # get data from hand device hardware thread and write to mov file
         m = gHand.getBufferAsArray()
         self.gData.add_mov_record_array(m)
+        m = m[:,4:]
+        a = np.matmul(np.transpose(m), m)
+        e_vals,e_vecs = la.eig(a)
+        vals = np.sqrt(e_vals)
+        top = np.square(np.sum(vals))
+        bottom = np.sum(np.square(vals))
+        dim = top/bottom
+        print(dim)
+
+
+      
 
         # print sampling stats
         # m = gHand.getBufferAsDataFrame()
@@ -308,6 +313,7 @@ class myExperiment(Experiment):
         self.gData.add_data_record([gTrial.TN, gTrial.Hand, 
                                     gVar['measStartTime'], gVar['measEndTime']])
         # self.gData.add_mov_record(gVar['MOV_DATA'])
+    
         self.gVariables['MOV_DATA'] = []
         # pdb.set_trace()
 

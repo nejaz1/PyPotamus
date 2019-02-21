@@ -125,15 +125,13 @@ class GenericHardware(object):
 
     def getBufferAsArrayLAST(self):
         with self.lock:
-            print(self.last_idx)
-            print(self.nsamples.value)
             d = self.shared_mem[self.last_idx:self.nsamples.value].copy()
             self.last_idx = self.nsamples.value    
 
             nrow = round(len(d)/self.shape[1])
             ncol = self.shape[1]
 
-            matrix = np.array(d).reshape((nrow,ncol)) 
+            matrix = np.array(d).reshape((nrow,ncol))             
             return matrix[:,4:]   
 
 
