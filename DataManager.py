@@ -84,7 +84,6 @@ class DataManager:
 
     def add_mov_record_array(self, data):
         (nrows,ncols) = data.shape
-
         self.mov_data[self.mov_idx:self.mov_idx + nrows] = data
         self.mov_idx = self.mov_idx + nrows
         # pdb.set_trace()

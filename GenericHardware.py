@@ -12,6 +12,7 @@ import abc
 import numpy as np
 import pandas as pd
 
+import pdb
 class GenericHardware(object):
     # constructor
     def __init__(self, params):
@@ -134,7 +135,19 @@ class GenericHardware(object):
             ncol    = self.shape[1] 
 
             return np.array(d).reshape((nrow,ncol))
-        
+
+    def getBufferAsArrayLAST(self):
+        with self.lock:
+            d = self.shared_mem[self.last_idx:self.nsamples.value].copy()
+            self.last_idx = self.nsamples.value    
+
+            nrow = round(len(d)/self.shape[1])
+            ncol = self.shape[1]
+
+            matrix = np.array(d).reshape((nrow,ncol))             
+            return matrix[:,4:]   
+
+
     # method that implement buffered sampling into shared memory
     def sampling_loop(self):
         print('Preparing to sample {} at {}ms'.format(self.processName(),self.sampling_freq))        
