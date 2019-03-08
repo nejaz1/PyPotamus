@@ -49,7 +49,7 @@ class myExperiment(Experiment):
         posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
         timebox = self.gScreen.rect(pos=[0,-1], width = 2, height = 4, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        dim_matrix = np.zeros([15,15])
+        dim_matrix = np.zeros([10,10])
         dim_num = 0
         # for sound 
         mixer.init()
@@ -57,7 +57,7 @@ class myExperiment(Experiment):
         # set time limits for trial phases
         CUE_TIME        = 1200
         PREP_TIME       = 400
-        RESP_TIME       = 60000
+        RESP_TIME       = 30000
         RETURN_TIME     = 3000
         FINGER_REMAIN   = 400
         FAIL_TIME       = 1200
@@ -138,7 +138,6 @@ class myExperiment(Experiment):
         gRespTime = self.gVariables['RESP_TIME']
 
         # update finger pos and raidus based on hardware readings during the appropriate phases
-        if self.state == self.gStates.WAIT_RESPONSE:           
         # #    # pos1             = self.gHardware['gHand'].getXYZ(0)
         # #     #gFinger1.pos     = [(pos1[0] - 0.4), (pos1[1])]
         # #     #gFinger1.radius  = 0.07 + pos1[2]/1.5
@@ -159,11 +158,12 @@ class myExperiment(Experiment):
         #     gFinger5.pos     = [(pos5[0]+0.4), (pos5[1])]
         #     gFinger5.radius  = 0.07 + pos5[2]/1.5
            
-            gDimBar.width = self.gVariables['DIM_NUMBER']/15
+        gDimBar.width = self.gVariables['DIM_NUMBER']/10
+        if self.state == self.gStates.WAIT_RESPONSE:
             gTimeBox.height = (gRespTime - self.gTimer[1])*(4/gRespTime)
 
             
-            
+        # dcfrvgtbhynjmk,
     
     # over-load experimental trial loop function
     def trial(self):
@@ -232,8 +232,9 @@ class myExperiment(Experiment):
 
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
-                gDimMatrix = np.zeros([15,15])
+                self.gVariables['DIM_MATRIX']= np.zeros([10,10])
                 self.gVariables['DIM_NUMBER'] = 0
+
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
             if self.gTimer[1] > 500 and self.gTimer[1] < 550:
@@ -296,7 +297,11 @@ class myExperiment(Experiment):
         top = np.square(np.sum(e_vals))
         bottom = np.sum(np.square(e_vals))
         dim = top/bottom
+        print('full matrix')
         print(dim)
+
+        print('no zs')
+        print(self.gVariables['DIM_NUMBER'])
 
 
       

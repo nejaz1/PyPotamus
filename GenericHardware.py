@@ -132,7 +132,11 @@ class GenericHardware(object):
             ncol = self.shape[1]
 
             matrix = np.array(d).reshape((nrow,ncol))             
-            return matrix[:,4:]   
+            matrix = matrix[:,4:] 
+            matrixa = matrix[:,0:15:3] 
+            matrixb = matrix[:,1:15:3] 
+            matrix = np.hstack((matrixa, matrixb))
+            return matrix
 
 
     # method that implement buffered sampling into shared memory
