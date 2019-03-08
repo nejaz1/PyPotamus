@@ -48,17 +48,16 @@ class myExperiment(Experiment):
 
         posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
-        
+        timebox = self.gScreen.rect(pos=[0,-1], width = 2, height = 4, lineWidth = 5, lineColor = 'white', fillColor = 'white')
         dim_matrix = np.zeros([15,15])
         dim_num = 0
-
         # for sound 
         mixer.init()
         
         # set time limits for trial phases
         CUE_TIME        = 1200
         PREP_TIME       = 400
-        RESP_TIME       = 6000
+        RESP_TIME       = 60000
         RETURN_TIME     = 3000
         FINGER_REMAIN   = 400
         FAIL_TIME       = 1200
@@ -68,6 +67,7 @@ class myExperiment(Experiment):
 
         dim_box.opacity = 0.7
         dim_bar.opacity = 0.8
+        timebox.opacity = 0.3
         text.color      = 'black'
 
         #   - save objects to dictionary for easy access
@@ -76,7 +76,7 @@ class myExperiment(Experiment):
         self.gScreen['finger3']          = finger3
         self.gScreen['finger4']          = finger4
         self.gScreen['finger5']          = finger5
-
+        self.gScreen['time_box']        = timebox
         self.gScreen['dim_box']            = dim_box
         self.gScreen['dim_bar']            = dim_bar
         self.gScreen['text']            = text
@@ -115,9 +115,8 @@ class myExperiment(Experiment):
 
     def updateDIM(self):
         e_vals,e_vecs = la.eig(self.gVariables['DIM_MATRIX'])
-        s_vals = np.sqrt(e_vals)
-        top = np.square(np.sum(s_vals))
-        bottom = np.sum(np.square(s_vals))
+        top = np.square(np.sum(e_vals))
+        bottom = np.sum(np.square(e_vals))
         if bottom != 0:
             dim = top/bottom
             self.gVariables['DIM_NUMBER'] = dim
@@ -134,7 +133,9 @@ class myExperiment(Experiment):
         gText       = self.gScreen['text']
         gScaling = self.gVariables['SCALING']
         gMaxForce = self.gVariables['MAX_FORCE']
+        gTimeBox = self.gScreen['time_box']
 
+        gRespTime = self.gVariables['RESP_TIME']
 
         # update finger pos and raidus based on hardware readings during the appropriate phases
         if self.state == self.gStates.WAIT_RESPONSE:           
@@ -159,7 +160,7 @@ class myExperiment(Experiment):
         #     gFinger5.radius  = 0.07 + pos5[2]/1.5
            
             gDimBar.width = self.gVariables['DIM_NUMBER']/15
-
+            gTimeBox.height = (gRespTime - self.gTimer[1])*(4/gRespTime)
 
             
             
@@ -231,7 +232,8 @@ class myExperiment(Experiment):
 
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
-
+                gDimMatrix = np.zeros([15,15])
+                self.gVariables['DIM_NUMBER'] = 0
         # CUE PHASE
         elif self.state == self.gStates.CUE_PHASE:
             if self.gTimer[1] > 500 and self.gTimer[1] < 550:
@@ -243,7 +245,7 @@ class myExperiment(Experiment):
             if self.gTimer[2] > 2000: 
                 gWarnings.text = '1'
             if self.gTimer[2] > 3000:
-                gWarnings.text = "GO!"
+                gWarnings.text = "WIGGLE!"
                 # hide hand
                 #display the shapes involved in the next phase
                 gFinger1.opacity     = 0
@@ -266,8 +268,9 @@ class myExperiment(Experiment):
             self.gVariables['DIM_MATRIX'] = self.gVariables['DIM_MATRIX'] + cov
             self.updateDIM()
 
-            if self.gTimer[1] > 30000:
+            if self.gTimer[1] > gRespTime:
                 self.state = self.gStates.TRIAL_COMPLETE
+                gWarnings.text = 'COMPLETE!'
 
         # TRIAL_COMPLETE
         elif self.state == self.gStates.TRIAL_COMPLETE:
@@ -290,9 +293,8 @@ class myExperiment(Experiment):
         m = m[:,4:]
         a = np.matmul(np.transpose(m), m)
         e_vals,e_vecs = la.eig(a)
-        vals = np.sqrt(e_vals)
-        top = np.square(np.sum(vals))
-        bottom = np.sum(np.square(vals))
+        top = np.square(np.sum(e_vals))
+        bottom = np.sum(np.square(e_vals))
         dim = top/bottom
         print(dim)
 

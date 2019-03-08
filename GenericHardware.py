@@ -113,19 +113,6 @@ class GenericHardware(object):
 
             return pd.DataFrame(np.array(d).reshape((nrow,ncol)))
 
-    def getBufferAsArrayLatest(self)
-        with self.lock:
-             d       = self.shared_mem[self.last:self.nsamples.value].copy()
-            
-            nrow    = round(len(d)/self.shape[1])
-            ncol    = self.shape[1] 
-            
-            self.last = nsamples.value
-            return np.array(d).reshape((nrow,ncol))
-            
-        
-            
-
     # get copy of all valid items in buffer as a list
     def getBufferAsArray(self):
         with self.lock:
@@ -138,8 +125,8 @@ class GenericHardware(object):
 
     def getBufferAsArrayLAST(self):
         with self.lock:
-            d = self.shared_mem[self.last_idx:self.nsamples.value].copy()
-            self.last_idx = self.nsamples.value    
+            d = self.shared_mem[self.last:self.nsamples.value].copy()
+            self.last = self.nsamples.value    
 
             nrow = round(len(d)/self.shape[1])
             ncol = self.shape[1]
