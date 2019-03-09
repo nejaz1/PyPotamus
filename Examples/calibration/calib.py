@@ -124,7 +124,7 @@ class myExperiment(Experiment):
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
-            gFinger.pos     = [(pos[0]), (pos[1])]
+            gFinger.pos     = [(pos[2]), (pos[0])]
             #gFinger.radius  = 0.1 + pos[2]/1.2
 
             #update ens bars based on hardware reading
@@ -254,7 +254,7 @@ class myExperiment(Experiment):
                 self.gVariables['RT'] = self.gTimer[2]
 
             #if the finger reaches the target
-            if euc_dist <= gTarget.radius and trgt_rad == fing_rad:
+            if euc_dist <= gTarget.radius:# and trgt_rad == fing_rad:
                 #audio = mixer.Sound('BLOP.wav')
                 #audio.play()
                 #save data for finger forces with scalar applied and show corr trial
