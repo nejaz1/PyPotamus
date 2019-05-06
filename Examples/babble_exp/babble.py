@@ -33,7 +33,7 @@ class myExperiment(Experiment):
         #   - draw circles for moving fingers and target stimulus
         #   - draw rectangles for strength of enslaving
         # e  = self.gScreen.circle(pos=[0,0], radius=1, lineColor='black', fillColor='gray')
-        warnings    = self.gScreen.text(text='', pos=(0,0.2), color='black')
+        warnings    = self.gScreen.text(text='', pos=(0,0.3), color='black')
         dim_box        = self.gScreen.rect(pos=[0,-0.8], width=1, height=0.05, lineWidth=5, 
                                         lineColor='white', fillColor='white')
         dim_bar        = self.gScreen.rect(pos=[0,-0.8], width=0, height=0.05, lineWidth=5, 
@@ -158,12 +158,12 @@ class myExperiment(Experiment):
         #     gFinger5.pos     = [(pos5[0]+0.4), (pos5[1])]
         #     gFinger5.radius  = 0.07 + pos5[2]/1.5
            
-        gDimBar.width = self.gVariables['DIM_NUMBER']/10
         if self.state == self.gStates.WAIT_RESPONSE:
+            gDimBar.width = self.gVariables['DIM_NUMBER']/10
+
             gTimeBox.height = (gRespTime - self.gTimer[1])*(4/gRespTime)
 
             
-        # dcfrvgtbhynjmk,
     
     # over-load experimental trial loop function
     def trial(self):
@@ -193,13 +193,19 @@ class myExperiment(Experiment):
         gBuzzSound   = self.gVariables['BUZZ_SOUND']
         gScaling     = self.gVariables['SCALING']
         gDimMatrix   = self.gVariables['DIM_MATRIX']
+        gTimeBox = self.gScreen['time_box']
+        gDimBar     = self.gScreen['dim_bar']
+
+
 
                         
         # set state for hand device
         gHand.setState(self.get_runno(),round(self.gTrial.TN),self.state)
 
         # START TRIAL
-        if self.state == self.gStates.START_TRIAL:          
+        if self.state == self.gStates.START_TRIAL:  
+                gTimeBox.height = 4
+                gDimBar.width = 0
                 # set state to cue phase
                 #   - log the start of the trial 
                 #   - start logging data
@@ -263,11 +269,18 @@ class myExperiment(Experiment):
                                 
         # WAIT_RESPONSE
         elif self.state == self.gStates.WAIT_RESPONSE:
-            # calculate distance from target and keep track of the ens bars continually
+            #gWarnings.text = ''
+            #a = self.gHardware['gHand'].getXYZ_ALL()
+            #a = abs(a) <=3
+            #if all(a):
+                # calculate distance from target and keep track of the ens bars continually
             a = gHand.getBufferAsArrayLAST()
             cov = np.matmul(np.transpose(a),a)
             self.gVariables['DIM_MATRIX'] = self.gVariables['DIM_MATRIX'] + cov
             self.updateDIM()
+
+            #else:
+            #    gWarnings.text = 'TOO MUCH FORCE!, MAKE SMALLER MOVEMENTS'    
 
             if self.gTimer[1] > gRespTime:
                 self.state = self.gStates.TRIAL_COMPLETE
@@ -300,10 +313,7 @@ class myExperiment(Experiment):
         print('full matrix')
         print(dim)
 
-        print('no zs')
-        print(self.gVariables['DIM_NUMBER'])
-
-
+    
       
 
         # print sampling stats
