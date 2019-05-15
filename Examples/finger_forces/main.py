@@ -70,7 +70,7 @@ class myExperiment(Experiment):
         FAIL_TIME       = 1200
         DEAD_TIME       = 2500
         RT_THRESH       = 0.25 #in N
-        MAX_FORCE       = 4 # in N
+        MAX_FORCE       = 3 # in N
 
         target.opacity  = 0.0
         ensbarL.opacity = 0.0

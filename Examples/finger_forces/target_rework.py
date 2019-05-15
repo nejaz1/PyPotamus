@@ -5,11 +5,11 @@ import random
 num_sampl = 8
 angle_inc = 360/num_sampl
 angles = []
-radii = [1.5,3]
+radii = [1.5]
 target_space = []
 digits = [1,2,3,4,5]
 Hand = 2
-ens_perc = 0.8
+ens_perc = 1.5
 
 
 for i in range(num_sampl):
