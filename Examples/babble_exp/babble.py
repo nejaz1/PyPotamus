@@ -49,7 +49,7 @@ class myExperiment(Experiment):
         posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
         timebox = self.gScreen.rect(pos=[0,-1], width = 2, height = 4, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        dim_matrix = np.zeros([10,10])
+        dim_matrix = np.zeros([15,15])
         dim_num = 0
         # for sound 
         mixer.init()
@@ -137,8 +137,6 @@ class myExperiment(Experiment):
 
         gRespTime = self.gVariables['RESP_TIME']
 
-        # update finger pos and raidus based on hardware readings during the appropriate phases
-        # #    # pos1             = self.gHardware['gHand'].getXYZ(0)
         # #     #gFinger1.pos     = [(pos1[0] - 0.4), (pos1[1])]
         # #     #gFinger1.radius  = 0.07 + pos1[2]/1.5
 
@@ -159,9 +157,14 @@ class myExperiment(Experiment):
         #     gFinger5.radius  = 0.07 + pos5[2]/1.5
            
         if self.state == self.gStates.WAIT_RESPONSE:
-            gDimBar.width = self.gVariables['DIM_NUMBER']/10
+            gDimBar.width = self.gVariables['DIM_NUMBER']/14
 
             gTimeBox.height = (gRespTime - self.gTimer[1])*(4/gRespTime)
+            #a            = self.gHardware['gHand'].getXYZ_ALL()
+            #a = abs(a)
+            #a = a>=3
+            #if any(a):
+             #   gText = 'Too Much Movement!'
 
             
     
@@ -238,7 +241,7 @@ class myExperiment(Experiment):
 
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
-                self.gVariables['DIM_MATRIX']= np.zeros([10,10])
+                self.gVariables['DIM_MATRIX']= np.zeros([15,15])
                 self.gVariables['DIM_NUMBER'] = 0
 
         # CUE PHASE
@@ -305,6 +308,7 @@ class myExperiment(Experiment):
         m = gHand.getBufferAsArray()
         self.gData.add_mov_record_array(m)
         m = m[:,4:]
+        m = np.delete(m,2,1)
         a = np.matmul(np.transpose(m), m)
         e_vals,e_vecs = la.eig(a)
         top = np.square(np.sum(e_vals))
