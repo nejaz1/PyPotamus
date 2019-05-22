@@ -311,8 +311,8 @@ class myExperiment(Experiment):
         m = np.delete(m,2,1)
         a = np.matmul(np.transpose(m), m)
         e_vals,e_vecs = la.eig(a)
-        top = np.square(np.sum(e_vals))
-        bottom = np.sum(np.square(e_vals))
+        top = np.square(np.sum(np.sqrt(e_vals)))
+        bottom = np.sum(e_vals)
         dim = top/bottom
         print('full matrix')
         print(dim)
