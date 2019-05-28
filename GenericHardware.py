@@ -133,9 +133,6 @@ class GenericHardware(object):
 
             matrix = np.array(d).reshape((nrow,ncol))             
             matrix = matrix[:,4:] 
-            matrixa = matrix[:,0:15:3] 
-            matrixb = matrix[:,1:15:3] 
-            matrix = np.hstack((matrixa, matrixb))
             return matrix
 
 

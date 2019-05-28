@@ -49,7 +49,7 @@ class myExperiment(Experiment):
         posList     = [(-0.45,0.01),(-0.21, 0.42),(0.03,0.5),(0.22,0.48),(0.38,0.28)]
         colorList   = ['#AFADF5', '#E3CBA0', '#DE4CBA', 'blue', 'yellow']
         timebox = self.gScreen.rect(pos=[0,-1], width = 2, height = 4, lineWidth = 5, lineColor = 'white', fillColor = 'white')
-        dim_matrix = np.zeros([15,15])
+        dim_matrix = np.zeros([14,14])
         dim_num = 0
         # for sound 
         mixer.init()
@@ -115,8 +115,8 @@ class myExperiment(Experiment):
 
     def updateDIM(self):
         e_vals,e_vecs = la.eig(self.gVariables['DIM_MATRIX'])
-        top = np.square(np.sum(e_vals))
-        bottom = np.sum(np.square(e_vals))
+        top = np.square(np.sum(np.sqrt(e_vals)))
+        bottom = np.sum(e_vals)
         if bottom != 0:
             dim = top/bottom
             self.gVariables['DIM_NUMBER'] = dim
@@ -241,7 +241,7 @@ class myExperiment(Experiment):
 
                 self.gVariables['RT'] = 0
                 self.gVariables['MT'] = 0
-                self.gVariables['DIM_MATRIX']= np.zeros([15,15])
+                self.gVariables['DIM_MATRIX']= np.zeros([14,14])
                 self.gVariables['DIM_NUMBER'] = 0
 
         # CUE PHASE
@@ -278,6 +278,7 @@ class myExperiment(Experiment):
             #if all(a):
                 # calculate distance from target and keep track of the ens bars continually
             a = gHand.getBufferAsArrayLAST()
+            a = np.delete(a,1,1)
             cov = np.matmul(np.transpose(a),a)
             self.gVariables['DIM_MATRIX'] = self.gVariables['DIM_MATRIX'] + cov
             self.updateDIM()
@@ -300,6 +301,7 @@ class myExperiment(Experiment):
                 gWarnings.text = ''
                 self.gVariables['measEndTime'] = self.gTimer[0]
                 gHand.stopRecording()
+                gDimBar.width = 0
 
 
     # adding trial data on trial end
@@ -308,7 +310,7 @@ class myExperiment(Experiment):
         m = gHand.getBufferAsArray()
         self.gData.add_mov_record_array(m)
         m = m[:,4:]
-        m = np.delete(m,2,1)
+        m = np.delete(m,1,1)
         a = np.matmul(np.transpose(m), m)
         e_vals,e_vecs = la.eig(a)
         top = np.square(np.sum(np.sqrt(e_vals)))
