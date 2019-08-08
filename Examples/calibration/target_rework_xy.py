@@ -2,12 +2,12 @@ import numpy as np
 import csv
 import random
 
-num_sampl = 1
+num_sampl = 4
 angle_inc = 360/num_sampl
 angles = []
-radii = [0.3,0.5,0.8]
+radii = [0.4,0.8]
 target_space = []
-digits = [5]
+digits = [2]
 Hand = 2
 ens_perc = 0.8
 
@@ -37,7 +37,7 @@ random.shuffle(all_trials)
 
 
 
-with open('fing5_Zred.tgt', 'w', newline='') as tgt:
+with open('fing2_xy.tgt', 'w', newline='') as tgt:
     headernames = ['TN', 'Hand', 'Digit', 'TargetX', 'TargetY', 'TargetZ', 'EnsPercent']
     writer = csv.writer(tgt, delimiter = '\t')
 

@@ -51,7 +51,7 @@ class myExperiment(Experiment):
         #set time limits for phases
         CUE_TIME = 500
         PREP_TIME = 500
-        RESP_TIME  = 10000
+        RESP_TIME  = 100000
         RETURN_TIME  = 1000
         FINGER_REMAIN = 500
         DEAD_TIME  = 4000
@@ -124,7 +124,7 @@ class myExperiment(Experiment):
         if self.state == self.gStates.WAIT_PREPRATORY or self.gStates.WAIT_RESPONSE or self.gStates.WAIT_RELEASE: 
             
             pos             = self.gHardware['gHand'].getXYZ(gDigit - 1)
-            gFinger.pos     = [(pos[2]), (pos[0])]
+            gFinger.pos     = [(pos[2]), (pos[1])]
             #gFinger.radius  = 0.1 + pos[2]/1.2
 
             #update ens bars based on hardware reading
