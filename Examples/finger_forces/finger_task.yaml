@@ -22,18 +22,7 @@ data_format: {
             'TargetX', 'TargetY','EnsPercent', 
             'RawX', 'RawY', 'RawZ', 'ForceX', 'ForceY', 'ForceZ', 
             'RT', 'MT', 'EnsForce', 'measStartTime','measEndTime'],
-  trial:    ['time','BN','TN','state',
-            'L_X1', 'L_Y1', 'L_Z1', 
-            'L_X2', 'L_Y2', 'L_Z2',
-            'L_X3', 'L_Y3', 'L_Z3', 
-            'L_X4', 'L_Y4', 'L_Z4', 
-            'L_X5', 'L_Y5', 'L_Z5',
-            'time','BN','TN','state',
-            'R_X1', 'R_Y1', 'R_Z1', 
-            'R_X2', 'R_Y2', 'R_Z2',
-            'R_X3', 'R_Y3', 'R_Z3', 
-            'R_X4', 'R_Y4', 'R_Z4', 
-            'R_X5', 'R_Y5', 'R_Z5'] #add columns for left and right hands
+  trial:    ['time','BN','TN','state','L_X1', 'L_Y1', 'L_Z1', 'L_X2', 'L_Y2', 'L_Z2','L_X3', 'L_Y3', 'L_Z3', 'L_X4', 'L_Y4', 'L_Z4', 'L_X5', 'L_Y5', 'L_Z5','time','BN','TN','state','R_X1', 'R_Y1', 'R_Z1', 'R_X2', 'R_Y2', 'R_Z2','R_X3', 'R_Y3', 'R_Z3', 'R_X4', 'R_Y4', 'R_Z4', _X5', 'R_Y5', 'R_Z5'] #add columns for left and right hands
 }
 
 right_hand: {
@@ -49,6 +38,6 @@ left_hand: {
   device_name:    'hopkins_hand_device_left',
   sampling_freq:  5,
   buffer_size:    [10000, 19],
-  multiplier:   [-5.40,5.30,-20.00, -4.4,4,12.8, -4.4,4.3,18.9, -7.1,9.8,31.10, -4,4,18.3],
+  multiplier:   [-5.40,5.30,-20.00, -4.2,4.2,16.9, -4.4,4.3,18.9, -4.5,4.9,15.8, -4,4,18.3],
   serial_number: '2753550'      
 }
